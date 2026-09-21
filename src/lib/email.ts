@@ -117,7 +117,16 @@ export async function sendResource(opts: {
     `),
     opts.to,
   );
-  return send({ to: opts.to, subject: `${opts.title} — from 4i Records`, html });
+  /* Replies go to the notification inbox, not the From address:
+     EMAIL_FROM only has to be on a DKIM-verified domain, it doesn't
+     have to be a mailbox that exists. Without this, anyone replying
+     to a resource email would get a bounce. */
+  return send({
+    to: opts.to,
+    subject: `${opts.title} — from 4i Records`,
+    html,
+    replyTo: NOTIFY,
+  });
 }
 
 /* ---------- Internal notification ---------- */
