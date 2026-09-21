@@ -1,0 +1,33 @@
+# What not to upload when deploying.
+#
+# Vercel only falls back to .gitignore when this file is absent, and that
+# fallback is not dependable: across these three projects it excluded env files
+# here and in 4i Productions, shipped invoICE's `.env`, and shipped 4i
+# Productions' SQLite database. All four files were gitignored.
+#
+# Nothing here leaked — this is to keep it that way. Because .vercelignore
+# replaces the fallback outright, the ordinary exclusions are repeated too.
+#
+# Note what must NOT be excluded: `content/` holds the gated PDFs, read off disk
+# by /api/download/[slug]. They live outside public/ on purpose so they can only
+# be served behind a signed token, and leaving them out would break every
+# download link.
+
+# Secrets. These belong in Vercel's project settings, nowhere else.
+.env
+.env.*
+!.env.example
+.admin-password.txt
+
+# Dependencies and build output — Vercel installs and builds its own.
+node_modules
+.next
+out
+build
+
+# Local state and tooling
+.git
+.vercel
+coverage
+*.tsbuildinfo
+.DS_Store
