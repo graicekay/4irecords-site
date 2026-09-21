@@ -1,5 +1,7 @@
 import InquiryRow from "./InquiryRow";
-import { listInquiries, listRsvps, listSubscribers, rsvpCounts } from "@/lib/db";
+import {
+  downloadStats, listContacts, listInquiries, listRsvps, listSubscribers, rsvpCounts,
+} from "@/lib/db";
 import { eventBySlug } from "@/lib/events";
 
 export const dynamic = "force-dynamic";
@@ -11,9 +13,11 @@ export const dynamic = "force-dynamic";
    It's one page rather than three because the volume doesn't warrant
    navigation — when it does, split it the way Productions did. */
 export default async function AdminPage() {
-  const [inquiries, subscribers, rsvps, counts] = await Promise.all([
+  const [inquiries, subscribers, rsvps, counts, contacts, dlStats] = await Promise.all([
     listInquiries(), listSubscribers(), listRsvps(), rsvpCounts(),
+    listContacts(), downloadStats(),
   ]);
+  const list = contacts.filter((c) => !c.unsubscribed);
 
   const open = inquiries.filter((i) => i.status !== "archived");
   const archived = inquiries.filter((i) => i.status === "archived");
@@ -33,7 +37,7 @@ export default async function AdminPage() {
       <div className="grid-3" style={{ margin: "36px 0 8px" }}>
         <Stat label="Open inquiries" value={open.length} />
         <Stat label="Subscribers" value={mailable.length} />
-        <Stat label="RSVPs" value={rsvps.length} />
+        <Stat label="On the list" value={list.length} />
       </div>
 
       <section className="section">
@@ -55,6 +59,54 @@ export default async function AdminPage() {
               {archived.map((i) => <InquiryRow key={i.id} inquiry={i} />)}
             </div>
           </details>
+        )}
+      </section>
+
+      <section className="section">
+        <h2 className="display" style={{ fontSize: 30 }}>Resource downloads</h2>
+        <p className="muted" style={{ fontSize: 13 }}>
+          Which resource is actually pulling — requests, and how many distinct
+          people asked.
+        </p>
+        {dlStats.length === 0 ? (
+          <p className="muted">No downloads requested yet.</p>
+        ) : (
+          <div className="card" style={{ marginTop: 20 }}>
+            <ul className="lineup">
+              {dlStats.map((d) => (
+                <li key={d.resource_slug} style={{ color: "var(--text)" }}>
+                  {d.resource_slug}
+                  <span className="muted">
+                    {" "}— {d.requests} request{d.requests === 1 ? "" : "s"} from{" "}
+                    {d.people} {d.people === 1 ? "person" : "people"}
+                  </span>
+                </li>
+              ))}
+            </ul>
+          </div>
+        )}
+      </section>
+
+      <section className="section">
+        <h2 className="display" style={{ fontSize: 30 }}>The list</h2>
+        <p className="muted" style={{ fontSize: 13 }}>
+          {list.length} active · {contacts.length - list.length} unsubscribed
+        </p>
+        {list.length === 0 ? (
+          <p className="muted">Nobody yet.</p>
+        ) : (
+          <div className="card" style={{ marginTop: 20 }}>
+            <ul className="lineup">
+              {list.map((c) => (
+                <li key={c.id} style={{ color: "var(--text)" }}>
+                  <a href={`mailto:${c.email}`} className="muted">{c.email}</a>
+                  {c.tags.length > 0 && (
+                    <span className="muted"> · {c.tags.join(", ")}</span>
+                  )}
+                </li>
+              ))}
+            </ul>
+          </div>
         )}
       </section>
 

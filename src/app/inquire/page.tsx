@@ -1,28 +1,41 @@
 import type { Metadata } from "next";
-import InquireForm from "@/components/InquireForm";
+import BranchedInquireForm from "@/components/BranchedInquireForm";
+import type { Branch } from "@/lib/inquire-actions";
 
 export const metadata: Metadata = {
   title: "Inquire",
   description:
-    "Artists, filmmakers, marketers, and live performers — tell us what you're making.",
+    "Artists, creatives, and anyone who just wants to stay posted. One form, four ways in.",
 };
 
-export default function Inquire() {
+const VALID: Branch[] = ["visuals", "artist", "creative", "updates"];
+
+/* `?for=creative` pre-selects a branch — the /vision blocks link in
+   this way so someone who clicked "the marketplace" doesn't have to
+   answer a question they've effectively already answered (§3.5). */
+export default async function Inquire({
+  searchParams,
+}: {
+  searchParams: Promise<{ for?: string }>;
+}) {
+  const { for: raw } = await searchParams;
+  const preset = VALID.includes(raw as Branch) ? (raw as Branch) : undefined;
+
   return (
     <>
       <section className="wrap page-head">
         <p className="eyebrow">Get in touch</p>
         <h1 className="display">Inquire</h1>
         <p className="sub">
-          Whether you make music or make things around it, this is the way in.
-          Tell us what you&apos;re working on and what you&apos;d want from us.
+          Four ways in. Pick the one that fits and we&apos;ll only ask for what
+          that actually needs.
         </p>
       </section>
 
       <section className="section" style={{ borderTop: 0, paddingTop: 48 }}>
         <div className="wrap narrow">
-          <InquireForm />
-          <p className="muted" style={{ fontSize: 13, marginTop: 30 }}>
+          <BranchedInquireForm defaultBranch={preset} />
+          <p className="muted" style={{ fontSize: 13, marginTop: 34 }}>
             Prefer email? We&apos;re at{" "}
             <a href="mailto:info@4irecords.com" style={{ color: "var(--accent)" }}>
               info@4irecords.com

@@ -16,8 +16,10 @@ export default function Footer() {
           <div>
             <p className="head">Site</p>
             {EVENTS_ENABLED && <Link className="fl" href="/events">Events</Link>}
+            <Link className="fl" href="/resources">Resources</Link>
+            <Link className="fl" href="/visuals">Visuals</Link>
+            <Link className="fl" href="/vision">Vision</Link>
             <Link className="fl" href="/mission">Mission</Link>
-            <Link className="fl" href="/artists">4 Artists</Link>
             {FANS_ENABLED && <Link className="fl" href="/fans">4 Fans</Link>}
           </div>
           <div>

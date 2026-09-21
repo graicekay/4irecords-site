@@ -22,7 +22,11 @@ function sql() {
 
 /* ---------- Types ---------- */
 
-export type InquiryKind = "artist" | "collaborator";
+/* The four branches of the /inquire form (§3.6). `collaborator` is
+   kept so rows captured by the earlier version of the form still
+   read correctly. */
+export type InquiryKind =
+  | "artist" | "creative" | "visuals" | "updates" | "collaborator";
 export type InquiryStatus = "new" | "replied" | "archived";
 
 export type Inquiry = {
@@ -35,8 +39,11 @@ export type Inquiry = {
   email: string;
   location: string | null;
   links: string | null;
-  message: string;
+  message: string | null;
   admin_note: string | null;
+  role: string | null;
+  portfolio: string | null;
+  availability: string | null;
 };
 
 export type Subscriber = {
@@ -67,15 +74,21 @@ export async function createInquiry(input: {
   kind: InquiryKind;
   name: string;
   email: string;
-  location: string | null;
-  links: string | null;
-  message: string;
+  location?: string | null;
+  links?: string | null;
+  message?: string | null;
+  role?: string | null;
+  portfolio?: string | null;
+  availability?: string | null;
 }): Promise<void> {
   const db = sql();
   await db`
-    INSERT INTO inquiries (kind, name, email, location, links, message)
-    VALUES (${input.kind}, ${input.name}, ${input.email},
-            ${input.location}, ${input.links}, ${input.message})
+    INSERT INTO inquiries
+      (kind, name, email, location, links, message, role, portfolio, availability)
+    VALUES
+      (${input.kind}, ${input.name}, ${input.email}, ${input.location ?? null},
+       ${input.links ?? null}, ${input.message ?? null}, ${input.role ?? null},
+       ${input.portfolio ?? null}, ${input.availability ?? null})
   `;
 }
 
@@ -188,4 +201,87 @@ export async function rsvpCounts(): Promise<Record<string, number>> {
     SELECT event_slug, SUM(guests)::int AS heads FROM rsvps GROUP BY event_slug
   `) as { event_slug: string; heads: number }[];
   return Object.fromEntries(rows.map((r) => [r.event_slug, r.heads]));
+}
+
+/* ---------- Contacts (the list) ----------
+
+   One row per email address, with tags accumulating on it. A repeat
+   capture adds tags rather than replacing them, so someone who
+   downloads three resources ends up tagged for all three — and
+   re-subscribes themselves if they'd previously opted out, which is
+   the only way back in without an admin. */
+
+export async function upsertContact(input: {
+  email: string;
+  tags: string[];
+  source: string;
+}): Promise<void> {
+  const db = sql();
+  await db`
+    INSERT INTO contacts (email, tags, source)
+    VALUES (${input.email}, ${input.tags}, ${input.source})
+    ON CONFLICT (lower(email)) DO UPDATE SET
+      tags = (
+        SELECT ARRAY(SELECT DISTINCT unnest(contacts.tags || EXCLUDED.tags))
+      ),
+      source = COALESCE(contacts.source, EXCLUDED.source),
+      unsubscribed = false,
+      updated_at = now()
+  `;
+}
+
+export type Contact = {
+  id: string;
+  created_at: string;
+  email: string;
+  tags: string[];
+  source: string | null;
+  unsubscribed: boolean;
+};
+
+export async function listContacts(): Promise<Contact[]> {
+  const db = sql();
+  return (await db`
+    SELECT * FROM contacts ORDER BY created_at DESC
+  `) as Contact[];
+}
+
+export async function unsubscribeContact(email: string): Promise<void> {
+  const db = sql();
+  await db`
+    UPDATE contacts SET unsubscribed = true, updated_at = now()
+    WHERE lower(email) = lower(${email})
+  `;
+}
+
+/* ---------- Downloads ----------
+
+   One row per request, not per person: the same address asking twice
+   is two rows, which is what makes per-resource conversion (§6)
+   measurable rather than just a unique-contact count. */
+
+export async function recordDownload(input: {
+  email: string;
+  slug: string;
+  delivered: boolean;
+}): Promise<void> {
+  const db = sql();
+  await db`
+    INSERT INTO downloads (email, resource_slug, delivered)
+    VALUES (${input.email}, ${input.slug}, ${input.delivered})
+  `;
+}
+
+export type DownloadStat = { resource_slug: string; requests: number; people: number };
+
+export async function downloadStats(): Promise<DownloadStat[]> {
+  const db = sql();
+  return (await db`
+    SELECT resource_slug,
+           COUNT(*)::int                      AS requests,
+           COUNT(DISTINCT lower(email))::int  AS people
+    FROM downloads
+    GROUP BY resource_slug
+    ORDER BY requests DESC
+  `) as DownloadStat[];
 }

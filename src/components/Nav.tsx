@@ -14,10 +14,11 @@ import { EVENTS_ENABLED, FANS_ENABLED } from "@/lib/flags";
    their URLs — /artists and /fans. Old links are redirected in
    next.config.ts so anything already shared still lands. */
 const LINKS = [
-  { href: "/", label: "Home" },
-  ...(EVENTS_ENABLED ? [{ href: "/events", label: "Events" }] : []),
+  { href: "/resources", label: "Resources" },
+  { href: "/visuals", label: "Visuals" },
+  { href: "/vision", label: "Vision" },
   { href: "/mission", label: "Mission" },
-  { href: "/artists", label: "4 Artists" },
+  ...(EVENTS_ENABLED ? [{ href: "/events", label: "Events" }] : []),
   ...(FANS_ENABLED ? [{ href: "/fans", label: "4 Fans" }] : []),
   { href: "/inquire", label: "Inquire" },
 ];
