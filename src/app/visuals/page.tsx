@@ -1,5 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import CaseStudy from "@/components/CaseStudy";
+import { caseStudies } from "@/lib/case-studies";
 import { PRODUCTIONS_INTAKE_URL, PRODUCTIONS_LIVE } from "@/lib/links";
 
 export const metadata: Metadata = {
@@ -12,12 +14,6 @@ export const metadata: Metadata = {
    4i Productions intake rather than rebuilding it here — that flow
    already shows a quote range before submit, which is the trust
    signal worth pointing at. */
-
-const CASE_STUDIES = [
-  { artist: "Artist name", result: "One line on what the work did." },
-  { artist: "Artist name", result: "One line on what the work did." },
-  { artist: "Artist name", result: "One line on what the work did." },
-];
 
 const OFFER = [
   ["Music videos", "Concept through delivery, shot for the song rather than the trend."],
@@ -45,30 +41,26 @@ export default function Visuals() {
         </p>
       </section>
 
-      <section className="section" style={{ borderTop: 0, paddingTop: 44 }}>
-        <div className="wrap">
-          <div className="grid-3">
-            {CASE_STUDIES.map((c, i) => (
-              <div key={i}>
-                {/* Placeholder until real case-study videos are supplied —
-                    the spec is explicit that stock imagery is worse than
-                    an honest empty slot. */}
-                <div className="video-ph" aria-hidden="true">
-                  <span>4i</span>
-                </div>
-                <p style={{ margin: "14px 0 2px", fontWeight: 500, fontSize: 15 }}>
-                  {c.artist}
-                </p>
-                <p className="muted" style={{ margin: 0, fontSize: 13.5 }}>{c.result}</p>
+      {/* Leads with work, not copy — but only when there is work to
+          lead with. One video gets the full width; several get a grid;
+          none gets an honest line rather than a row of grey boxes. */}
+      {caseStudies.length > 0 && (
+        <section className="section" style={{ borderTop: 0, paddingTop: 44 }}>
+          <div className="wrap">
+            {caseStudies.length === 1 ? (
+              <div style={{ maxWidth: 820 }}>
+                <CaseStudy study={caseStudies[0]!} large />
               </div>
-            ))}
+            ) : (
+              <div className={caseStudies.length === 2 ? "grid-2" : "grid-3"}>
+                {caseStudies.map((c) => (
+                  <CaseStudy key={c.youtubeId} study={c} />
+                ))}
+              </div>
+            )}
           </div>
-          <p className="muted" style={{ fontSize: 12.5, marginTop: 20 }}>
-            Case studies go here — send the video links and the one-line results
-            and these become real embeds.
-          </p>
-        </div>
-      </section>
+        </section>
+      )}
 
       <section className="section">
         <div className="wrap">

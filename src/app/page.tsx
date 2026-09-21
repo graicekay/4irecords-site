@@ -1,4 +1,6 @@
 import Link from "next/link";
+import CaseStudy from "@/components/CaseStudy";
+import { caseStudies } from "@/lib/case-studies";
 import { FORMAT_LABEL, featuredResources } from "@/lib/resources";
 
 /* ============================================================
@@ -103,11 +105,16 @@ export default function Home() {
             Music videos, performance visuals, and the short-form that comes out
             of the same shoot. You see a price range before you submit anything.
           </p>
-          <div className="grid-3" style={{ marginTop: 30 }}>
-            {[0, 1, 2].map((i) => (
-              <div className="video-ph" key={i} aria-hidden="true"><span>4i</span></div>
-            ))}
-          </div>
+          {caseStudies.length > 0 && (
+            <div
+              className={caseStudies.length === 1 ? undefined : "grid-3"}
+              style={{ marginTop: 30, maxWidth: caseStudies.length === 1 ? 760 : undefined }}
+            >
+              {caseStudies.slice(0, 3).map((c) => (
+                <CaseStudy key={c.youtubeId} study={c} large={caseStudies.length === 1} />
+              ))}
+            </div>
+          )}
           <div style={{ marginTop: 28 }}>
             <Link href="/visuals" className="btn btn-solid">See the work</Link>
           </div>
