@@ -1,7 +1,9 @@
 import type { Metadata } from "next";
+import { notFound } from "next/navigation";
 import EventCard from "@/components/EventCard";
 import SubscribeForm from "@/components/SubscribeForm";
 import { pastEvents, upcomingEvents } from "@/lib/events";
+import { EVENTS_ENABLED } from "@/lib/flags";
 
 export const metadata: Metadata = {
   title: "Events",
@@ -16,6 +18,9 @@ export const metadata: Metadata = {
 export const dynamic = "force-dynamic";
 
 export default function Events() {
+  /* Hidden rather than deleted — see lib/flags.ts. */
+  if (!EVENTS_ENABLED) notFound();
+
   const upcoming = upcomingEvents();
   const past = pastEvents().slice(0, 4);
 

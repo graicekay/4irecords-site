@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { EVENTS_ENABLED, FANS_ENABLED } from "@/lib/flags";
 
 export default function Footer() {
   return (
@@ -14,10 +15,10 @@ export default function Footer() {
         <div className="cols">
           <div>
             <p className="head">Site</p>
-            <Link className="fl" href="/events">Events</Link>
+            {EVENTS_ENABLED && <Link className="fl" href="/events">Events</Link>}
             <Link className="fl" href="/mission">Mission</Link>
             <Link className="fl" href="/artists">4 Artists</Link>
-            <Link className="fl" href="/fans">4 Fans</Link>
+            {FANS_ENABLED && <Link className="fl" href="/fans">4 Fans</Link>}
           </div>
           <div>
             <p className="head">Reach us</p>

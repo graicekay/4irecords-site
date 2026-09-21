@@ -1,6 +1,8 @@
 import type { Metadata } from "next";
+import { notFound } from "next/navigation";
 import Link from "next/link";
 import SubscribeForm from "@/components/SubscribeForm";
+import { FANS_ENABLED } from "@/lib/flags";
 
 export const metadata: Metadata = {
   title: "4 Fans",
@@ -9,6 +11,9 @@ export const metadata: Metadata = {
 };
 
 export default function Fans() {
+  /* Hidden rather than deleted — see lib/flags.ts. */
+  if (!FANS_ENABLED) notFound();
+
   return (
     <>
       <section className="wrap page-head">
@@ -30,9 +35,6 @@ export default function Fans() {
             Come to a show and the money goes where it should — to the people on
             stage.
           </p>
-          <div style={{ marginTop: 30 }}>
-            <Link href="/events" className="btn">See upcoming events</Link>
-          </div>
         </div>
       </section>
 

@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
+import { EVENTS_ENABLED, FANS_ENABLED } from "@/lib/flags";
 
 /* Nav styling lives in globals.css, not styled-jsx: styled-jsx only
    scopes plain DOM elements, so every rule targeting a <Link> would
@@ -14,10 +15,10 @@ import { useEffect, useState } from "react";
    next.config.ts so anything already shared still lands. */
 const LINKS = [
   { href: "/", label: "Home" },
-  { href: "/events", label: "Events" },
+  ...(EVENTS_ENABLED ? [{ href: "/events", label: "Events" }] : []),
   { href: "/mission", label: "Mission" },
   { href: "/artists", label: "4 Artists" },
-  { href: "/fans", label: "4 Fans" },
+  ...(FANS_ENABLED ? [{ href: "/fans", label: "4 Fans" }] : []),
   { href: "/inquire", label: "Inquire" },
 ];
 
