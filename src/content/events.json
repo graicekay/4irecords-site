@@ -1,0 +1,16 @@
+[
+  {
+    "slug": "neutral-snap-basement-show",
+    "title": "Neutral Snap",
+    "date": "2026-10-17T20:00:00-06:00",
+    "doorsAt": "8:00 PM",
+    "city": "Salt Lake City, UT",
+    "venue": "Basement show",
+    "addressPolicy": "on-rsvp",
+    "lineup": ["Neutral Snap", "TBA", "TBA"],
+    "cover": "$10 at the door",
+    "flyer": null,
+    "rsvp": true,
+    "note": "Cash or Venmo at the door. All ages."
+  }
+]
