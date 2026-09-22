@@ -6,7 +6,11 @@ export default function Footer() {
     <footer className="foot">
       <div className="wrap foot-inner">
         <div>
-          <p className="tag display">4 Artists. 4 Fans. 4 Good.</p>
+          <p className="tag display">
+            <span className="four-n">4</span> Artists.{" "}
+            <span className="four-n">4</span> Fans.{" "}
+            <span className="four-n">4</span> Good.
+          </p>
           <p className="muted small">Based in Salt Lake City, Utah.</p>
         </div>
 

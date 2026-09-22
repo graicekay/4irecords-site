@@ -1,0 +1,142 @@
+"use client";
+
+import { useEffect, useRef } from "react";
+
+/**
+ * The record behind the hero type.
+ *
+ * Driven by requestAnimationFrame rather than a CSS animation, because the
+ * brief is that it speeds up on hover and CSS can't do that smoothly: changing
+ * `animation-duration` remaps where the playhead sits, so the disc jumps to a
+ * new angle the moment the speed changes. Here the *speed* is eased toward its
+ * target and the angle only ever accumulates, so it winds up and coasts back
+ * down the way a turntable does.
+ *
+ * Idles near 33⅓ rpm for the obvious reason, and winds up to about four times
+ * that on hover.
+ */
+
+const IDLE_RPM = 33 + 1 / 3;
+const HOVER_RPM = IDLE_RPM * 4;
+/** How fast the speed itself changes. Higher is snappier; this is ~0.4s. */
+const RAMP = 2.6;
+
+export function SpinningRecord() {
+  const ref = useRef<SVGSVGElement>(null);
+
+  useEffect(() => {
+    const el = ref.current;
+    if (!el) return;
+
+    // Someone who asked for less motion gets the record, standing still.
+    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+
+    const hero = el.closest("section");
+    let angle = 0;
+    let rpm = IDLE_RPM;
+    let target = IDLE_RPM;
+    let last = performance.now();
+    let frame = 0;
+    let visible = true;
+
+    const onEnter = () => { target = HOVER_RPM; };
+    const onLeave = () => { target = IDLE_RPM; };
+    hero?.addEventListener("pointerenter", onEnter);
+    hero?.addEventListener("pointerleave", onLeave);
+    // A tap on a touch screen winds it up too, then lets it fall back.
+    hero?.addEventListener("pointerdown", onEnter, { passive: true });
+    hero?.addEventListener("pointerup", onLeave, { passive: true });
+    hero?.addEventListener("pointercancel", onLeave, { passive: true });
+
+    const tick = (now: number) => {
+      const dt = Math.min((now - last) / 1000, 0.05); // clamp: tab-switch jumps
+      last = now;
+
+      // Ease the speed toward its target, frame-rate independent.
+      rpm += (target - rpm) * (1 - Math.exp(-RAMP * dt));
+      angle = (angle + rpm * 6 * dt) % 360;        // 6 deg per rpm per second
+      el.style.transform = `rotate(${angle}deg)`;
+
+      frame = requestAnimationFrame(tick);
+    };
+
+    // Nothing spins while it's off screen or the tab is in the background —
+    // a rAF loop runs whether or not anyone can see it.
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        visible = entry?.isIntersecting ?? false;
+        cancelAnimationFrame(frame);
+        if (visible && !document.hidden) {
+          last = performance.now();
+          frame = requestAnimationFrame(tick);
+        }
+      },
+      { threshold: 0 },
+    );
+    observer.observe(el);
+
+    const onVisibility = () => {
+      cancelAnimationFrame(frame);
+      if (!document.hidden && visible) {
+        last = performance.now();
+        frame = requestAnimationFrame(tick);
+      }
+    };
+    document.addEventListener("visibilitychange", onVisibility);
+
+    return () => {
+      cancelAnimationFrame(frame);
+      observer.disconnect();
+      document.removeEventListener("visibilitychange", onVisibility);
+      hero?.removeEventListener("pointerenter", onEnter);
+      hero?.removeEventListener("pointerleave", onLeave);
+      hero?.removeEventListener("pointerdown", onEnter);
+      hero?.removeEventListener("pointerup", onLeave);
+      hero?.removeEventListener("pointercancel", onLeave);
+    };
+  }, []);
+
+  /* Grooves as stroked circles rather than a texture: a dozen paths beat a
+     bitmap that would have to be twice the size for a retina screen. */
+  const grooves = [];
+  for (let r = 196; r >= 92; r -= 7) {
+    grooves.push(
+      <circle
+        key={r}
+        cx="256" cy="256" r={r}
+        fill="none"
+        stroke="#ffffff"
+        strokeOpacity={r % 14 === 0 ? 0.055 : 0.03}
+        strokeWidth="1"
+      />,
+    );
+  }
+
+  return (
+    <svg
+      ref={ref}
+      className="hero-record"
+      viewBox="0 0 512 512"
+      aria-hidden="true"
+      focusable="false"
+    >
+      {/* The disc. Not pure black — it has to separate from the page. */}
+      <circle cx="256" cy="256" r="248" fill="#131313" />
+      <circle cx="256" cy="256" r="248" fill="none" stroke="#ffffff" strokeOpacity="0.07" />
+
+      {grooves}
+
+      {/* The label, and the one thing on here that carries any colour. */}
+      <circle cx="256" cy="256" r="84" fill="#57FF52" fillOpacity="0.7" />
+      <path
+        d="M286 0 L0 449 L0 531 L269 531 L269 675 L369 675 L369 531 L436 531 L436 680 L541 680 L541 171 L436 171 L436 447 L369 447 L369 0 Z M269 192 L269 447 L106 447 Z M436 0 L541 0 L541 110 L436 110 Z"
+        fill="#0A0A0A"
+        fillRule="evenodd"
+        transform="translate(211.5 205.5) scale(0.1305)"
+      />
+
+      {/* Spindle hole. */}
+      <circle cx="256" cy="256" r="9" fill="#0A0A0A" />
+    </svg>
+  );
+}

@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import CaseStudy from "@/components/CaseStudy";
 import { caseStudies } from "@/lib/case-studies";
-import { PRODUCTIONS_INTAKE_URL } from "@/lib/links";
+import { PRODUCTIONS_INTAKE_URL, productionsIntake, type ProductionsType } from "@/lib/links";
 
 export const metadata: Metadata = {
   title: "Visuals",
@@ -14,11 +14,15 @@ export const metadata: Metadata = {
    already shows a quote range before submit, which is the trust
    signal worth pointing at. */
 
-const OFFER = [
-  ["Music videos", "Concept through delivery, shot for the song rather than the trend."],
-  ["Performance visuals", "Live sessions and stage content that hold up outside the room."],
-  ["Short-form cutdowns", "The vertical edits that actually move, cut from the same shoot."],
-  ["Lyric and visualizer content", "The release-day essentials, without the release-day panic."],
+/* Each tile opens the 4i Productions intake with its type already chosen —
+   the brief starts one question further along than it otherwise would.
+   Short-form cutdowns file as a music video because that is the shoot they
+   come out of; there is no separate type for them. */
+const OFFER: [string, string, ProductionsType][] = [
+  ["Music videos", "Concept through delivery, shot for the song rather than the trend.", "music_video"],
+  ["Performance visuals", "Live sessions and stage content that hold up outside the room.", "live_show"],
+  ["Short-form cutdowns", "The vertical edits that actually move, cut from the same shoot.", "music_video"],
+  ["Narrative projects", "Expand your story and build your world with short films or other narrative projects that elevate your music.", "narrative"],
 ];
 
 export default function Visuals() {
@@ -58,11 +62,18 @@ export default function Visuals() {
         <div className="wrap">
           <h2 className="display">What&apos;s on offer</h2>
           <div className="grid-2" style={{ marginTop: 26 }}>
-            {OFFER.map(([title, body]) => (
-              <div className="card" key={title}>
+            {OFFER.map(([title, body, type]) => (
+              <a
+                className="card card-link"
+                key={title}
+                href={productionsIntake(type)}
+                target="_blank"
+                rel="noreferrer noopener"
+              >
                 <h3>{title}</h3>
-                <p className="muted" style={{ fontSize: 14, margin: 0 }}>{body}</p>
-              </div>
+                <p className="muted" style={{ fontSize: 14, margin: "0 0 14px" }}>{body}</p>
+                <span className="card-cue">Start this brief →</span>
+              </a>
             ))}
           </div>
         </div>

@@ -15,7 +15,10 @@ import matter from "gray-matter";
 const DIR = join(process.cwd(), "content", "resources");
 const FILES = join(process.cwd(), "content", "files");
 
-export type ResourceFormat = "guide" | "template" | "breakdown";
+/* "template" came from the spec's content model, but nothing here is one —
+   a template is a file you fill in and make your own. Added "checklist"
+   rather than mislabel the thing the resource is actually called. */
+export type ResourceFormat = "guide" | "template" | "breakdown" | "checklist";
 
 export type ResourceMeta = {
   title: string;
@@ -97,4 +100,5 @@ export const FORMAT_LABEL: Record<ResourceFormat, string> = {
   guide: "Guide",
   template: "Template",
   breakdown: "Breakdown",
+  checklist: "Checklist",
 };

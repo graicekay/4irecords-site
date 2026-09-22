@@ -1,5 +1,6 @@
 import Link from "next/link";
 import CaseStudy from "@/components/CaseStudy";
+import { SpinningRecord } from "@/components/SpinningRecord";
 import { caseStudies } from "@/lib/case-studies";
 import { FORMAT_LABEL, featuredResources } from "@/lib/resources";
 
@@ -20,6 +21,7 @@ export default function Home() {
   return (
     <>
       <section className="hero">
+        <SpinningRecord />
         <h1 className="display">
           A record label that lets artists be their own record label.
         </h1>
@@ -116,7 +118,7 @@ export default function Home() {
               ))}
             </div>
           )}
-          <div style={{ marginTop: 28 }}>
+          <div style={{ marginTop: 28, display: "flex", justifyContent: "center" }}>
             <Link href="/visuals" className="btn btn-solid">See the work</Link>
           </div>
         </div>
@@ -129,7 +131,7 @@ export default function Home() {
             4 Artists. 4 Fans. 4 <span className="four">Good</span>.
           </h2>
           <p className="lede muted">
-            Get new resources when we publish them. One email field, nothing else.
+            Get new resources when we publish them.
           </p>
           <div className="cta" style={{ justifyContent: "center", marginTop: 30 }}>
             <Link href="/inquire?for=updates" className="btn btn-solid">

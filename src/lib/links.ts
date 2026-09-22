@@ -16,6 +16,20 @@ export const PRODUCTIONS_SITE =
    page. It was `#intake` here, which scrolled nowhere. */
 export const PRODUCTIONS_INTAKE_URL = `${PRODUCTIONS_SITE}/#inquire`;
 
+/**
+ * The intake, with a project type already chosen.
+ *
+ * These keys are 4i Productions' own (`PROJECT_TYPES` in its lib/spec.ts).
+ * Its intake ignores anything it doesn't recognise and just opens on the
+ * type question, so a key going stale here degrades rather than breaks —
+ * but if that list is edited, edit this one.
+ */
+export type ProductionsType =
+  | "music_video" | "commercial" | "narrative" | "live_show" | "other";
+
+export const productionsIntake = (type: ProductionsType) =>
+  `${PRODUCTIONS_SITE}/?type=${type}#inquire`;
+
 export const PRODUCTIONS_LIVE = true;
 
 export const INSTAGRAM = "https://instagram.com/4irecords";
