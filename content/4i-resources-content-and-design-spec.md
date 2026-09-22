@@ -328,8 +328,7 @@ What you can expect:
 
 A lot of people think a more expensive camera equals better production value, but it's not true. Most filmmakers will agree the best investment you can make is in lighting — or in creative professionals who are trained to see and arrange shots according to natural lighting.
 
-> **PRO TIP** — [This music video] was shot on an iPhone for $60 — the cost of an iPhone stabilizer from Amazon.
-> ⚠ **NEEDS URL** — link to the Weapons video by Graice Kay.
+> **PRO TIP** — [Weapons](https://www.youtube.com/watch?v=iI-B1-WOcNk) was shot on an iPhone for $60 — the cost of an iPhone stabilizer from Amazon.
 
 Even if you can't afford expensive lights, training the eye to see composition and good lighting helps elevate the perceived production value of your visual project dramatically. In that case, hiring an experienced DP may be worth it even without an expensive camera or lighting package.
 
@@ -516,7 +515,7 @@ Every 4i Productions shoot delivers the final video plus the full cutdown set, a
 
 ## 6. Open items
 
-1. **Weapons video URL** — the Pro Tip in Resource 02 § Lighting has a dead link. Needs the real URL before launch.
+1. ~~**Weapons video URL**~~ — resolved 2026-09-22: https://www.youtube.com/watch?v=iI-B1-WOcNk, live in Resource 02 § Lighting.
 2. **Spec drift** — Resource 01's size table and Resource 03's safe-area numbers should be re-verified quarterly. Note the check date in the page footnote each time.
 3. **Cross-links** — R1 ↔ R2 ↔ R3 each reference the others; make sure slugs match whatever the CMS produces.
 4. **ESP wiring** — every gate form posts to the same endpoint with a `resource` tag. Duplicate emails should re-send the file rather than error.
