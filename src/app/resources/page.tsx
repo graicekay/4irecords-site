@@ -16,7 +16,7 @@ export default function ResourcesIndex() {
   return (
     <>
       <section className="wrap page-head">
-        <p className="eyebrow">Free, and actually free</p>
+        <p className="eyebrow">Free</p>
         <h1 className="display">Resources</h1>
         <p className="sub">
           Guides, templates and breakdowns for independent artists. Read
