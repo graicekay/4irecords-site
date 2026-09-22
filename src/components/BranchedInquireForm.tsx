@@ -4,6 +4,7 @@ import { useState } from "react";
 import FormShell, { Field } from "@/components/FormShell";
 import { submitBranchedInquiry, type Branch } from "@/lib/inquire-actions";
 import { PRODUCTIONS_INTAKE_URL } from "@/lib/links";
+import { FourILower } from "@/components/FourIMark";
 
 /* §3.6. The branch question is answered before any fields appear, so
    nobody reads a form that isn't theirs. */
@@ -91,7 +92,7 @@ export default function BranchedInquireForm({
           </p>
           <div className="cta" style={{ marginTop: 20 }}>
             <a href={PRODUCTIONS_INTAKE_URL} className="btn btn-solid">
-              Start a project at 4i Productions
+              Start a project at <FourILower /> Productions
             </a>
           </div>
           <p className="muted small" style={{ marginTop: 14, marginBottom: 0 }}>

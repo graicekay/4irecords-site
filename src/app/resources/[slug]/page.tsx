@@ -10,6 +10,7 @@ import { SafeAreas } from "@/components/SafeAreas";
 import { ResourceNav } from "@/components/ResourceNav";
 import { CtaLink, EndCta, Quote } from "@/components/resource-mdx";
 import DownloadGate from "@/components/DownloadGate";
+import { FourILower } from "@/components/FourIMark";
 import {
   FORMAT_LABEL, allResources, relatedResources, resourceBySlug,
 } from "@/lib/resources";
@@ -94,7 +95,7 @@ export default async function ResourcePage(
           ← All resources
         </Link>
         <p className="res-byline">
-          4i Records · Updated {new Date(resource.publishedAt).toLocaleDateString("en-GB", { month: "short", year: "numeric" })} · {FORMAT_LABEL[resource.format]}
+          <FourILower /> Records · Updated {new Date(resource.publishedAt).toLocaleDateString("en-GB", { month: "short", year: "numeric" })} · {FORMAT_LABEL[resource.format]}
         </p>
         <h1>{resource.title}</h1>
         <p className="standfirst">{resource.description}</p>

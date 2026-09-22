@@ -90,7 +90,7 @@ export default function Visuals() {
           </p>
           <div className="cta" style={{ justifyContent: "center", marginTop: 30 }}>
             <a href={PRODUCTIONS_INTAKE_URL} className="btn btn-solid">
-              Start a project at 4i Productions
+              Start a project at <FourILower /> Productions
             </a>
           </div>
           <p className="muted" style={{ fontSize: 12.5, marginTop: 18 }}>
