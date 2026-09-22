@@ -1,7 +1,7 @@
 import Link from "next/link";
 import CaseStudy from "@/components/CaseStudy";
 import { SpinningRecord } from "@/components/SpinningRecord";
-import { FourIMark } from "@/components/FourIMark";
+import { FourIText } from "@/components/FourIMark";
 import { caseStudies } from "@/lib/case-studies";
 import { FORMAT_LABEL, featuredResources } from "@/lib/resources";
 
@@ -43,7 +43,7 @@ export default function Home() {
               has no lowercase to fall back on, so a typed "4i" came out as
               "4I" — the dot on the i is not optional. */}
           <h2 className="display">
-            What <FourIMark className="inline-mark" /><span className="sr-only">4i</span> is
+            What <FourIText /> is
           </h2>
           <div className="grid-3" style={{ marginTop: 26 }}>
             <div className="card">
@@ -93,7 +93,7 @@ export default function Home() {
                   <span className={r.downloadFile ? "badge badge-has-dl" : "badge"}>
                     {FORMAT_LABEL[r.format]}
                   </span>
-                  <h3 style={{ marginTop: 14, fontSize: 17 }}>{r.title}</h3>
+                  <h3 className="card-title">{r.title}</h3>
                   <p className="muted" style={{ fontSize: 13.5, margin: 0 }}>
                     {r.description}
                   </p>
@@ -106,7 +106,7 @@ export default function Home() {
 
       <section className="section">
         <div className="wrap">
-          <p className="eyebrow">4i Productions</p>
+          <p className="eyebrow"><FourIText /> Productions</p>
           <h2 className="display" style={{ marginTop: 12 }}>
             When you need it made properly.
           </h2>

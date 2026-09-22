@@ -166,7 +166,7 @@ export default async function ResourcePage(
                   <span className={r.downloadFile ? "badge badge-has-dl" : "badge"}>
                     {FORMAT_LABEL[r.format]}
                   </span>
-                  <h3 style={{ marginTop: 14, fontSize: 17 }}>{r.title}</h3>
+                  <h3 className="card-title">{r.title}</h3>
                   <p className="muted" style={{ fontSize: 13.5, margin: 0 }}>
                     {r.description}
                   </p>

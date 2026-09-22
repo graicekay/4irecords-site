@@ -20,3 +20,20 @@ export function FourIMark({ className }: { className?: string }) {
     </svg>
   );
 }
+
+/**
+ * "4i" inside a line of type.
+ *
+ * Anywhere the text is uppercased — eyebrows, `.display` headings — a typed
+ * "4i" comes out as "4I" and loses the dot, and Anton has no lowercase to
+ * fall back on. This puts the mark there instead and leaves the letters for
+ * screen readers and for anyone copying the text.
+ */
+export function FourIText() {
+  return (
+    <>
+      <FourIMark className="inline-mark" />
+      <span className="sr-only">4i</span>
+    </>
+  );
+}

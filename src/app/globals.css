@@ -216,6 +216,29 @@ a { color: inherit; text-decoration: none; }
   font-size: 14px;
 }
 
+/* Card titles are titles, in the title face. Everything on this site
+   inherits Roboto Mono from body, which is why these read as body text set
+   a bit larger — the label above them only looked like a different font
+   because it is uppercase and tracked out. */
+.card-title {
+  font-family: var(--font-display);
+  font-weight: 400;
+  text-transform: uppercase;
+  letter-spacing: 0.015em;
+  line-height: 1.02;
+  font-size: 22px;
+  margin-top: 14px;
+}
+/* The "What 4i is" cards carry their own h3s; same treatment. */
+.card h3 {
+  font-family: var(--font-display);
+  font-weight: 400;
+  text-transform: uppercase;
+  letter-spacing: 0.015em;
+  line-height: 1.02;
+  font-size: 20px;
+}
+
 .card {
   background: var(--bg-card);
   border: 1px solid var(--border);

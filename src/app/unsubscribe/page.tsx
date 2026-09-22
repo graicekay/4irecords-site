@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { doUnsubscribe } from "@/lib/gate-actions";
+import { FourIText } from "@/components/FourIMark";
 
 export const metadata: Metadata = {
   title: "Unsubscribe",
@@ -23,7 +24,7 @@ export default async function Unsubscribe({
 
   return (
     <section className="wrap narrow" style={{ padding: "96px 24px 120px" }}>
-      <p className="eyebrow">4i Records</p>
+      <p className="eyebrow"><FourIText /> Records</p>
       <h1 className="display" style={{ fontSize: 46, margin: "12px 0 24px" }}>
         {email && done.ok ? "You're off the list." : "Something's off."}
       </h1>
