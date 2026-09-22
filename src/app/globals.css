@@ -95,6 +95,20 @@ a { color: inherit; text-decoration: none; }
    for the word "Good" in the landing-page version of this line. */
 .four-n { color: var(--accent); }
 
+/* The 4i mark set inside a line of type. Sized from the cap height of
+   whatever it sits in and dropped onto the baseline, so it scales with the
+   heading instead of being pinned to one size. */
+.inline-mark {
+  display: inline-block;
+  height: 0.86em;
+  width: auto;
+  aspect-ratio: 541 / 680;
+  vertical-align: baseline;
+  position: relative;
+  top: 0.03em;
+  color: currentColor;
+}
+
 .eyebrow {
   font-size: 12px;
   letter-spacing: 0.22em;

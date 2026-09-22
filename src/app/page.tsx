@@ -1,6 +1,7 @@
 import Link from "next/link";
 import CaseStudy from "@/components/CaseStudy";
 import { SpinningRecord } from "@/components/SpinningRecord";
+import { FourIMark } from "@/components/FourIMark";
 import { caseStudies } from "@/lib/case-studies";
 import { FORMAT_LABEL, featuredResources } from "@/lib/resources";
 
@@ -38,7 +39,12 @@ export default function Home() {
 
       <section className="section">
         <div className="wrap">
-          <h2 className="display">What 4i is</h2>
+          {/* The mark, not the letters. `.display` uppercases, and Anton
+              has no lowercase to fall back on, so a typed "4i" came out as
+              "4I" — the dot on the i is not optional. */}
+          <h2 className="display">
+            What <FourIMark className="inline-mark" /><span className="sr-only">4i</span> is
+          </h2>
           <div className="grid-3" style={{ marginTop: 26 }}>
             <div className="card">
               <p className="eyebrow">Ownership</p>
@@ -79,7 +85,7 @@ export default function Home() {
               <Link href="/resources" className="linkish">All resources →</Link>
             </div>
             <p className="muted" style={{ marginTop: 14 }}>
-              Read every word without giving us anything.
+              The full PDFs and spreadsheet trackers go straight to your email.
             </p>
             <div className="grid-3" style={{ marginTop: 26 }}>
               {featured.map((r) => (
