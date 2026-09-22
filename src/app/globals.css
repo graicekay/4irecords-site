@@ -859,13 +859,18 @@ a { color: inherit; text-decoration: none; }
   color: var(--ink-2);
   max-width: 68ch;
 }
+/* Section headings carry the green. The spec reserves green for numbers,
+   labels and one-per-section emphasis and warns off large areas — an h2 at
+   24px is small enough to be the emphasis rather than a green wall. h1 and
+   h3 stay off-white so the page still has a hierarchy: one green step, not
+   three. */
 .res .prose h2 {
   font-family: var(--font-display);
   text-transform: uppercase;
   font-weight: 400;
   font-size: 24px;
   letter-spacing: 0.02em;
-  color: var(--ink);
+  color: var(--accent);
   margin-top: 2.1em;
 }
 .res .prose h3 {
