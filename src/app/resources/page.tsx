@@ -19,9 +19,9 @@ export default function ResourcesIndex() {
         <p className="eyebrow">Free</p>
         <h1 className="display">Resources</h1>
         <p className="sub">
-          Guides, templates and breakdowns for independent artists. Read
-          everything without giving us anything. If you want the fillable
-          version, that costs one email address.
+          Guides, templates and breakdowns for independent artists.
+          We&apos;ll send the full PDFs and spreadsheet trackers directly to
+          your email.
         </p>
       </section>
 
