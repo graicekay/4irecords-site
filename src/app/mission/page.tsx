@@ -36,7 +36,7 @@ export default function Mission() {
           </p>
           <p className="muted" style={{ marginTop: 22 }}>
             We aim to build a music movement through innovation, honesty, and the
-            power of self-expression — one that unifies audiences everywhere.
+            power of self-expression to unify audiences everywhere.
           </p>
         </div>
       </section>
