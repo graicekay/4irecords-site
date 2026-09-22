@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { MDXRemote } from "next-mdx-remote/rsc";
+import remarkGfm from "remark-gfm";
 import { Locked } from "@/components/Locked";
 import { BudgetEstimator } from "@/components/BudgetEstimator";
 import { CutdownCounter } from "@/components/CutdownCounter";
@@ -110,9 +111,23 @@ export default async function ResourcePage(
                 </p>
               )}
               <div className="prose">
+                {/* GitHub-flavoured markdown is not on by default in
+                    next-mdx-remote, and every resource is mostly tables —
+                    without this they render as literal pipe characters. */}
                 <MDXRemote
                   source={resource.body}
-                  components={{ Locked, BudgetEstimator, CutdownCounter, SafeAreas }}
+                  components={{
+                    Locked, BudgetEstimator, CutdownCounter, SafeAreas,
+                    /* The spec tables run to four columns and can't shrink
+                       below their content. Each gets its own scroller so a
+                       phone scrolls the table rather than the whole page. */
+                    table: (props) => (
+                      <div className="table-scroll">
+                        <table {...props} />
+                      </div>
+                    ),
+                  }}
+                  options={{ mdxOptions: { remarkPlugins: [remarkGfm] } }}
                 />
               </div>
 
