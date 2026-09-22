@@ -26,6 +26,10 @@ export type ResourceMeta = {
   publishedAt: string;
   downloadFile: string | null;
   downloadLabel: string;
+  /* The reading order Grace set: the checklist, then the budget guide, then
+     the cutdown matrix. They were all published the same day, so "newest
+     first" put them in whatever order the dates tied in. */
+  order?: number;
   /* Marks the placeholder content that ships before Grace's real
      resources land, so it can be listed differently and never
      quietly go live as if it were finished. */
@@ -49,8 +53,11 @@ function readAll(): Resource[] {
     });
 }
 
-/* Featured first, then newest — §3.2. */
+/* Explicit order first, then featured, then newest — §3.2. */
 function order(a: ResourceMeta, b: ResourceMeta): number {
+  if (a.order != null || b.order != null) {
+    return (a.order ?? Infinity) - (b.order ?? Infinity);
+  }
   if (a.featured !== b.featured) return a.featured ? -1 : 1;
   return +new Date(b.publishedAt) - +new Date(a.publishedAt);
 }

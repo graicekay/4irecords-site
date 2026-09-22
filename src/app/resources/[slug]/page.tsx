@@ -7,6 +7,8 @@ import { Locked } from "@/components/Locked";
 import { BudgetEstimator } from "@/components/BudgetEstimator";
 import { CutdownCounter } from "@/components/CutdownCounter";
 import { SafeAreas } from "@/components/SafeAreas";
+import { ResourceNav } from "@/components/ResourceNav";
+import { CtaLink, EndCta, Quote } from "@/components/resource-mdx";
 import DownloadGate from "@/components/DownloadGate";
 import {
   FORMAT_LABEL, allResources, relatedResources, resourceBySlug,
@@ -86,20 +88,20 @@ export default async function ResourcePage(
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
       />
 
+      <div className="res">
       <section className="wrap page-head">
         <Link href="/resources" className="eyebrow" style={{ textDecoration: "none" }}>
           ← All resources
         </Link>
-        <h1 className="display" style={{ fontSize: "clamp(36px, 6vw, 62px)" }}>
-          {resource.title}
-        </h1>
-        <p className="sub">{resource.description}</p>
-        <p style={{ marginTop: 18 }}>
-          <span className="badge">{FORMAT_LABEL[resource.format]}</span>
+        <p className="res-byline">
+          4i Records · Updated {new Date(resource.publishedAt).toLocaleDateString("en-GB", { month: "short", year: "numeric" })} · {FORMAT_LABEL[resource.format]}
         </p>
+        <h1>{resource.title}</h1>
+        <p className="standfirst">{resource.description}</p>
+        <ResourceNav resources={allResources()} current={resource.slug} />
       </section>
 
-      <section className="section" style={{ borderTop: 0, paddingTop: 44 }}>
+      <section className="section" style={{ borderTop: 0, paddingTop: 34 }}>
         <div className="wrap">
           <div className="article">
             <div>
@@ -118,6 +120,10 @@ export default async function ResourcePage(
                   source={resource.body}
                   components={{
                     Locked, BudgetEstimator, CutdownCounter, SafeAreas,
+                    EndCta, CtaLink,
+                    /* Pro tips and plain emphasis are both blockquotes in the
+                       source; this tells them apart by reading the text. */
+                    blockquote: Quote,
                     /* The spec tables run to four columns and can't shrink
                        below their content. Each gets its own scroller so a
                        phone scrolls the table rather than the whole page. */
@@ -131,17 +137,6 @@ export default async function ResourcePage(
                 />
               </div>
 
-              <div style={{ marginTop: 64, paddingTop: 30, borderTop: "1px solid var(--border)" }}>
-                <h2 className="display" style={{ fontSize: 26 }}>
-                  Can&apos;t execute this yourself?
-                </h2>
-                <p className="muted" style={{ fontSize: 14 }}>
-                  That&apos;s what 4i Productions is for.
-                </p>
-                <div style={{ marginTop: 18 }}>
-                  <Link href="/visuals" className="btn">See the visuals work</Link>
-                </div>
-              </div>
             </div>
 
             <aside className="gate-col">
@@ -181,6 +176,7 @@ export default async function ResourcePage(
           </div>
         </section>
       )}
+      </div>
     </>
   );
 }

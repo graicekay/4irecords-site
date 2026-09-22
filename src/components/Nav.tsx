@@ -4,7 +4,6 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
 import { EVENTS_ENABLED, FANS_ENABLED } from "@/lib/flags";
-import { FourIMark } from "@/components/FourIMark";
 
 /* Nav styling lives in globals.css, not styled-jsx: styled-jsx only
    scopes plain DOM elements, so every rule targeting a <Link> would
@@ -42,10 +41,11 @@ export default function Nav() {
     <header className="nav">
       <div className="nav-inner">
         <Link href="/" className="brand" aria-label="4i Records — home">
-          <FourIMark className="mark" />
-          <span className="wordmark">
-            <span className="wordmark-4i">4i</span> Records
-          </span>
+          {/* The whole lockup, not the mark plus the words — the mark already
+              contains "4i", so a typed "4i Records" beside it read as "4i 4i
+              Records". The aria-label on the link carries the name. */}
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img src="/4i-records-lockup.svg" alt="" className="brand-lockup" />
         </Link>
 
         <nav className="links" aria-label="Primary">

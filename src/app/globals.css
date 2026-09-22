@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Anton&family=Roboto+Mono:wght@300;400;500;700&family=Inter:wght@400;500;600&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Anton&family=Roboto+Mono:wght@300;400;500;700&family=Inter:wght@400;500;600;800&display=swap');
 @import "tailwindcss";
 
 /* ============================================================
@@ -424,28 +424,15 @@ a { color: inherit; text-decoration: none; }
   gap: 12px;
   flex-shrink: 0;
 }
-/* The kit's 4i mark (brand guide §3), not a "4i" in a green tile.
-   Brand rule §1: on dark, the mark is off-white and the wordmark is
-   the neon green — the tile had that exactly backwards. */
-.mark {
-  height: 24px;
+/* The kit's 4i Records lockup, artwork rather than type: off-white mark,
+   neon green RECORDS, per brand rule §1. */
+.brand-lockup {
+  height: 26px;
   width: auto;
-  aspect-ratio: 541 / 680;   /* an <svg> with no width attribute is 100% wide */
   display: block;
-  color: var(--ink, #f0f0f0);
   flex-shrink: 0;
 }
-.wordmark {
-  font-size: 15px;
-  font-weight: 700;
-  letter-spacing: 0.1em;
-  text-transform: uppercase;
-  white-space: nowrap;
-  color: var(--accent);
-}
-/* The "4i" in the typed wordmark stays off-white with the mark, so the
-   green reads as the word RECORDS rather than a stray highlight. */
-.wordmark-4i { color: var(--ink, #f0f0f0); }
+@media (max-width: 720px) { .brand-lockup { height: 22px; } }
 .links { display: flex; gap: 26px; }
 .link {
   font-size: 13px;
@@ -811,4 +798,235 @@ a { color: inherit; text-decoration: none; }
   .estimator-row { grid-template-columns: 1fr; gap: 8px; }
   .estimator-role { padding-top: 0; }
   .estimator-cost { text-align: left; padding-top: 0; }
+}
+
+/* ============================================================
+   RESOURCE PAGES ONLY
+   4i-resources-content-and-design-spec.md §1.
+
+   Everything below is scoped to `.res`. These pages are meant to
+   read like a blog with its own feel — a different world from the
+   rest of the site — so none of it may escape this wrapper. If a
+   rule here needs to apply site-wide, it belongs somewhere else.
+   ============================================================ */
+.res {
+  --ground:     #0A0A0A;
+  --surface:    #111111;
+  --surface-2:  #161616;
+  --ink:        #F0F0F0;
+  --ink-2:      #C4C4C4;
+  --ink-3:      #888888;
+  --rule:       rgba(255,255,255,.14);
+  --rule-soft:  rgba(255,255,255,.07);
+  --accent:     #57FF52;
+  --accent-soft: rgba(87,255,82,.10);
+  --warn:       #FFD152;
+}
+
+/* ── Type ──────────────────────────────────────────────────
+   Three faces, one job each. Anton and Roboto Mono are the brand's
+   texture; neither is a reading face, so running text is Inter. */
+.res .page-head h1 {
+  font-family: var(--font-display);
+  text-transform: uppercase;
+  font-weight: 400;              /* Anton ships one weight. Never fake-bold it. */
+  font-size: clamp(30px, 5.4vw, 50px);
+  letter-spacing: 0.02em;
+  line-height: 1.04;
+  margin: 12px 0 0;
+}
+.res .standfirst {
+  font-family: var(--font-body);
+  font-size: 17px;
+  line-height: 1.6;
+  color: var(--ink-2);
+  max-width: 62ch;
+  margin-top: 16px;
+}
+.res .res-byline {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--ink-3);
+  margin-top: 18px;
+}
+
+.res .prose {
+  font-family: var(--font-body);
+  font-size: 16px;
+  line-height: 1.65;
+  color: var(--ink-2);
+  max-width: 68ch;
+}
+.res .prose h2 {
+  font-family: var(--font-display);
+  text-transform: uppercase;
+  font-weight: 400;
+  font-size: 24px;
+  letter-spacing: 0.02em;
+  color: var(--ink);
+  margin-top: 2.1em;
+}
+.res .prose h3 {
+  font-family: var(--font-display);
+  text-transform: uppercase;
+  font-weight: 400;
+  font-size: 17px;
+  letter-spacing: 0.02em;
+  color: var(--ink);
+  margin-top: 1.9em;
+}
+.res .prose strong { color: var(--ink); font-weight: 600; }
+.res .prose a { color: var(--accent); }
+
+/* ── Checklists ────────────────────────────────────────────
+   Every bullet in these resources is something to tick off — the
+   PDFs carry real checkboxes for the same lines. An empty square
+   instead of a disc, per the spec's `.checkrow`. */
+.res .prose ul { list-style: none; padding-left: 0; }
+.res .prose ul > li {
+  position: relative;
+  padding-left: 26px;
+  margin-top: 0.5em;
+}
+.res .prose ul > li::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 0.42em;
+  width: 14px;
+  height: 14px;
+  border: 1px solid var(--rule);
+  border-radius: 2px;
+  background: var(--surface);
+}
+/* Nested lists step in rather than restating the box at the same offset. */
+.res .prose ul ul { margin-top: 0.5em; padding-left: 8px; }
+.res .prose ol { padding-left: 1.3em; }
+.res .prose ol > li::marker { color: var(--accent); font-family: var(--font-mono); }
+
+/* ── Callouts ──────────────────────────────────────────────
+   `.note` is plain emphasis; `.protip` is the bordered box with the
+   green label. Told apart by the text — see components/resource-mdx. */
+.res .prose blockquote.note {
+  border-left: 2px solid var(--accent);
+  background: none;
+  padding: 2px 0 2px 18px;
+  margin: 1.7em 0;
+  font-style: normal;
+  color: var(--ink-2);
+}
+.res .prose blockquote.protip {
+  position: relative;
+  border: 1px solid var(--rule);
+  border-left: 2px solid var(--accent);
+  border-radius: 4px;
+  background: var(--surface);
+  padding: 20px 22px 18px;
+  margin: 1.9em 0;
+  font-style: normal;
+  color: var(--ink-2);
+}
+.res .prose blockquote.protip > :first-child { margin-top: 0; }
+.res .prose blockquote.protip > :last-child { margin-bottom: 0; }
+/* "PRO TIP" is bold in the source; give it the green label treatment. */
+.res .prose blockquote.protip strong:first-of-type {
+  color: var(--accent);
+  font-family: var(--font-mono);
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+}
+
+/* ── In-article CTA ────────────────────────────────────────
+   A subtle underlined link, never a filled button. Filled green is
+   reserved for the gate's submit. */
+.res .ctalink {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 8px;
+  font-family: var(--font-mono);
+  font-size: 11.5px;
+  font-weight: 500;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--accent);
+  text-decoration: none;
+  border-bottom: 1px solid var(--accent);
+  padding-bottom: 3px;
+  transition: opacity var(--transition);
+}
+.res .ctalink:hover { opacity: 0.72; }
+.res .ctalink-arrow { font-size: 13px; line-height: 1; }
+
+/* ── Closing block ─────────────────────────────────────────── */
+.res .endcta {
+  border: 1px solid var(--rule);
+  border-radius: 6px;
+  background: var(--surface);
+  padding: 28px 28px 26px;
+  margin: 3em 0 0;
+}
+.res .endcta h2 {
+  font-family: var(--font-display);
+  text-transform: uppercase;
+  font-weight: 400;
+  font-size: 22px;
+  letter-spacing: 0.02em;
+  color: var(--ink);
+  margin: 0 0 12px;
+}
+.res .endcta-body p { margin: 0 0 18px; color: var(--ink-2); font-size: 15px; line-height: 1.6; }
+
+/* ── The strip that moves between the three ────────────────── */
+.res .resnav {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 1px;
+  background: var(--rule-soft);
+  border: 1px solid var(--rule-soft);
+  border-radius: 4px;
+  overflow: hidden;
+  margin-top: 32px;
+}
+.res .resnav-item {
+  display: flex;
+  align-items: baseline;
+  gap: 10px;
+  padding: 13px 15px;
+  background: var(--ground);
+  text-decoration: none;
+  transition: background var(--transition), color var(--transition);
+}
+.res .resnav-item:hover { background: var(--surface); }
+.res .resnav-item.is-current { background: var(--surface-2); }
+.res .resnav-n {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  color: var(--ink-3);
+  flex-shrink: 0;
+}
+.res .resnav-item.is-current .resnav-n { color: var(--accent); }
+.res .resnav-label {
+  font-family: var(--font-body);
+  font-size: 12.5px;
+  line-height: 1.35;
+  color: var(--ink-3);
+}
+.res .resnav-item.is-current .resnav-label { color: var(--ink); }
+@media (max-width: 720px) {
+  .res .resnav { grid-template-columns: 1fr; }
+}
+
+/* ── Layout ────────────────────────────────────────────────
+   Article plus sticky rail, one column at 900px — spec §1. */
+.res .article { grid-template-columns: minmax(0, 1fr) 316px; gap: 56px; }
+.res .gate-col { top: calc(env(safe-area-inset-top, 0px) + var(--nav-h) + 24px); }
+@media (max-width: 900px) {
+  .res .article { grid-template-columns: 1fr; gap: 40px; }
+  .res .gate-col { position: static; }
 }
