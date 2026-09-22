@@ -7,3 +7,4 @@ tsconfig.tsbuildinfo
 .vercel
 .env*
 .admin-password.txt
+.DS_Store

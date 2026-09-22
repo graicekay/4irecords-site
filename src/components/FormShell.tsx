@@ -1,6 +1,6 @@
 "use client";
 
-import { useActionState } from "react";
+import { useActionState, useEffect } from "react";
 import { useFormStatus } from "react-dom";
 import type { FormState } from "@/lib/actions";
 
@@ -64,18 +64,27 @@ export function Honeypot() {
 }
 
 export default function FormShell({
-  action, submitLabel, successTitle, successBody, children,
+  action, submitLabel, successTitle, successBody, onSuccess, children,
 }: {
   action: (prev: FormState, formData: FormData) => Promise<FormState>;
   submitLabel: string;
   successTitle: string;
   successBody: string;
+  /* Runs once when the action comes back ok — the resource gate uses it to
+     open the locked blocks on the page. In an effect rather than inline,
+     so it fires after the render that flipped the state rather than
+     during it. */
+  onSuccess?: () => void;
   children: (
     errors: Record<string, string>,
     values: Record<string, string>,
   ) => React.ReactNode;
 }) {
   const [state, formAction] = useActionState<FormState, FormData>(action, {});
+
+  useEffect(() => {
+    if (state.ok) onSuccess?.();
+  }, [state.ok, onSuccess]);
 
   if (state.ok) {
     return (

@@ -1,6 +1,7 @@
 "use client";
 
 import FormShell from "@/components/FormShell";
+import { announceUnlock } from "@/components/Locked";
 import { requestResource } from "@/lib/gate-actions";
 
 /* One field, one button (§3.3). No name, no "how did you hear about
@@ -17,8 +18,11 @@ export default function DownloadGate({
       <p className="eyebrow">Free download</p>
       <p className="gate-label">{label}</p>
 
+      {/* One email opens every locked block on the page, not just the one
+          they happened to scroll to (content spec §2). */}
       <FormShell
         action={requestResource}
+        onSuccess={announceUnlock}
         submitLabel="Send it to me"
         successTitle="Check your email."
         successBody="The file is on its way. If it hasn't shown up in a couple of minutes, look in spam — then tell us at info@4irecords.com."

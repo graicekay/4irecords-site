@@ -42,11 +42,22 @@ export async function GET(
     });
   }
 
+  /* Typed from the extension rather than assumed to be a PDF. The real
+     resources deliver a zip — a PDF plus the working spreadsheet and the
+     README — and serving that as application/pdf makes a browser try to
+     render it and fail. */
+  const TYPES: Record<string, string> = {
+    ".zip": "application/zip",
+    ".pdf": "application/pdf",
+    ".xlsx": "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+  };
+  const ext = resource.downloadFile.slice(resource.downloadFile.lastIndexOf("."));
+
   const file = readFileSync(path);
   return new NextResponse(new Uint8Array(file), {
     headers: {
-      "content-type": "application/pdf",
-      "content-disposition": `attachment; filename="${resource.slug}.pdf"`,
+      "content-type": TYPES[ext] ?? "application/octet-stream",
+      "content-disposition": `attachment; filename="${resource.slug}${ext}"`,
       /* Never cached by a CDN: the URL is per-person and expiring. */
       "cache-control": "private, no-store",
     },

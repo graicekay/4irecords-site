@@ -2,6 +2,10 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { MDXRemote } from "next-mdx-remote/rsc";
+import { Locked } from "@/components/Locked";
+import { BudgetEstimator } from "@/components/BudgetEstimator";
+import { CutdownCounter } from "@/components/CutdownCounter";
+import { SafeAreas } from "@/components/SafeAreas";
 import DownloadGate from "@/components/DownloadGate";
 import {
   FORMAT_LABEL, allResources, relatedResources, resourceBySlug,
@@ -106,7 +110,10 @@ export default async function ResourcePage(
                 </p>
               )}
               <div className="prose">
-                <MDXRemote source={resource.body} />
+                <MDXRemote
+                  source={resource.body}
+                  components={{ Locked, BudgetEstimator, CutdownCounter, SafeAreas }}
+                />
               </div>
 
               <div style={{ marginTop: 64, paddingTop: 30, borderTop: "1px solid var(--border)" }}>
