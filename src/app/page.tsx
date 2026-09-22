@@ -1,6 +1,7 @@
 import Link from "next/link";
 import CaseStudy from "@/components/CaseStudy";
 import { SpinningRecord } from "@/components/SpinningRecord";
+import { ScrollCue } from "@/components/ScrollCue";
 import { FourIText, FourILower } from "@/components/FourIMark";
 import { caseStudies } from "@/lib/case-studies";
 import { FORMAT_LABEL, featuredResources } from "@/lib/resources";
@@ -34,7 +35,7 @@ export default function Home() {
           <Link href="/resources" className="btn btn-solid">Get the free resources</Link>
           <Link href="/visuals" className="btn">Get pro visuals</Link>
         </div>
-        <div className="cue" aria-hidden="true">↓</div>
+        <ScrollCue />
       </section>
 
       <section className="section">

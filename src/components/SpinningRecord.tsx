@@ -41,12 +41,13 @@ const DUST = Array.from({ length: 90 }, () => {
   return {
     cx: 256 + Math.cos(angle) * radius,
     cy: 256 + Math.sin(angle) * radius,
-    r: 0.5 + rand() * 1.5,
-    o: 0.05 + rand() * 0.22,
+    r: 0.35 + rand() * 0.75,
+    o: 0.03 + rand() * 0.10,
   };
 });
 
-/* Longer arcs, the scratches you can actually see turning. */
+/* Longer arcs, the scratches you can actually see turning. Kept faint —
+   these only have to be enough to read as motion, not as damage. */
 const SCUFFS = Array.from({ length: 11 }, () => {
   const radius = 104 + rand() * 138;
   const start = rand() * 360;
@@ -57,8 +58,8 @@ const SCUFFS = Array.from({ length: 11 }, () => {
   };
   return {
     d: `M ${pt(start)} A ${radius} ${radius} 0 0 1 ${pt(start + sweep)}`,
-    o: 0.05 + rand() * 0.13,
-    w: 0.7 + rand() * 1.1,
+    o: 0.03 + rand() * 0.06,
+    w: 0.45 + rand() * 0.6,
   };
 });
 
