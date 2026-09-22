@@ -34,6 +34,7 @@ export default function Footer() {
               Instagram
             </a>
             <Link className="fl" href="/inquire">Inquire</Link>
+            <Link className="fl" href="/feedback">Report a bug or request a feature</Link>
           </div>
         </div>
       </div>

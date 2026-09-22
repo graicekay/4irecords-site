@@ -163,3 +163,44 @@ function escapeHtml(s: string): string {
     .replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;")
     .replace(/"/g, "&quot;").replace(/'/g, "&#39;");
 }
+
+/* ---------- Feedback ---------- */
+
+/**
+ * A bug report or feature request from the /feedback form.
+ *
+ * Unlike an inquiry there is no row behind this one — nothing is written to
+ * the database, so the email IS the record. That makes a failed send worth
+ * reporting to the person rather than swallowing: `skipped` and `ok:false`
+ * both mean nobody heard them.
+ *
+ * Reply-to is only set when an address was given. The form does not require
+ * one, because somebody reporting a bug should not have to identify
+ * themselves to do it.
+ */
+export async function notifyFeedback(opts: {
+  kindLabel: string;
+  subject: string;
+  message: string;
+  email: string | null;
+}): Promise<SendResult> {
+  const base = process.env.SITE_URL ?? "https://www.4irecords.com";
+  const html = layout(`
+    <p style="margin:0 0 6px;color:#57ff52;font-size:12px;letter-spacing:0.14em;text-transform:uppercase;">
+      ${escapeHtml(opts.kindLabel)}
+    </p>
+    <p style="margin:0 0 18px;">${
+      opts.email
+        ? `<a href="mailto:${escapeHtml(opts.email)}" style="color:#57ff52;">${escapeHtml(opts.email)}</a>`
+        : `<span style="color:#888888;">No email given — this one can't be replied to.</span>`
+    }</p>
+    <p style="margin:0;white-space:pre-wrap;">${escapeHtml(opts.message)}</p>
+  `).replace("{{UNSUB}}", `${base}/feedback`);
+
+  return send({
+    to: NOTIFY,
+    subject: opts.subject,
+    html,
+    ...(opts.email ? { replyTo: opts.email } : {}),
+  });
+}
