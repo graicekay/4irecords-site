@@ -112,10 +112,13 @@ export default function BranchedInquireForm({
         action={submitBranchedInquiry}
         submitLabel={branch === "updates" ? "Keep me posted" : "Send it"}
         successTitle={branch === "updates" ? "You're on the list." : "Got it."}
+        /* The old line promised a reply to everyone. The only guaranteed
+           reply is a 4i Productions quote, and that branch never reaches
+           this form. */
         successBody={
           branch === "updates"
-            ? "We'll email you when there's something worth reading. Unsubscribe anytime."
-            : "We read every one of these. Expect to hear back at the address you gave us — if it's been more than a week, nudge us at info@4irecords.com."
+            ? "We'll email you when there's something worth reading."
+            : "We read every one of these. We'll be in touch if it's a good fit."
         }
       >
         {(errors, values) => (
