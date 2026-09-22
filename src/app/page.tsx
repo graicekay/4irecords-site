@@ -1,7 +1,7 @@
 import Link from "next/link";
 import CaseStudy from "@/components/CaseStudy";
 import { SpinningRecord } from "@/components/SpinningRecord";
-import { FourIText } from "@/components/FourIMark";
+import { FourIText, FourILower } from "@/components/FourIMark";
 import { caseStudies } from "@/lib/case-studies";
 import { FORMAT_LABEL, featuredResources } from "@/lib/resources";
 
@@ -106,7 +106,7 @@ export default function Home() {
 
       <section className="section">
         <div className="wrap">
-          <p className="eyebrow"><FourIText /> Productions</p>
+          <p className="eyebrow"><FourILower /> Productions</p>
           <h2 className="display" style={{ marginTop: 12 }}>
             When you need it made properly.
           </h2>

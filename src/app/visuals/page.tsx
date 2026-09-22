@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import CaseStudy from "@/components/CaseStudy";
 import { caseStudies } from "@/lib/case-studies";
 import { PRODUCTIONS_INTAKE_URL, productionsIntake, type ProductionsType } from "@/lib/links";
-import { FourIText } from "@/components/FourIMark";
+import { FourIText, FourILower } from "@/components/FourIMark";
 
 export const metadata: Metadata = {
   title: "Visuals",
@@ -30,7 +30,7 @@ export default function Visuals() {
   return (
     <>
       <section className="wrap page-head">
-        <p className="eyebrow"><FourIText /> Productions</p>
+        <p className="eyebrow"><FourILower /> Productions</p>
         <h1 className="display">Visuals</h1>
         <p className="sub">
           Music videos, performance content, and the short-form that comes out

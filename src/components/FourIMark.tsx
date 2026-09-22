@@ -22,12 +22,15 @@ export function FourIMark({ className }: { className?: string }) {
 }
 
 /**
- * "4i" inside a line of type.
+ * "4i" inside a line of Anton.
  *
- * Anywhere the text is uppercased — eyebrows, `.display` headings — a typed
- * "4i" comes out as "4I" and loses the dot, and Anton has no lowercase to
- * fall back on. This puts the mark there instead and leaves the letters for
- * screen readers and for anyone copying the text.
+ * Anton ships uppercase only, so a typed "4i" in a `.display` heading comes
+ * out as "4I" and loses the dot. The mark goes in instead, with the letters
+ * kept for screen readers and for copying.
+ *
+ * Only for Anton. Anywhere the type is Roboto Mono — every eyebrow on the
+ * site — use FourILower: mono has a lowercase i, and swapping in artwork
+ * there reads as a logo dropped mid-sentence.
  */
 export function FourIText() {
   return (
@@ -36,4 +39,12 @@ export function FourIText() {
       <span className="sr-only">4i</span>
     </>
   );
+}
+
+/**
+ * "4i" in a line that CSS is uppercasing, where the font has a real
+ * lowercase i. Opts just those two characters out of the transform.
+ */
+export function FourILower() {
+  return <span className="no-caps">4i</span>;
 }

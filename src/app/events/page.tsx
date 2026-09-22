@@ -4,7 +4,7 @@ import EventCard from "@/components/EventCard";
 import SubscribeForm from "@/components/SubscribeForm";
 import { pastEvents, upcomingEvents } from "@/lib/events";
 import { EVENTS_ENABLED } from "@/lib/flags";
-import { FourIText } from "@/components/FourIMark";
+import { FourIText, FourILower } from "@/components/FourIMark";
 
 export const metadata: Metadata = {
   title: "Events",
@@ -28,7 +28,7 @@ export default function Events() {
   return (
     <>
       <section className="wrap page-head">
-        <p className="eyebrow"><FourIText /> Underground</p>
+        <p className="eyebrow"><FourILower /> Underground</p>
         <h1 className="display">Events</h1>
         <p className="sub">
           Packed into basements, garages, and your local neighborhood. No hefty

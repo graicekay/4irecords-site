@@ -95,6 +95,10 @@ a { color: inherit; text-decoration: none; }
    for the word "Good" in the landing-page version of this line. */
 .four-n { color: var(--accent); }
 
+/* Opts a run of text out of an ancestor's uppercasing — the lowercase i in
+   "4i" where the face has one. */
+.no-caps { text-transform: none; }
+
 /* The 4i mark set inside a line of type. Sized from the cap height of
    whatever it sits in and dropped onto the baseline, so it scales with the
    heading instead of being pinned to one size. */
@@ -219,24 +223,23 @@ a { color: inherit; text-decoration: none; }
 /* Card titles are titles, in the title face. Everything on this site
    inherits Roboto Mono from body, which is why these read as body text set
    a bit larger — the label above them only looked like a different font
-   because it is uppercase and tracked out. */
-.card-title {
+   because it is uppercase and tracked out.
+
+   Specificity is deliberate: `.section h3` further down this file sets
+   `margin: 0 0 10px` and would otherwise win on source order, which is what
+   was collapsing the gap under the badge to nothing. */
+.card .card-title,
+.section .card h3,
+.card .card h3 {
   font-family: var(--font-display);
   font-weight: 400;
   text-transform: uppercase;
   letter-spacing: 0.015em;
   line-height: 1.02;
-  font-size: 22px;
-  margin-top: 14px;
-}
-/* The "What 4i is" cards carry their own h3s; same treatment. */
-.card h3 {
-  font-family: var(--font-display);
-  font-weight: 400;
-  text-transform: uppercase;
-  letter-spacing: 0.015em;
-  line-height: 1.02;
-  font-size: 20px;
+  font-size: 21px;
+  /* Anton sits tight to its cap line, so the 14px that looked right under a
+     mono title reads as half of it under this one. */
+  margin: 20px 0 10px;
 }
 
 .card {
@@ -334,7 +337,10 @@ a { color: inherit; text-decoration: none; }
   /* Clear of the type now, so it can carry more weight than it could when
      it sat behind the headline. */
   opacity: 0.75;
-  pointer-events: none;
+  /* Hoverable, so it can be the thing that speeds up. It sits under the
+     copy (z-index 0 against .hero > * at 1), so this never steals a click
+     from a button or a line of text. */
+  pointer-events: auto;
   will-change: transform;
 }
 
@@ -1119,3 +1125,15 @@ a { color: inherit; text-decoration: none; }
   text-transform: uppercase;
   color: var(--accent);
 }
+
+/* The small record at the foot of the page. In flow, not absolute — it is
+   an object sitting under the address line rather than a backdrop. */
+.foot-record {
+  display: block;
+  width: 96px;
+  height: auto;
+  margin-top: 22px;
+  opacity: 0.85;
+  will-change: transform;
+}
+@media (max-width: 620px) { .foot-record { width: 78px; } }

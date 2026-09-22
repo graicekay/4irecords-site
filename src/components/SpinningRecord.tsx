@@ -21,7 +21,7 @@ const HOVER_RPM = IDLE_RPM * 4;
 /** How fast the speed itself changes. Higher is snappier; this is ~0.4s. */
 const RAMP = 2.6;
 
-export function SpinningRecord() {
+export function SpinningRecord({ className = "hero-record" }: { className?: string }) {
   const ref = useRef<SVGSVGElement>(null);
 
   useEffect(() => {
@@ -31,7 +31,14 @@ export function SpinningRecord() {
     // Someone who asked for less motion gets the record, standing still.
     if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
 
-    const hero = el.closest("section");
+    /* The disc itself is the hover target, not the box it sits in — the
+       whole hero was winding it up, so it span faster whenever the pointer
+       was anywhere near the headline.
+
+       Hit-testing on an <svg> follows the painted shapes, so this is the
+       disc rather than its bounding square, and the half below the hero's
+       edge is clipped and therefore not hoverable either. */
+    const hero = el;
     let angle = 0;
     let rpm = IDLE_RPM;
     let target = IDLE_RPM;
@@ -115,7 +122,7 @@ export function SpinningRecord() {
   return (
     <svg
       ref={ref}
-      className="hero-record"
+      className={className}
       viewBox="0 0 512 512"
       aria-hidden="true"
       focusable="false"

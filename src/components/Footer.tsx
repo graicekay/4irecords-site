@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { EVENTS_ENABLED, FANS_ENABLED } from "@/lib/flags";
+import { SpinningRecord } from "@/components/SpinningRecord";
 
 export default function Footer() {
   return (
@@ -12,6 +13,9 @@ export default function Footer() {
             <span className="four-n">4</span> Good.
           </p>
           <p className="muted small">Based in Salt Lake City, Utah.</p>
+          {/* Whole disc here, not the half-moon — there is no horizon to
+              rise over at the foot of the page. */}
+          <SpinningRecord className="foot-record" />
         </div>
 
         <div className="cols">

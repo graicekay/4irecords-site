@@ -2,7 +2,7 @@ import { redirect } from "next/navigation";
 import { adminMode } from "@/lib/auth";
 import { adminSession } from "@/lib/session";
 import LoginForm from "./LoginForm";
-import { FourIText } from "@/components/FourIMark";
+import { FourIText, FourILower } from "@/components/FourIMark";
 
 export const dynamic = "force-dynamic";
 
@@ -27,7 +27,7 @@ export default async function LoginPage({
 
   return (
     <section className="wrap narrow" style={{ padding: "96px 24px" }}>
-      <p className="eyebrow"><FourIText /> Records</p>
+      <p className="eyebrow"><FourILower /> Records</p>
       <h1 className="display" style={{ fontSize: 48, margin: "12px 0 28px" }}>
         Back office
       </h1>
