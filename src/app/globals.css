@@ -271,6 +271,10 @@ a { color: inherit; text-decoration: none; }
 /* ---------- Hero ---------- */
 
 .hero {
+  /* Positioned and clipped: the record is anchored to this box, and the
+     bottom edge is what cuts it in half. */
+  position: relative;
+  overflow: hidden;
   min-height: calc(100svh - var(--nav-h));
   display: flex;
   flex-direction: column;
@@ -285,28 +289,30 @@ a { color: inherit; text-decoration: none; }
 }
 .hero > * { position: relative; z-index: 1; }
 
-/* The record behind the type. Half-moon: the lower half is masked away so
-   it reads as rising out of the page rather than sitting on it as a full
-   disc. Spun by requestAnimationFrame — see components/SpinningRecord. */
+/* The record sits below the hero copy, centred on the section's bottom
+   edge so exactly its top half shows — a record rising behind the horizon
+   rather than a disc floating in the middle of the page. The cut comes from
+   `overflow: hidden` on .hero, not a mask: a hard edge is the point, and a
+   soft fade read as a full disc that had been dimmed.
+
+   Spun by requestAnimationFrame — see components/SpinningRecord. */
 .hero-record {
+  --rec: min(78vmin, 620px);
   position: absolute;
   z-index: 0;
   left: 50%;
-  top: 52%;
-  width: min(86vmin, 680px);
+  top: auto;
+  bottom: calc(var(--rec) / -2);
+  width: var(--rec);
   height: auto;
-  /* Its own centre is the pivot, and the translate has to live here rather
-     than in the transform the animation writes every frame. */
-  margin-left: min(-43vmin, -340px);
-  margin-top: min(-43vmin, -340px);
-  /* Well back. It is texture behind the headline, not an illustration
-     competing with it — at full strength the green label reads straight
-     through the white type. */
-  opacity: 0.6;
+  /* Its own centre is the pivot, so the centring offset lives here rather
+     than in the transform the animation rewrites every frame. */
+  margin-left: calc(var(--rec) / -2);
+  /* Clear of the type now, so it can carry more weight than it could when
+     it sat behind the headline. */
+  opacity: 0.75;
   pointer-events: none;
   will-change: transform;
-  -webkit-mask-image: linear-gradient(to bottom, #000 0 46%, transparent 68%);
-  mask-image: linear-gradient(to bottom, #000 0 46%, transparent 68%);
 }
 
 .hero h1 {
