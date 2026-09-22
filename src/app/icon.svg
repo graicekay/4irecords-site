@@ -1,1 +1,10 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1080 1080" width="1080" height="1080"><rect width="1080" height="1080" fill="#0A0A0A"/><path d="M286 0 L0 449 L0 531 L269 531 L269 675 L369 675 L369 531 L436 531 L436 680 L541 680 L541 171 L436 171 L436 447 L369 447 L369 0 Z M269 192 L269 447 L106 447 Z M436 0 L541 0 L541 110 L436 110 Z" fill="#F0F0F0" fill-rule="evenodd" transform="translate(285.412 220.000) scale(0.941176)" /></svg>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1080 1080">
+  <!-- 4i Records mark. A green record rather than the dark square 4i
+       Productions uses, so the two are told apart in a row of tabs.
+
+       Ink on green, not off-white: brand guide §1 — anything sitting on a
+       green fill takes #0A0A0A, never white. -->
+  <circle cx="540" cy="540" r="540" fill="#57FF52"/>
+  <path d="M286 0 L0 449 L0 531 L269 531 L269 675 L369 675 L369 531 L436 531 L436 680 L541 680 L541 171 L436 171 L436 447 L369 447 L369 0 Z M269 192 L269 447 L106 447 Z M436 0 L541 0 L541 110 L436 110 Z" fill="#0A0A0A" fill-rule="evenodd"
+        transform="translate(310.075 251.000) scale(0.85)"/>
+</svg>
