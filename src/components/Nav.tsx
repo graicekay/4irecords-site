@@ -4,6 +4,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
 import { EVENTS_ENABLED, FANS_ENABLED } from "@/lib/flags";
+import { FourIMark } from "@/components/FourIMark";
 
 /* Nav styling lives in globals.css, not styled-jsx: styled-jsx only
    scopes plain DOM elements, so every rule targeting a <Link> would
@@ -16,7 +17,6 @@ import { EVENTS_ENABLED, FANS_ENABLED } from "@/lib/flags";
 const LINKS = [
   { href: "/resources", label: "Resources" },
   { href: "/visuals", label: "Visuals" },
-  { href: "/vision", label: "Vision" },
   { href: "/mission", label: "Mission" },
   ...(EVENTS_ENABLED ? [{ href: "/events", label: "Events" }] : []),
   ...(FANS_ENABLED ? [{ href: "/fans", label: "4 Fans" }] : []),
@@ -42,8 +42,10 @@ export default function Nav() {
     <header className="nav">
       <div className="nav-inner">
         <Link href="/" className="brand" aria-label="4i Records — home">
-          <span className="mark" aria-hidden="true">4i</span>
-          <span className="wordmark">4i Records</span>
+          <FourIMark className="mark" />
+          <span className="wordmark">
+            <span className="wordmark-4i">4i</span> Records
+          </span>
         </Link>
 
         <nav className="links" aria-label="Primary">

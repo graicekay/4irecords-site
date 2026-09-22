@@ -7,9 +7,7 @@ export default function Footer() {
       <div className="wrap foot-inner">
         <div>
           <p className="tag display">4 Artists. 4 Fans. 4 Good.</p>
-          <p className="muted small">
-            Based in Salt Lake City, Utah. Open to remote collaboration.
-          </p>
+          <p className="muted small">Based in Salt Lake City, Utah.</p>
         </div>
 
         <div className="cols">
@@ -18,7 +16,6 @@ export default function Footer() {
             {EVENTS_ENABLED && <Link className="fl" href="/events">Events</Link>}
             <Link className="fl" href="/resources">Resources</Link>
             <Link className="fl" href="/visuals">Visuals</Link>
-            <Link className="fl" href="/vision">Vision</Link>
             <Link className="fl" href="/mission">Mission</Link>
             {FANS_ENABLED && <Link className="fl" href="/fans">4 Fans</Link>}
           </div>

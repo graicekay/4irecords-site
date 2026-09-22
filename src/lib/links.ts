@@ -1,19 +1,22 @@
 /* ============================================================
    Outbound destinations, in one place.
 
-   4iproductions.com has no DNS yet, so the visuals hand-off can't
-   point at the real intake form. `PRODUCTIONS_INTAKE_URL` is the
-   single line to change when that site ships — until then it falls
-   back to emailing, which is worse than the intake flow but better
-   than a dead link.
+   4iproductions.com went live on 2026-09-21, so the visuals hand-off
+   points at its real intake. 4i Records deliberately does not collect
+   visual-project briefs itself — that is 4i Productions' job, and its
+   intake asks the questions that actually price the work.
+
+   The env var still wins, for pointing a preview at a preview.
    ============================================================ */
 
-export const PRODUCTIONS_SITE = process.env.NEXT_PUBLIC_PRODUCTIONS_URL ?? null;
+export const PRODUCTIONS_SITE =
+  process.env.NEXT_PUBLIC_PRODUCTIONS_URL ?? "https://www.4iproductions.com";
 
-export const PRODUCTIONS_INTAKE_URL =
-  PRODUCTIONS_SITE ? `${PRODUCTIONS_SITE}/#intake` : "mailto:info@4irecords.com?subject=Visuals%20inquiry";
+/* `#inquire` is the id on the intake section of the 4i Productions home
+   page. It was `#intake` here, which scrolled nowhere. */
+export const PRODUCTIONS_INTAKE_URL = `${PRODUCTIONS_SITE}/#inquire`;
 
-export const PRODUCTIONS_LIVE = PRODUCTIONS_SITE !== null;
+export const PRODUCTIONS_LIVE = true;
 
 export const INSTAGRAM = "https://instagram.com/4irecords";
 export const CONTACT_EMAIL = "info@4irecords.com";

@@ -23,6 +23,11 @@ const nextConfig: NextConfig = {
       { source: "/4artists", destination: "/inquire?for=artist", permanent: true },
       { source: "/4fans", destination: "/inquire?for=updates", permanent: true },
       { source: "/home", destination: "/", permanent: true },
+      /* /vision is pulled until the marketplace and the events actually
+         exist — Grace would rather say nothing than publish a roadmap.
+         Temporary, not permanent: the page is coming back, and a 308
+         would have browsers cache the redirect past its return. */
+      { source: "/vision", destination: "/", permanent: false },
       /* /artists was the old "what we do + inquiry" page. Its job is
          now split between the landing page and the artist branch of
          /inquire, which is where its inbound links should land. */

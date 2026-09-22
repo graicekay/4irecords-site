@@ -7,10 +7,11 @@ import { FORMAT_LABEL, featuredResources } from "@/lib/resources";
    §3.1 — landing page.
 
    Order of on-page weight follows §1: give away real value first,
-   route to visuals second, state the vision third, build the list
-   last. The roadmap is one condensed section near the bottom —
-   deliberately not the headline, and nowhere does this read as
-   "coming soon".
+   route to visuals second, build the list last.
+
+   The roadmap section and /vision are both gone for now — Grace
+   pulled them until the marketplace and events actually exist.
+   Nothing here should read as "coming soon".
    ============================================================ */
 
 export default function Home() {
@@ -24,7 +25,7 @@ export default function Home() {
         </h1>
         <p className="sub">
           4i Records is building the infrastructure independent artists
-          don&apos;t have. Right now, the piece that&apos;s live is visuals.
+          don&apos;t have.
         </p>
         <div className="cta">
           <Link href="/resources" className="btn btn-solid">Get the free resources</Link>
@@ -103,7 +104,7 @@ export default function Home() {
           </h2>
           <p className="lede muted">
             Music videos, performance visuals, and the short-form that comes out
-            of the same shoot. You see a price range before you submit anything.
+            of the same shoot.
           </p>
           {caseStudies.length > 0 && (
             <div
@@ -121,46 +122,6 @@ export default function Home() {
         </div>
       </section>
 
-      <section className="section">
-        <div className="wrap">
-          <h2 className="display">Where 4i is going</h2>
-          <div className="grid-3" style={{ marginTop: 26 }}>
-            <div className="card">
-              <span className="badge" style={{ borderColor: "var(--accent)", color: "var(--accent)" }}>
-                In development
-              </span>
-              <h3 style={{ marginTop: 14 }}>A creative marketplace</h3>
-              <p className="muted" style={{ fontSize: 14, margin: 0 }}>
-                Artists matched with managers, strategists, editors and the rest
-                of the people a career actually needs.
-              </p>
-            </div>
-            <div className="card">
-              <span className="badge" style={{ borderColor: "#ffd152", color: "#ffd152" }}>
-                Paused, returning
-              </span>
-              <h3 style={{ marginTop: 14 }}>Live events</h3>
-              <p className="muted" style={{ fontSize: 14, margin: 0 }}>
-                Showcases that double as networking, built so the room is
-                actually useful to the people in it.
-              </p>
-            </div>
-            <div className="card">
-              <span className="badge" style={{ borderColor: "var(--accent)", color: "var(--accent)" }}>
-                Applications open
-              </span>
-              <h3 style={{ marginTop: 14 }}>The collective model</h3>
-              <p className="muted" style={{ fontSize: 14, margin: 0 }}>
-                Long-term projects rather than cohorts. Small and hand-picked
-                to start.
-              </p>
-            </div>
-          </div>
-          <div style={{ marginTop: 28 }}>
-            <Link href="/vision" className="btn">Read the roadmap</Link>
-          </div>
-        </div>
-      </section>
 
       <section className="section">
         <div className="wrap center">

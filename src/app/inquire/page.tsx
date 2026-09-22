@@ -10,7 +10,7 @@ export const metadata: Metadata = {
 
 const VALID: Branch[] = ["visuals", "artist", "creative", "updates"];
 
-/* `?for=creative` pre-selects a branch — the /vision blocks link in
+/* `?for=creative` pre-selects a branch — links elsewhere can point in
    this way so someone who clicked "the marketplace" doesn't have to
    answer a question they've effectively already answered (§3.5). */
 export default async function Inquire({

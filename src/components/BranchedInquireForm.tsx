@@ -3,7 +3,7 @@
 import { useState } from "react";
 import FormShell, { Field } from "@/components/FormShell";
 import { submitBranchedInquiry, type Branch } from "@/lib/inquire-actions";
-import { PRODUCTIONS_INTAKE_URL, PRODUCTIONS_LIVE } from "@/lib/links";
+import { PRODUCTIONS_INTAKE_URL } from "@/lib/links";
 
 /* §3.6. The branch question is answered before any fields appear, so
    nobody reads a form that isn't theirs. */
@@ -77,17 +77,37 @@ export default function BranchedInquireForm({
         </button>
       </div>
 
-      {/* The visuals branch is a hand-off, not an intake. 4i Productions
-          already has an AI intake with a quote range shown before
-          submit; rebuilding it here would be a worse copy of it. */}
-      {branch === "visuals" && (
-        <p className="notice" style={{ marginBottom: 24 }}>
-          {PRODUCTIONS_LIVE
-            ? "Visuals are quoted through 4i Productions, which shows you a price range before you submit. Leave your email here and we'll send you straight there."
-            : "Visuals run through 4i Productions. That intake isn't live yet — leave your email and we'll come to you as soon as it is."}
-        </p>
-      )}
-
+      {/* The visuals branch is a hand-off and nothing else. 4i Records does
+          not take briefs for visual projects — that is 4i Productions' job,
+          and its intake asks the questions that actually price the work.
+          Collecting a half-brief here would only mean asking the same person
+          the same questions twice. So: no form on this branch, one button
+          out. */}
+      {branch === "visuals" ? (
+        <div className="notice" style={{ marginBottom: 8 }}>
+          <p style={{ margin: 0 }}>
+            Visual projects go through 4i Productions. Send them the specs and
+            they&apos;ll follow up within five business days.
+          </p>
+          <div className="cta" style={{ marginTop: 20 }}>
+            <a href={PRODUCTIONS_INTAKE_URL} className="btn btn-solid">
+              Start a project at 4i Productions
+            </a>
+          </div>
+          <p className="muted small" style={{ marginTop: 14, marginBottom: 0 }}>
+            Opens 4iproductions.com. Not looking for visuals?{" "}
+            <button
+              type="button"
+              className="linkish"
+              onClick={() => setBranch(null)}
+              style={{ background: "none", border: 0, padding: 0, cursor: "pointer" }}
+            >
+              Pick something else
+            </button>
+            .
+          </p>
+        </div>
+      ) : (
       <FormShell
         action={submitBranchedInquiry}
         submitLabel={branch === "updates" ? "Keep me posted" : "Send it"}
@@ -188,15 +208,6 @@ export default function BranchedInquireForm({
           </>
         )}
       </FormShell>
-
-      {branch === "visuals" && PRODUCTIONS_LIVE && (
-        <p style={{ marginTop: 20, fontSize: 13 }} className="muted">
-          In a hurry?{" "}
-          <a href={PRODUCTIONS_INTAKE_URL} style={{ color: "var(--accent)" }}>
-            Go straight to the 4i Productions intake
-          </a>
-          .
-        </p>
       )}
     </div>
   );
