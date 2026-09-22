@@ -27,8 +27,7 @@ export default async function Inquire({
         <p className="eyebrow">Get in touch</p>
         <h1 className="display">Inquire</h1>
         <p className="sub">
-          Four ways in. Pick the one that fits and we&apos;ll only ask for what
-          that actually needs.
+          Four ways in. Pick which one best describes you.
         </p>
       </section>
 
