@@ -5,10 +5,12 @@ import { FORMAT_LABEL, allResources } from "@/lib/resources";
 export const metadata: Metadata = {
   title: "Resources",
   description:
-    "Free guides, templates and breakdowns for independent artists. No gate to read them.",
+    "Free guides, templates and breakdowns for independent artists. The full PDFs and spreadsheet trackers go straight to your email.",
 };
 
-/* §3.2 — no gate to browse, no gate to read. Featured first, then
+/* §3.2 — no gate to browse. The reading is open; the size table, the
+   resource list and the counter sit behind the email, and so do the PDFs
+   and the spreadsheets. Ordered by the explicit `order` field, then
    newest, which `allResources` already handles. */
 export default function ResourcesIndex() {
   const resources = allResources();
