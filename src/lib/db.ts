@@ -1,4 +1,5 @@
 import { neon } from "@neondatabase/serverless";
+import { forwardAudience } from "@/lib/invoice-forward";
 
 /* ============================================================
    Every SQL statement in the project lives in this file.
@@ -216,6 +217,8 @@ export async function upsertContact(input: {
   tags: string[];
   source: string;
 }): Promise<void> {
+  // Into invoiCE's audience too, alongside the local row. Best-effort.
+  forwardAudience({ email: input.email, tags: input.tags, origin: input.source });
   const db = sql();
   await db`
     INSERT INTO contacts (email, tags, source)
@@ -247,6 +250,7 @@ export async function listContacts(): Promise<Contact[]> {
 }
 
 export async function unsubscribeContact(email: string): Promise<void> {
+  forwardAudience({ email, tags: [], unsubscribed: true });
   const db = sql();
   await db`
     UPDATE contacts SET unsubscribed = true, updated_at = now()

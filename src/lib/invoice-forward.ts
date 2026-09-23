@@ -41,3 +41,40 @@ export function forwardToInvoice(payload: ForwardPayload): void {
     })
     .catch((e) => console.error("[inquire] invoiCE forward failed:", e));
 }
+
+export type AudiencePayload = {
+  email: string;
+  name?: string | null;
+  tags: string[];
+  origin?: string | null;
+  unsubscribed?: boolean;
+  subscribedAt?: string;
+};
+
+/** The audience endpoint sits beside the inquiries one. */
+function audienceUrl(): string | null {
+  const url = process.env.INVOICE_INGEST_URL;
+  return url ? url.replace(/\/inquiries\/ingest$/, "/audience/ingest") : null;
+}
+
+/** Send one sign-up to invoiCE's audience; say whether it took. */
+export async function sendAudienceToInvoice(payload: AudiencePayload): Promise<boolean> {
+  const url = audienceUrl();
+  const secret = process.env.INVOICE_INGEST_SECRET;
+  if (!url || !secret) return false;
+  const r = await fetch(url, {
+    method: "POST",
+    headers: { "Content-Type": "application/json", "x-ingest-secret": secret },
+    body: JSON.stringify({ source: SOURCE, ...payload }),
+  });
+  return r.ok;
+}
+
+/** Fire-and-forget, for the sign-up path. */
+export function forwardAudience(payload: AudiencePayload): void {
+  void sendAudienceToInvoice(payload)
+    .then((ok) => {
+      if (!ok) console.error("[audience] invoiCE forward refused");
+    })
+    .catch((e) => console.error("[audience] invoiCE forward failed:", e));
+}
