@@ -2,6 +2,7 @@
 
 import { useActionState, useEffect } from "react";
 import { useFormStatus } from "react-dom";
+import posthog from "posthog-js";
 import type { FormState } from "@/lib/actions";
 
 /* ============================================================
@@ -64,7 +65,7 @@ export function Honeypot() {
 }
 
 export default function FormShell({
-  action, submitLabel, successTitle, successBody, onSuccess, children,
+  action, submitLabel, successTitle, successBody, onSuccess, analyticsEvent, analyticsProperties, children,
 }: {
   action: (prev: FormState, formData: FormData) => Promise<FormState>;
   submitLabel: string;
@@ -75,6 +76,8 @@ export default function FormShell({
      so it fires after the render that flipped the state rather than
      during it. */
   onSuccess?: () => void;
+  analyticsEvent?: string;
+  analyticsProperties?: Record<string, string | boolean | number>;
   children: (
     errors: Record<string, string>,
     values: Record<string, string>,
@@ -96,7 +99,19 @@ export default function FormShell({
   }
 
   return (
-    <form action={formAction} style={{ position: "relative" }}>
+    <form
+      action={formAction}
+      style={{ position: "relative" }}
+      onSubmit={() => {
+        if (
+          analyticsEvent
+          && process.env.NEXT_PUBLIC_POSTHOG_PROJECT_TOKEN
+          && process.env.NEXT_PUBLIC_POSTHOG_HOST
+        ) {
+          posthog.capture(analyticsEvent, analyticsProperties);
+        }
+      }}
+    >
       <Honeypot />
       {children(state.errors ?? {}, state.values ?? {})}
       {state.formError && (

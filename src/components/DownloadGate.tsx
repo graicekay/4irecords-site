@@ -23,6 +23,8 @@ export default function DownloadGate({
       <FormShell
         action={requestResource}
         onSuccess={announceUnlock}
+        analyticsEvent="resource_download_requested"
+        analyticsProperties={{ resource_slug: slug }}
         submitLabel="Send it to me"
         successTitle="Check your email."
         successBody="The file is on its way. If it hasn't shown up in a couple of minutes, look in spam — then tell us at info@4irecords.com."

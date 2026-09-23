@@ -10,6 +10,7 @@ export default function SubscribeForm() {
   return (
     <FormShell
       action={submitSubscribe}
+      analyticsEvent="newsletter_subscription_submitted"
       submitLabel="Subscribe"
       successTitle="You're on the list."
       successBody="We'll only get in touch about shows. No more than a couple of messages a month, and you can tell us to stop any time."

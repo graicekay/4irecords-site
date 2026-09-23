@@ -111,6 +111,8 @@ export default function BranchedInquireForm({
       ) : (
       <FormShell
         action={submitBranchedInquiry}
+        analyticsEvent="branched_inquiry_submitted"
+        analyticsProperties={{ inquiry_branch: branch }}
         submitLabel={branch === "updates" ? "Keep me posted" : "Send it"}
         successTitle={branch === "updates" ? "You're on the list." : "Got it."}
         /* The old line promised a reply to everyone. The only guaranteed

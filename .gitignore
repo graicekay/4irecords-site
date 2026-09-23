@@ -8,3 +8,4 @@ tsconfig.tsbuildinfo
 .env*
 .admin-password.txt
 .DS_Store
+.env.local

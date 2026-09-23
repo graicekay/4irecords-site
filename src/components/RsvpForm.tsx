@@ -16,6 +16,8 @@ export default function RsvpForm({
   return (
     <FormShell
       action={submitRsvp}
+      analyticsEvent="rsvp_submitted"
+      analyticsProperties={{ event_slug: eventSlug, address_withheld: addressWithheld }}
       submitLabel="RSVP"
       successTitle={`You're down for ${title}.`}
       successBody={

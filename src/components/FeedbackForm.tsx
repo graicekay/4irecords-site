@@ -15,6 +15,8 @@ export default function FeedbackForm() {
   return (
     <FormShell
       action={submitFeedback}
+      analyticsEvent="feedback_submitted"
+      analyticsProperties={{ feedback_kind: kind }}
       submitLabel="Send it"
       successTitle="Sent — thank you."
       successBody="If you left an email we'll reply when there's something to say."

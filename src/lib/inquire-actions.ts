@@ -3,6 +3,7 @@
 import { z } from "zod";
 import { createInquiry, upsertContact, type InquiryKind } from "@/lib/db";
 import { notifyInquiry } from "@/lib/email";
+import { forwardToInvoice } from "@/lib/invoice-forward";
 import { rateLimit, clientIp } from "@/lib/rate-limit";
 import { isBot } from "@/lib/forms";
 import type { FormState } from "@/lib/actions";
@@ -146,6 +147,22 @@ export async function submitBranchedInquiry(
        is logged and swallowed rather than shown to the visitor. */
     await notifyInquiry({ branch: LABEL[branch], name, email, summary })
       .catch((e) => console.error("[4i] notify failed:", e));
+
+    // Into the one queue in invoiCE, alongside the local copy.
+    forwardToInvoice({
+      externalId: `${email}:${Date.now()}`,
+      kind: branch,
+      name,
+      email,
+      summary: (d.message as string) ?? "",
+      details: {
+        role: d.role ?? null,
+        links: d.links ?? null,
+        portfolio: d.portfolio ?? null,
+        availability: d.availability ?? null,
+      },
+      receivedAt: new Date().toISOString(),
+    });
   }
 
   return { ok: true };

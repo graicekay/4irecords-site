@@ -1,6 +1,7 @@
 "use client";
 
 import { useTransition } from "react";
+import posthog from "posthog-js";
 import { markInquiry } from "./actions";
 import type { Inquiry, InquiryStatus } from "@/lib/db";
 
@@ -74,7 +75,18 @@ export default function InquiryRow({ inquiry }: { inquiry: Inquiry }) {
             className="btn"
             style={{ padding: "8px 14px", fontSize: 11 }}
             disabled={pending}
-            onClick={() => start(() => { void markInquiry(inquiry.id, a.to); })}
+            onClick={() => {
+              if (
+                process.env.NEXT_PUBLIC_POSTHOG_PROJECT_TOKEN
+                && process.env.NEXT_PUBLIC_POSTHOG_HOST
+              ) {
+                posthog.capture("inquiry_status_updated", {
+                  previous_status: inquiry.status,
+                  next_status: a.to,
+                });
+              }
+              start(() => { void markInquiry(inquiry.id, a.to); });
+            }}
           >
             {a.label}
           </button>

@@ -15,6 +15,7 @@ export default function InquireForm({
   return (
     <FormShell
       action={submitInquiry}
+      analyticsEvent="inquiry_submitted"
       submitLabel="Send it"
       successTitle="Got it."
       successBody="We read every one of these. Expect to hear back at the address you gave us — if it's been more than a week, nudge us at info@4irecords.com."
