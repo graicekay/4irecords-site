@@ -17,6 +17,14 @@ PostHog analytics. Every inquiry is forwarded to invoiCE
 queue; every keep-me-posted sign-up, download and unsubscribe is forwarded
 to invoiCE's Audience the same way. Both were backfilled once.
 
+**Resource checklists** (24 Sep): every bullet in a resource is a real
+checkbox (`src/components/Checklist.tsx`, mapped to `ul`/`li` in the MDX
+renderer). Ticks are remembered in the reader's browser (localStorage, keyed
+by page and line text, so editing a resource doesn't shift anyone's ticks).
+Unticked boxes are dark (`color-scheme: dark`), ticked ones the accent green.
+Known snag: `npx eslint` fails on a config problem unrelated to this; the
+build is fine.
+
 ## Open
 
 1. **Mobile app, or a web app that behaves like one.** Fans and artists
