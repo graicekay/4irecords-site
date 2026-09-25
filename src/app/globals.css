@@ -973,26 +973,30 @@ a { color: inherit; text-decoration: none; }
 .res .prose a { color: var(--accent); }
 
 /* ── Checklists ────────────────────────────────────────────
-   Every bullet in these resources is something to tick off — the
-   PDFs carry real checkboxes for the same lines. An empty square
-   instead of a disc, per the spec's `.checkrow`. */
+   Every bullet in these resources is something to tick off, and each
+   is a real checkbox (components/Checklist) — the PDFs carry the same
+   lines. Square, tinted with the accent like the counter's boxes. */
 .res .prose ul { list-style: none; padding-left: 0; }
 .res .prose ul > li {
   position: relative;
   padding-left: 26px;
   margin-top: 0.5em;
 }
-.res .prose ul > li::before {
-  content: '';
+.res .prose ul > li > input[type="checkbox"] {
   position: absolute;
   left: 0;
-  top: 0.42em;
-  width: 14px;
-  height: 14px;
-  border: 1px solid var(--rule);
-  border-radius: 2px;
-  background: var(--surface);
+  top: 0.32em;
+  width: 15px;
+  height: 15px;
+  margin: 0;
+  accent-color: var(--accent);
+  /* Dark unticked boxes, like the drawn ones they replace, not white. */
+  color-scheme: dark;
+  cursor: pointer;
 }
+.res .prose ul > li > label { cursor: pointer; }
+/* Done lines stay readable — dimmed, not struck through. */
+.res .prose ul > li.is-checked > label { color: var(--ink-2); }
 /* Nested lists step in rather than restating the box at the same offset. */
 .res .prose ul ul { margin-top: 0.5em; padding-left: 8px; }
 .res .prose ol { padding-left: 1.3em; }

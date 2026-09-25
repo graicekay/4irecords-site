@@ -9,6 +9,7 @@ import { CutdownCounter } from "@/components/CutdownCounter";
 import { SafeAreas } from "@/components/SafeAreas";
 import { ResourceNav } from "@/components/ResourceNav";
 import { CtaLink, EndCta, Quote } from "@/components/resource-mdx";
+import { Checklist, ChecklistItem } from "@/components/Checklist";
 import DownloadGate from "@/components/DownloadGate";
 import { FourILower } from "@/components/FourIMark";
 import {
@@ -125,6 +126,10 @@ export default async function ResourcePage(
                     /* Pro tips and plain emphasis are both blockquotes in the
                        source; this tells them apart by reading the text. */
                     blockquote: Quote,
+                    /* Every bullet is something to tick off: real boxes,
+                       remembered in the reader's browser. */
+                    ul: Checklist,
+                    li: ChecklistItem,
                     /* The spec tables run to four columns and can't shrink
                        below their content. Each gets its own scroller so a
                        phone scrolls the table rather than the whole page. */
