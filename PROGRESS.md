@@ -53,9 +53,9 @@ build is fine.
    the resource email carries `List-Unsubscribe` + one-click
    `List-Unsubscribe-Post` headers (POST target `/api/unsubscribe`), so
    Gmail shows its own unsubscribe button. DNS is fine: SPF, DKIM and
-   DMARC (`p=none`) all present for 4irecords.com. Still open:
-   click/open tracking in Resend should be off for this domain (tracked
-   links are rewritten to a Resend domain, which filters distrust), and a
+   DMARC (`p=none`) all present for 4irecords.com. Click and open
+   tracking are off in Resend for all three domains (checked 28 Sep; never
+   configured). Still open: a
    new sending domain has no reputation yet — mark early test mail "not
    spam". Test with mail-tester.com. The dark design was kept; if spam
    persists after the above, a light version is the next thing to try.
