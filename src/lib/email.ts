@@ -28,7 +28,11 @@ async function send(opts: {
   to: string;
   subject: string;
   html: string;
+  /* The plain-text part. Every send has one: HTML-only mail is a
+     classic spam signal, and some clients show nothing else. */
+  text: string;
   replyTo?: string;
+  headers?: Record<string, string>;
 }): Promise<SendResult> {
   const resend = client();
   if (!resend) {
@@ -41,7 +45,9 @@ async function send(opts: {
       to: opts.to,
       subject: opts.subject,
       html: opts.html,
+      text: opts.text,
       ...(opts.replyTo ? { replyTo: opts.replyTo } : {}),
+      ...(opts.headers ? { headers: opts.headers } : {}),
     });
     if (error) {
       console.error("[4i] resend error:", error);
@@ -82,11 +88,38 @@ function layout(body: string): string {
 
 /* CAN-SPAM wants a working unsubscribe and a real postal address in
    anything promotional. The address is in the footer above; this is
-   the link. It's a plain signed URL — no login to unsubscribe. */
-function withUnsub(html: string, email: string): string {
+   the link. It's a plain URL — no login to unsubscribe. */
+function unsubUrl(email: string): string {
   const base = process.env.SITE_URL ?? "https://www.4irecords.com";
-  const url = `${base}/unsubscribe?email=${encodeURIComponent(email)}`;
-  return html.replace("{{UNSUB}}", url);
+  return `${base}/unsubscribe?email=${encodeURIComponent(email)}`;
+}
+
+function withUnsub(html: string, email: string): string {
+  return html.replace("{{UNSUB}}", unsubUrl(email));
+}
+
+/* The same footer, for the plain-text part. */
+function textFooter(unsub: string): string {
+  return [
+    "",
+    "--",
+    "4i Records · Salt Lake City, Utah",
+    "You're getting this because you asked us for something at 4irecords.com.",
+    `Unsubscribe: ${unsub}`,
+  ].join("\n");
+}
+
+/* Gmail and Yahoo show their own "Unsubscribe" button when these are
+   present, and expect them on anything that isn't a one-to-one
+   message. The POST target is /api/unsubscribe, which removes the
+   address without a page (RFC 8058 one-click). */
+function unsubHeaders(email: string): Record<string, string> {
+  const base = process.env.SITE_URL ?? "https://www.4irecords.com";
+  const post = `${base}/api/unsubscribe?email=${encodeURIComponent(email)}`;
+  return {
+    "List-Unsubscribe": `<${post}>, <mailto:${NOTIFY}?subject=unsubscribe>`,
+    "List-Unsubscribe-Post": "List-Unsubscribe=One-Click",
+  };
 }
 
 /* ---------- Resource delivery ---------- */
@@ -117,6 +150,19 @@ export async function sendResource(opts: {
     `),
     opts.to,
   );
+  const text = [
+    `Here's ${opts.title}, as promised.`,
+    "",
+    `${opts.downloadLabel}:`,
+    opts.downloadUrl,
+    "",
+    "This link is tied to your email address and expires in 7 days. Ask again on the",
+    "site any time and we'll send a fresh one.",
+    "",
+    "If you'd rather someone else made this for you, that's what 4i Productions is for:",
+    "https://www.4irecords.com/visuals",
+    textFooter(unsubUrl(opts.to)),
+  ].join("\n");
   /* Replies go to the notification inbox, not the From address:
      EMAIL_FROM only has to be on a DKIM-verified domain, it doesn't
      have to be a mailbox that exists. Without this, anyone replying
@@ -125,7 +171,9 @@ export async function sendResource(opts: {
     to: opts.to,
     subject: `${opts.title} — from 4i Records`,
     html,
+    text,
     replyTo: NOTIFY,
+    headers: unsubHeaders(opts.to),
   });
 }
 
@@ -154,6 +202,16 @@ export async function notifyInquiry(opts: {
     to: NOTIFY,
     subject: `4i Records — ${opts.branch} inquiry from ${opts.name}`,
     html,
+    text: [
+      `New ${opts.branch} inquiry`,
+      "",
+      opts.name,
+      opts.email,
+      "",
+      opts.summary,
+      "",
+      `Open the dashboard: ${base}/admin`,
+    ].join("\n"),
     replyTo: opts.email,
   });
 }
@@ -201,6 +259,12 @@ export async function notifyFeedback(opts: {
     to: NOTIFY,
     subject: opts.subject,
     html,
+    text: [
+      opts.kindLabel,
+      opts.email ?? "No email given — this one can't be replied to.",
+      "",
+      opts.message,
+    ].join("\n"),
     ...(opts.email ? { replyTo: opts.email } : {}),
   });
 }

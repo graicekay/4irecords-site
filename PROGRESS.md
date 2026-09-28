@@ -35,6 +35,43 @@ build is fine.
    real material: releases, show photos and video from the T7 drive. The
    layouts hold it; the assets aren't in.
 
+## Planned (26 Sep list, not in order)
+
+3. **Gumroad references now point to 4i Productions.** The free editing
+   assets are moving from graicekay.gumroad.com to 4i Productions (see that
+   doc). Update `content/resources/what-pro-visuals-cost.mdx` (lines 36 and
+   179) and the matching lines in
+   `content/4i-resources-content-and-design-spec.md` once the assets are
+   live there. Grace writes the replacement copy.
+4. **Rewrite the resources email.** The "This link is tied to your email
+   address and expires in 7 days… that's what 4i Productions is for" block
+   in `src/lib/email.ts` (around line 110) needs new copy from Grace.
+   Note: its "4i Productions" link goes to `4irecords.com/visuals`, not
+   4iproductions.com; check that's intended.
+5. **The resources email went to spam** in Grace's test. Done in code
+   (28 Sep): every email now has a plain-text part alongside the HTML, and
+   the resource email carries `List-Unsubscribe` + one-click
+   `List-Unsubscribe-Post` headers (POST target `/api/unsubscribe`), so
+   Gmail shows its own unsubscribe button. DNS is fine: SPF, DKIM and
+   DMARC (`p=none`) all present for 4irecords.com. Still open:
+   click/open tracking in Resend should be off for this domain (tracked
+   links are rewritten to a Resend domain, which filters distrust), and a
+   new sending domain has no reputation yet — mark early test mail "not
+   spam". Test with mail-tester.com. The dark design was kept; if spam
+   persists after the above, a light version is the next thing to try.
+6. **Artist feedback links (idea).** Artists and content creators sign up
+   and get a personal link for their Instagram story or bio, where fans
+   leave quick, anonymous feedback on a new song, a post or the profile.
+   It works like the old anonymous Snapchat question apps (tbh, Sendit,
+   NGL, YOLO), but for creative feedback. The goal is to make collecting
+   feedback a normal habit for artists and creators. Could be an app or
+   the web. Plan moderation and abuse filtering from the start: YOLO was
+   pulled from Snapchat in 2021 over bullying. 4i Productions already has
+   an anonymous feedback form that could be a starting point.
+7. **If 4i Records sells event tickets or downloads,** Utah charges sales
+   tax on admission and digital products. Register at tap.utah.gov before
+   selling. See the invoiCE doc.
+
 ## Running it
 
 ```bash
