@@ -4,6 +4,7 @@ import { useEffect, useState, type MutableRefObject } from "react";
 import { currentRig, type Clock } from "./clock";
 import { depthOfField, hFov, formatMetres } from "./optics";
 import type { Shot } from "./shots";
+import { scene, type PlaceKey } from "./scenes";
 import s from "./visualizer.module.css";
 
 /* The plan view: subject, camera, field of view and the band that's in
@@ -11,15 +12,15 @@ import s from "./visualizer.module.css";
 
 const W = 320;
 const H = 320;
-const PILLARS: [number, number][] = [[-2.4, -3], [2.8, -4.6], [-4.2, -7.5], [4.6, -9.5], [-7.5, -11.5], [8, -6]];
 
 function niceStep(m: number): number {
   const steps = [0.1, 0.25, 0.5, 1, 2, 5, 10, 20, 50, 100];
   return steps.find((x) => x >= m) ?? 100;
 }
 
-export default function TopDown({ shot, clock, playing }: {
+export default function TopDown({ shot, place, clock, playing }: {
   shot: Shot;
+  place: PlaceKey;
   clock: MutableRefObject<Clock>;
   playing: boolean;
 }) {
@@ -37,6 +38,7 @@ export default function TopDown({ shot, clock, playing }: {
   }, [animating]);
 
   const r = currentRig(shot, clock.current);
+  const plan = scene(place).plan;
   const [cx, , cz] = r.position;
   const dx = r.target[0] - cx, dz = r.target[2] - cz;
   const flat = Math.hypot(dx, dz);
@@ -87,10 +89,16 @@ export default function TopDown({ shot, clock, playing }: {
           </clipPath>
         </defs>
         <g clipPath="url(#sv-plan-clip)">
-          <line x1={0} x2={W} y1={py(-15)} y2={py(-15)} className={s.planWall} />
-          {PILLARS.map(([x, z]) => (
-            <rect key={`${x},${z}`} x={px(x) - 0.225 * scale} y={py(z) - 0.225 * scale}
-              width={Math.max(0.45 * scale, 2)} height={Math.max(0.45 * scale, 2)} className={s.planProp} />
+          {plan.lines.map(([x1, z1, x2, z2]) => (
+            <line key={`${x1},${z1},${x2},${z2}`} x1={px(x1)} y1={py(z1)} x2={px(x2)} y2={py(z2)} className={s.planWall} />
+          ))}
+          {plan.dots.map(([x, z, r]) => (
+            <circle key={`${x},${z}`} cx={px(x)} cy={py(z)} r={Math.max(r * scale, 2)} className={s.planProp} />
+          ))}
+          {plan.boxes.map((b) => (
+            <rect key={`${b.c[0]},${b.c[2]}`} x={px(b.c[0]) - (b.size[0] / 2) * scale} y={py(b.c[2]) - (b.size[2] / 2) * scale}
+              width={Math.max(b.size[0] * scale, 2)} height={Math.max(b.size[2] * scale, 2)}
+              transform={`rotate(${(-(b.rotY ?? 0) * 180) / Math.PI} ${px(b.c[0])} ${py(b.c[2])})`} className={s.planProp} />
           ))}
           <path d={`M ${px(cx)} ${py(cz)} L ${l1x} ${l1y} L ${r1x} ${r1y} Z`} className={s.planFov} />
           <path d={band} className={s.planFocus} />

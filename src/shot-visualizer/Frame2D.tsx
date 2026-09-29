@@ -1,9 +1,10 @@
 "use client";
 
 import { useEffect, useState, type MutableRefObject, type Ref } from "react";
-import { drawFrame, W, H, BLUR_LEVELS, type Shape } from "./render2d";
+import { drawFrame, palette, W, H, BLUR_LEVELS, PAPER, type Shape } from "./render2d";
 import { currentRig, type Clock } from "./clock";
 import type { Shot } from "./shots";
+import type { Look } from "./scenes";
 
 /* The camera view: render2d's shapes in an SVG. Redraws every frame only
    while a move plays; otherwise once per change. */
@@ -17,13 +18,15 @@ function Paint({ s }: { s: Shape }) {
       strokeWidth={s.strokeWidth}
       strokeLinecap={s.stroke ? "round" : undefined}
       opacity={s.opacity}
+      style={s.blend ? { mixBlendMode: s.blend } : undefined}
       filter={s.blur ? `url(#svBlur${s.blur})` : undefined}
     />
   );
 }
 
-export default function Frame2D({ shot, clock, playing, svgRef }: {
+export default function Frame2D({ shot, look, clock, playing, svgRef }: {
   shot: Shot;
+  look: Look;
   clock: MutableRefObject<Clock>;
   playing: boolean;
   svgRef: Ref<SVGSVGElement>;
@@ -42,7 +45,9 @@ export default function Frame2D({ shot, clock, playing, svgRef }: {
     return () => cancelAnimationFrame(raf);
   }, [animating]);
 
-  const { back, items } = drawFrame(currentRig(shot, clock.current), shot.fStop);
+  const { sky, back, items } = drawFrame(currentRig(shot, clock.current), shot.fStop, look);
+  const a = look.accent;
+  const pool = palette(look).pin("#e8ffe6");
 
   return (
     <svg
@@ -62,50 +67,35 @@ export default function Frame2D({ shot, clock, playing, svgRef }: {
             </filter>
           ),
         )}
-        <linearGradient id="svSky" x1="0" y1="0" x2="0" y2="1">
-          <stop offset="0" stopColor="#050605" />
-          <stop offset="1" stopColor="#0c0f0c" />
-        </linearGradient>
-        <radialGradient id="svWallGlow">
-          <stop offset="0" stopColor="#57ff52" stopOpacity="0.12" />
-          <stop offset="0.5" stopColor="#57ff52" stopOpacity="0.04" />
-          <stop offset="1" stopColor="#57ff52" stopOpacity="0" />
+        {/* Paper tooth: fine grain, laid over the whole print once. */}
+        <filter id="svTooth" x="0" y="0" width="100%" height="100%">
+          <feTurbulence type="fractalNoise" baseFrequency="0.85" numOctaves="2" seed="4" />
+          <feColorMatrix type="matrix" values="0 0 0 0 0.5  0 0 0 0 0.5  0 0 0 0 0.5  0.9 0.9 0.9 0 -1.05" />
+        </filter>
+        <radialGradient id="svHaloAccent">
+          <stop offset="0" stopColor={a} stopOpacity="0.55" />
+          <stop offset="0.4" stopColor={a} stopOpacity="0.16" />
+          <stop offset="1" stopColor={a} stopOpacity="0" />
         </radialGradient>
-        <linearGradient id="svFloor" x1="0" y1="0" x2="0" y2="1">
-          <stop offset="0" stopColor="#111411" />
-          <stop offset="1" stopColor="#1c201b" />
-        </linearGradient>
-        <linearGradient id="svClay" x1="0.1" y1="0" x2="0.9" y2="1">
-          <stop offset="0" stopColor="#ece6da" />
-          <stop offset="0.55" stopColor="#cfc8bb" />
-          <stop offset="1" stopColor="#8f887d" />
-        </linearGradient>
-        <radialGradient id="svBokehWarm">
-          <stop offset="0" stopColor="#fff4de" />
-          <stop offset="0.8" stopColor="#ffd9a0" stopOpacity="0.92" />
-          <stop offset="1" stopColor="#ffd9a0" stopOpacity="0.55" />
+        <radialGradient id="svHaloPaper">
+          <stop offset="0" stopColor={PAPER} stopOpacity="0.5" />
+          <stop offset="0.4" stopColor={PAPER} stopOpacity="0.12" />
+          <stop offset="1" stopColor={PAPER} stopOpacity="0" />
         </radialGradient>
-        <radialGradient id="svBokehGreen">
-          <stop offset="0" stopColor="#e2ffe0" />
-          <stop offset="0.8" stopColor="#57ff52" stopOpacity="0.92" />
-          <stop offset="1" stopColor="#57ff52" stopOpacity="0.55" />
-        </radialGradient>
-        <radialGradient id="svHaloWarm">
-          <stop offset="0" stopColor="#ffd9a0" stopOpacity="0.5" />
-          <stop offset="1" stopColor="#ffd9a0" stopOpacity="0" />
-        </radialGradient>
-        <radialGradient id="svHaloGreen">
-          <stop offset="0" stopColor="#57ff52" stopOpacity="0.5" />
-          <stop offset="1" stopColor="#57ff52" stopOpacity="0" />
+        <radialGradient id="svPool">
+          <stop offset="0" stopColor={look.time === "night" ? pool : "#ffffff"} stopOpacity="0.5" />
+          <stop offset="0.55" stopColor={a} stopOpacity="0.12" />
+          <stop offset="1" stopColor={a} stopOpacity="0" />
         </radialGradient>
         <radialGradient id="svVignette" cx="0.5" cy="0.5" r="0.75">
           <stop offset="0.6" stopColor="#000" stopOpacity="0" />
-          <stop offset="1" stopColor="#000" stopOpacity="0.55" />
+          <stop offset="1" stopColor="#000" stopOpacity={look.time === "night" ? 0.5 : 0.22} />
         </radialGradient>
       </defs>
-      <rect width={W} height={H} fill="url(#svSky)" />
+      <rect width={W} height={H} fill={sky} />
       {back.map((s, i) => <Paint key={`b${i}`} s={s} />)}
       {items.map((s, i) => <Paint key={`i${i}`} s={s} />)}
+      <rect width={W} height={H} filter="url(#svTooth)" opacity="0.5" style={{ mixBlendMode: "soft-light" }} pointerEvents="none" />
       <rect width={W} height={H} fill="url(#svVignette)" pointerEvents="none" />
     </svg>
   );

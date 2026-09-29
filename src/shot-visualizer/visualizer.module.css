@@ -123,6 +123,20 @@
 }
 .chip:hover { border-color: rgba(255, 255, 255, 0.35); }
 .chipOn, .chipOn:hover { background: var(--sv-accent); border-color: var(--sv-accent); color: #0a0a0a; }
+
+/* Location, time of day and accent: one small row under the camera view. */
+.setBar { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 14px; }
+.setBar .chip { font-size: 12px; padding: 5px 9px; }
+.swatches { display: flex; gap: 7px; margin-left: auto; }
+.swatch {
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  border: 1px solid rgba(255, 255, 255, 0.25);
+  padding: 0;
+  cursor: pointer;
+}
+.swatchOn { outline: 2px solid var(--sv-text); outline-offset: 2px; }
 .select {
   width: 100%;
   font: 500 14px/1.2 var(--font, system-ui);

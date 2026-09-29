@@ -13,6 +13,7 @@ import {
 } from "./shots";
 import { depthOfField, formatMetres } from "./optics";
 import type { ShotEntry } from "./export";
+import { ACCENTS, DEFAULT_LOOK, PLACES, PLACE_ORDER, type Look } from "./scenes";
 import s from "./visualizer.module.css";
 
 /* The shot visualizer, shared by 4iproductions.com and 4irecords.com.
@@ -27,6 +28,7 @@ export type SignupResult = { ok: boolean; error?: string };
 
 const LIST_KEY = "4i-shotlist-v1";
 const UNLOCK_KEY = "4i-shotlist-unlocked";
+const LOOK_KEY = "4i-shotlist-look";
 
 function readStore<T>(key: string, fallback: T): T {
   try {
@@ -92,6 +94,7 @@ export default function Visualizer({ brand, signup }: {
   signup: (form: FormData) => Promise<SignupResult>;
 }) {
   const [shot, setShot] = useState<Shot>(DEFAULT_SHOT);
+  const [look, setLook] = useState<Look>(DEFAULT_LOOK);
   const [playing, setPlaying] = useState(true);
   const clock = useRef<Clock>({ t0: 0, playing: true });
   const svg = useRef<SVGSVGElement | null>(null);
@@ -107,6 +110,12 @@ export default function Visualizer({ brand, signup }: {
     );
     setList(saved);
     setUnlocked(readStore<boolean>(UNLOCK_KEY, false));
+    const savedLook = readStore<Partial<Look>>(LOOK_KEY, {});
+    setLook({
+      place: savedLook.place && savedLook.place in PLACES ? savedLook.place : DEFAULT_LOOK.place,
+      time: savedLook.time === "day" ? "day" : "night",
+      accent: ACCENTS.some((a) => a.hex === savedLook.accent) ? savedLook.accent! : DEFAULT_LOOK.accent,
+    });
     clock.current.t0 = performance.now();
   }, []);
 
@@ -121,6 +130,15 @@ export default function Visualizer({ brand, signup }: {
     posthog.capture("shot_visualizer_changed", { control: key, value });
   };
 
+  const changeLook = <K extends keyof Look>(key: K, value: Look[K]) => {
+    setLook((prev) => {
+      const next = { ...prev, [key]: value };
+      writeStore(LOOK_KEY, next);
+      return next;
+    });
+    posthog.capture("shot_visualizer_changed", { control: key, value });
+  };
+
   const togglePlay = () => {
     const next = !playing;
     setPlaying(next);
@@ -132,6 +150,7 @@ export default function Visualizer({ brand, signup }: {
     const entry: ShotEntry = {
       id: Math.random().toString(36).slice(2, 10),
       shot,
+      set: { place: look.place, time: look.time },
       scene: list.at(-1)?.scene ?? "",
       description: "",
       notes: "",
@@ -210,7 +229,7 @@ export default function Visualizer({ brand, signup }: {
 
         <div className={s.stage}>
           <div className={s.frame}>
-            <Frame2D shot={shot} clock={clock} playing={playing} svgRef={svg} />
+            <Frame2D shot={shot} look={look} clock={clock} playing={playing} svgRef={svg} />
             <div className={s.readout} aria-live="polite">
               <span className={s.readoutSize}>{SIZES[shot.size].abbr}</span>
               <span>{shot.lens}mm</span>
@@ -224,9 +243,23 @@ export default function Visualizer({ brand, signup }: {
               </button>
             )}
           </div>
+          <div className={s.setBar}>
+            <Chips label="Location" options={PLACE_ORDER} value={look.place}
+              onChange={(v) => changeLook("place", v)} show={(v) => PLACES[v].name} />
+            <Chips label="Time of day" options={["day", "night"] as const} value={look.time}
+              onChange={(v) => changeLook("time", v)} show={(v) => (v === "day" ? "Day" : "Night")} />
+            <div className={s.swatches} role="radiogroup" aria-label="Accent colour">
+              {ACCENTS.map((a) => (
+                <button key={a.hex} type="button" role="radio" aria-checked={look.accent === a.hex}
+                  aria-label={a.name} title={a.name}
+                  className={look.accent === a.hex ? `${s.swatch} ${s.swatchOn}` : s.swatch}
+                  style={{ background: a.hex }} onClick={() => changeLook("accent", a.hex)} />
+              ))}
+            </div>
+          </div>
           {start.floored && <p className={s.warn}>{COPY.floored}</p>}
           {shot.angle === "ots" && !start.partner && <p className={s.warn}>{COPY.otsTooTight}</p>}
-          <TopDown shot={shot} clock={clock} playing={playing} />
+          <TopDown shot={shot} place={look.place} clock={clock} playing={playing} />
         </div>
       </div>
 
@@ -237,6 +270,7 @@ export default function Visualizer({ brand, signup }: {
         onChange={saveList}
         onLoad={(e) => {
           setShot(e.shot);
+          if (e.set) setLook((prev) => ({ ...prev, ...e.set }));
           clock.current.t0 = performance.now();
           window.scrollTo({ top: 0, behavior: "smooth" });
         }}

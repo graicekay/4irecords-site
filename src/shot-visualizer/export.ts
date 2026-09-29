@@ -2,10 +2,13 @@
    thumbnail per shot, and a CSV that opens in Sheets or Excel. */
 
 import { SIZES, ANGLES, MOVES, type Shot } from "./shots";
+import type { PlaceKey, TimeKey } from "./scenes";
 
 export type ShotEntry = {
   id: string;
   shot: Shot;
+  /** Where and when it was set up; lists saved before locations have none. */
+  set?: { place: PlaceKey; time: TimeKey };
   scene: string;
   description: string;
   notes: string;
