@@ -133,34 +133,32 @@ export async function sendResource(opts: {
 }): Promise<SendResult> {
   const html = withUnsub(
     layout(`
-      <p style="margin:0 0 16px;">Here's <strong>${escapeHtml(opts.title)}</strong>, as promised.</p>
+      <p style="margin:0 0 20px;">Your free resources are here.</p>
       <p style="margin:0 0 24px;">
         <a href="${opts.downloadUrl}" style="display:inline-block;background:#57ff52;color:#0a0a0a;font-weight:600;text-decoration:none;padding:13px 22px;border-radius:2px;">
-          ${escapeHtml(opts.downloadLabel)}
+          ${escapeHtml(opts.title)}
         </a>
       </p>
-      <p style="margin:0 0 8px;color:#888888;font-size:13px;">
-        This link is tied to your email address and expires in 7 days. Ask again on the
-        site any time and we'll send a fresh one.
+      <p style="margin:0 0 8px;">
+        Check out our other free resources at
+        <a href="https://www.4irecords.com/resources" style="color:#57ff52;">4irecords.com/resources</a>.
       </p>
-      <p style="margin:24px 0 0;">
-        If you'd rather someone else made this for you, that's what
-        <a href="https://www.4irecords.com/visuals" style="color:#57ff52;">4i Productions</a> is for.
+      <p style="margin:0;">
+        For world-immersive visuals, visit
+        <a href="https://www.4iproductions.com" style="color:#57ff52;">4iproductions.com</a>
       </p>
     `),
     opts.to,
   );
   const text = [
-    `Here's ${opts.title}, as promised.`,
+    "Your free resources are here.",
     "",
-    `${opts.downloadLabel}:`,
+    `${opts.title}:`,
     opts.downloadUrl,
     "",
-    "This link is tied to your email address and expires in 7 days. Ask again on the",
-    "site any time and we'll send a fresh one.",
+    "Check out our other free resources at https://www.4irecords.com/resources",
     "",
-    "If you'd rather someone else made this for you, that's what 4i Productions is for:",
-    "https://www.4irecords.com/visuals",
+    "For world-immersive visuals, visit https://www.4iproductions.com",
     textFooter(unsubUrl(opts.to)),
   ].join("\n");
   /* Replies go to the notification inbox, not the From address:

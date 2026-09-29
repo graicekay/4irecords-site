@@ -1,20 +1,20 @@
 import { createHmac, createHash, timingSafeEqual } from "node:crypto";
 
 /* ============================================================
-   Signed, expiring download links.
+   Signed download links. They don't expire (Grace, 28 Sep).
 
    The spec suggested Vercel Blob with obscure URLs. This does the
    same job with a stronger guarantee and no extra service: the
    files live outside /public and are streamed by a route that
    checks an HMAC over (slug, email, expiry). An obscure URL is
    only secret until someone shares it; this one is tied to the
-   address that asked for it and stops working after 7 days.
+   address that asked for it. The token still carries an expiry
+   field so links sent before 28 Sep keep verifying; it is written
+   as 0 and never checked.
 
    If the files outgrow the repo, swap the route's file read for a
    Blob fetch and leave this module alone.
    ============================================================ */
-
-const TTL_MS = 7 * 24 * 60 * 60 * 1000;
 
 function secret(): string {
   const explicit = process.env.DOWNLOAD_SECRET?.trim();
@@ -37,7 +37,7 @@ function equals(a: string, b: string): boolean {
 }
 
 export function makeToken(slug: string, email: string): string {
-  const exp = Date.now() + TTL_MS;
+  const exp = 0; // no expiry
   /* The email is hashed, not carried: the link shouldn't leak an
      address to anyone it gets forwarded to, and we only ever need
      to compare it against the one that requested the file. */
@@ -48,7 +48,7 @@ export function makeToken(slug: string, email: string): string {
 
 export type TokenCheck =
   | { ok: true; slug: string }
-  | { ok: false; reason: "malformed" | "bad-signature" | "expired" };
+  | { ok: false; reason: "malformed" | "bad-signature" };
 
 export function verifyToken(token: string | null, slug: string): TokenCheck {
   if (!token) return { ok: false, reason: "malformed" };
@@ -57,15 +57,10 @@ export function verifyToken(token: string | null, slug: string): TokenCheck {
 
   const payload = token.slice(0, cut);
   const signature = token.slice(cut + 1);
-  /* Signature first — an expired token with a forged signature is a
-     forgery, and should read as one. */
   if (!equals(signature, sign(payload))) return { ok: false, reason: "bad-signature" };
 
-  const [tokenSlug, , expRaw] = payload.split(".");
+  const [tokenSlug] = payload.split(".");
   if (tokenSlug !== slug) return { ok: false, reason: "bad-signature" };
-
-  const exp = Number(expRaw);
-  if (!Number.isFinite(exp) || exp < Date.now()) return { ok: false, reason: "expired" };
 
   return { ok: true, slug: tokenSlug };
 }

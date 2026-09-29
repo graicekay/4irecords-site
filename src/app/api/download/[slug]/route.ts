@@ -7,7 +7,7 @@ import { verifyToken } from "@/lib/download-token";
    /public, so this route is the only way to it.
 
    Every failure returns the same 403 and the same wording: telling
-   a probe whether a token was forged, expired, or simply for the
+   a probe whether a token was forged or simply for the
    wrong slug is more help than it's worth. */
 
 export const runtime = "nodejs";
@@ -58,7 +58,7 @@ export async function GET(
     headers: {
       "content-type": TYPES[ext] ?? "application/octet-stream",
       "content-disposition": `attachment; filename="${resource.slug}${ext}"`,
-      /* Never cached by a CDN: the URL is per-person and expiring. */
+      /* Never cached by a CDN: the URL is per-person. */
       "cache-control": "private, no-store",
     },
   });
