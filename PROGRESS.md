@@ -13,9 +13,8 @@ Started 24 September 2026.
 Committed locally, **not pushed** (a push deploys). Waiting on that push:
 the rewritten resources email (Open, item 4: Grace's copy, 4iproductions.com
 link, links that no longer expire) and the shot visualizer at
-`/resources/shot-visualizer` (unlisted; see "Shot visualizer" below). The
-visualizer is still being debugged from the 4i Productions side; after any
-change there, copy `src/shot-visualizer/` across and `diff -r` the two.
+`/resources/shot-visualizer` (unlisted; see "Shot visualizer" below). Since
+29 Sep the visualizer lives only on 4i Productions; this site just links to it.
 
 ## What's built
 
@@ -44,17 +43,16 @@ build is fine.
    real material: releases, show photos and video from the T7 drive. The
    layouts hold it; the assets aren't in.
 
-## Shot visualizer (28 Sep)
+## Shot visualizer (lives on 4i Productions)
 
-Shared with 4i Productions: `src/shot-visualizer/` is a verbatim copy (change
-both or neither; spec is `4iProductions-site/SHOT-VISUALIZER.md`). Page at
-`/resources/shot-visualizer`, working by link, `noindex` and off the
-resources index until `SHOT_VISUALIZER_LISTED` in `src/lib/flags.ts` is
-turned on. The download gate files the address in `contacts` (tags
-`resource-downloader`, `resource:shot-visualizer`), so artists sign up here
-and filmmakers on 4i Productions. Prose is `COPY:` placeholders in
-`src/shot-visualizer/copy.ts`. `schema.sql` now also records the `contacts`
-table, which existed live but was never written down.
+Grace, 29 Sep: the tool "is just going to live on 4i Productions but it'll be
+linked on 4irecords." The copy that was here (`src/shot-visualizer/`, the
+`/resources/shot-visualizer` page and its own email gate) is removed; its
+history is in git (last shared version `ffcbb0e`). `/resources` has a card
+linking to `4iproductions.com/resources/shot-visualizer`, shown once
+`SHOT_VISUALIZER_LISTED` in `src/lib/flags.ts` is on. Spec and progress:
+`4iProductions-site/SHOT-VISUALIZER.md`. `schema.sql` still records the
+`contacts` table (the other resources use it).
 
 ## Planned (26 Sep list, not in order)
 

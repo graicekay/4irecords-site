@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { FORMAT_LABEL, allResources } from "@/lib/resources";
 import { SHOT_VISUALIZER_LISTED } from "@/lib/flags";
+import { PRODUCTIONS_SITE } from "@/lib/links";
 
 export const metadata: Metadata = {
   title: "Resources",
@@ -39,15 +40,16 @@ export default function ResourcesIndex() {
             </div>
           ) : (
             <div className="grid-3">
+              {/* The shot visualizer lives on 4i Productions; this card links there. */}
               {SHOT_VISUALIZER_LISTED && (
-                <Link href="/resources/shot-visualizer" className="card">
+                <a href={`${PRODUCTIONS_SITE}/resources/shot-visualizer`} className="card">
                   <span className="badge">Tool</span>
                   <h3 className="card-title">Shot visualizer</h3>
                   <p className="muted" style={{ fontSize: 13.5, margin: "0 0 14px" }}>
                     COPY: one line on the shot visualizer.
                   </p>
-                  <p style={{ margin: 0, fontSize: 12 }} className="muted">Interactive</p>
-                </Link>
+                  <p style={{ margin: 0, fontSize: 12 }} className="muted">Interactive · opens 4iproductions.com</p>
+                </a>
               )}
               {resources.map((r) => (
                 <Link key={r.slug} href={`/resources/${r.slug}`} className="card">

@@ -20,7 +20,8 @@ export const EVENTS_ENABLED = false;
    longer anywhere on the site to join the list. */
 export const FANS_ENABLED = false;
 
-/* `SHOT_VISUALIZER_LISTED` puts the shot visualizer on /resources and lets
-   search engines index it. Off until Grace launches it; the page works
-   by direct link either way (/resources/shot-visualizer). */
+/* `SHOT_VISUALIZER_LISTED` puts a card for the shot visualizer on
+   /resources. The tool itself lives on 4i Productions
+   (4iproductions.com/resources/shot-visualizer); the card links there. Off
+   until Grace launches it. */
 export const SHOT_VISUALIZER_LISTED = false;

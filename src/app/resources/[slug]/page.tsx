@@ -49,6 +49,7 @@ export async function generateMetadata(
       description: resource.description,
       url,
       publishedTime: new Date(resource.publishedAt).toISOString(),
+      ...(resource.cover ? { images: [{ url: resource.cover }] } : {}),
     },
     twitter: {
       card: "summary_large_image",
@@ -113,6 +114,10 @@ export default async function ResourcePage(
                   It&apos;s here so the page and the download can be tested, and
                   it&apos;s excluded from search engines.
                 </p>
+              )}
+              {resource.cover && (
+                // eslint-disable-next-line @next/next/no-img-element
+                <img src={resource.cover} alt="" className="res-cover" />
               )}
               <div className="prose">
                 {/* GitHub-flavoured markdown is not on by default in
