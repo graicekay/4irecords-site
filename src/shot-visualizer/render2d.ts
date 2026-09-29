@@ -258,10 +258,17 @@ function clipNear(poly: Vec3[]): Vec3[] {
   return out;
 }
 
-function project(cam: Cam, world: Vec3[]): { pts: [number, number][]; depth: number } | null {
+/**
+ * `flat`: draw with flattened perspective (the figure's body, sprite-like):
+ * every point's depth is pulled toward depth `z` by `keep` (0 = none within
+ * it, 1 = true perspective). It still moves and scales with the camera.
+ */
+function project(cam: Cam, world: Vec3[], flat?: { z: number; keep: number }): { pts: [number, number][]; depth: number } | null {
   const c = clipNear(world.map(cam.toCam));
   if (c.length < 3) return null;
-  const pts = c.map(cam.proj);
+  const pts = flat
+    ? c.map(([px, py, pz]) => cam.proj([px, py, Math.max(NEAR, flat.z + (pz - flat.z) * flat.keep)]))
+    : c.map(cam.proj);
   let x0 = Infinity, x1 = -Infinity, y0 = Infinity, y1 = -Infinity;
   for (const [x, y] of pts) {
     if (x < x0) x0 = x;
@@ -550,7 +557,9 @@ function reflections(x: Ctx, s: Scene) {
    blocky bob (top, back, sides and fringe slabs), a boxy oversized hoodie with
    square shoulders, box limbs and chunky box sneakers. Shading comes from the
    boxes' own faces, the way the crates are lit: tops a step lighter, faces
-   turned from the light a step darker. A thin rim of light on its top edges.
+   turned from the light a step darker. A thin rim of light on its top edges,
+   no outline. The body keeps a little of its perspective (square, sprite-
+   like); the head keeps all of it.
    Two pixel eyes that blink, and a phone in the right hand at chest height,
    screen toward the face (so the insert has something in hand). Everything
    in metres, so every angle and lens is true. pixel.ts draws it as a sprite.
@@ -558,7 +567,7 @@ function reflections(x: Ctx, s: Scene) {
 
 export type Region = "hair" | "skin" | "nose" | "hood" | "sleeve" | "pocket" | "trousers" | "shoes" | "sole" | "eyes" | "phone" | "line";
 /** A box from a to b (its long axis), `w` across and `d` deep, in one region. */
-type Block = { a: Vec3; b: Vec3; w: number; d: number; c: Region };
+type Block = { a: Vec3; b: Vec3; w: number; d: number; c: Region; head?: boolean };
 
 /** Where the phone is: in the right hand, screen tilted back toward the face. */
 export const PHONE = { c: [0.13, 1.1, 0.24] as Vec3, w: 0.076, h: 0.156, tilt: 0.95 };
@@ -566,19 +575,24 @@ export const PHONE = { c: [0.13, 1.1, 0.24] as Vec3, w: 0.076, h: 0.156, tilt: 0
 const FACE_Z = 0.117;
 
 const BODY: Block[] = (() => {
-  const B = (a: Vec3, b: Vec3, w: number, d: number, c: Region): Block => ({ a, b, w, d, c });
+  const B = (a: Vec3, b: Vec3, w: number, d: number, c: Region, head = false): Block => ({ a, b, w, d, c, head });
   const out: Block[] = [
-    // Head and a blocky bob.
-    B([0, 1.53, 0.005], [0, 1.79, 0.005], 0.22, 0.22, "skin"),
-    B([0, 1.76, -0.005], [0, 1.845, -0.005], 0.25, 0.25, "hair"), // top
-    B([0, 1.55, -0.105], [0, 1.8, -0.105], 0.25, 0.05, "hair"), // back
-    B([-0.12, 1.58, -0.005], [-0.12, 1.8, -0.005], 0.03, 0.235, "hair"), // sides, to the jaw
-    B([0.12, 1.58, -0.005], [0.12, 1.8, -0.005], 0.03, 0.235, "hair"),
-    B([0.01, 1.72, FACE_Z], [0.01, 1.8, FACE_Z], 0.24, 0.028, "hair"), // fringe
-    B([0, 1.615, FACE_Z + 0.02], [0, 1.66, FACE_Z + 0.02], 0.036, 0.04, "nose"), // a small nose: the face has depth, so a fisheye bends it
+    // Head and a blocky bob. The hair's top, back, sides and fringe are all
+    // flush with the sides' outer edge (0.27 across), so the head reads as one
+    // clean square rather than a stepped, rounded helmet.
+    B([0, 1.53, 0.005], [0, 1.79, 0.005], 0.22, 0.22, "skin", true),
+    B([0, 1.76, -0.005], [0, 1.845, -0.005], 0.27, 0.25, "hair", true), // top
+    B([0, 1.55, -0.105], [0, 1.8, -0.105], 0.27, 0.05, "hair", true), // back
+    B([-0.12, 1.58, -0.005], [-0.12, 1.8, -0.005], 0.03, 0.235, "hair", true), // sides, to the jaw
+    B([0.12, 1.58, -0.005], [0.12, 1.8, -0.005], 0.03, 0.235, "hair", true),
+    B([0, 1.72, FACE_Z], [0, 1.8, FACE_Z], 0.27, 0.028, "hair", true), // fringe
+    B([0, 1.615, FACE_Z + 0.02], [0, 1.66, FACE_Z + 0.02], 0.036, 0.04, "nose", true), // a small nose: the face has depth, so a fisheye bends it
     B([0, 1.42, 0], [0, 1.54, 0], 0.085, 0.085, "skin"), // neck
-    // Boxy oversized hoodie, square shoulders, the hood bunched behind the neck.
+    // Boxy oversized hoodie, the hood bunched behind the neck.
     B([0, 0.86, 0], [0, 1.43, 0], 0.44, 0.25, "hood"),
+    // Square shoulders: one slab across the top at the torso's full depth, so the
+    // shoulder line is one flat edge instead of a staircase of box tops.
+    B([-0.335, 1.4, 0], [0.335, 1.4, 0], 0.06, 0.25, "hood"),
     B([0, 1.36, -0.15], [0, 1.5, -0.12], 0.26, 0.09, "hood"),
     B([0, 0.93, 0.13], [0, 1.07, 0.13], 0.24, 0.02, "pocket"),
     // Left arm hangs.
@@ -599,6 +613,9 @@ const BODY: Block[] = (() => {
   return out;
 })();
 
+/** How much of the body's own perspective is kept (the rest flattened, sprite-like); the head keeps all of its. */
+const BODY_PERSPECTIVE = 0.35;
+
 /** The light the figure's faces are shaded by: high, from the front left. */
 const KEY: Vec3 = norm([-0.55, 0.6, 0.6]);
 
@@ -615,6 +632,8 @@ function figure(x: Ctx, at: Vec3, facing: number, blink: boolean, group: number,
   if (sh) x.back.push({ d: toPath(sh.pts), fill: "#000", opacity: pal.night ? 0.6 : 0.3, blur: soften(bucket(cam.blurAt(sh.depth)), 3), depth: 1e3 });
 
   const toEye = sub(cam.eye, at);
+  const chestZ = cam.toCam(place([0, 1.2, 0], at, facing))[2];
+  const bodyFlat = chestZ > NEAR ? { z: chestZ, keep: BODY_PERSPECTIVE } : undefined;
   // Every visible face of every box, shaded by which way it faces.
   const faces: { pts: [number, number][]; depth: number; c: Region; shade: number; blur: number }[] = [];
   for (const bl of BODY) {
@@ -641,7 +660,9 @@ function figure(x: Ctx, at: Vec3, facing: number, blink: boolean, group: number,
       const n = place(n0, [0, 0, 0], facing);
       const mid = pts.reduce<Vec3>((m, p) => [m[0] + p[0] / 4, m[1] + p[1] / 4, m[2] + p[2] / 4], [0, 0, 0]);
       if (dot(n, sub(cam.eye, mid)) <= 0) continue; // facing away
-      const p = project(cam, pts);
+      // The body (neck down) is drawn with its perspective mostly flattened, so
+      // it stays square and sharp like a sprite; the head keeps true perspective.
+      const p = project(cam, pts, bl.head ? undefined : bodyFlat);
       if (!p) continue;
       const shade = n[1] > 0.6 ? 1 : dot(n, KEY) < -0.05 ? -1 : 0;
       faces.push({ pts: p.pts, depth: p.depth, c: bl.c, shade, blur: bucket(cam.blurAt(p.depth)) });

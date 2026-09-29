@@ -492,9 +492,8 @@ function scatter(from: CanvasRenderingContext2D, to: CanvasRenderingContext2D, r
 /**
  * Paint a figure as a sprite: its shapes rasterized onto a grid of sprite
  * pixels (k screen pixels each, k from its size in frame, 1–6), hard-edged and
- * snapped to the palette, then a one-sprite-pixel ink outline round the outside,
- * a one-pixel rim light along its top edges, and the eyes as whole sprite
- * pixels. Scaled up by k with no smoothing, so close-ups get chunky pixels.
+ * snapped to the palette, then a one-pixel rim light along its top edges (no
+ * outline), and the eyes as whole sprite pixels. Scaled up by k with no smoothing, so close-ups get chunky pixels.
  */
 function paintSprite(
   ctx: CanvasRenderingContext2D,
@@ -546,12 +545,11 @@ function paintSprite(
   const ink = rgbOf(pp.figure("eyes", 0)), rim = rgbOf(info.rim.length === 7 ? pp.grade(info.rim) : info.rim);
   // Rim light: figure pixels with open sky above them (not where the figure
   // simply runs off the top of the frame).
+  // It runs along top edges as a line (a pixel with a rim neighbour beside it),
+  // not stray dots where a side steps. No outline round the figure.
+  const top = (x: number, y: number) => y > 0 && at(x, y) && !at(x, y - 1);
   for (let y = 1; y < sh; y++) for (let x = 0; x < sw; x++) {
-    if (at(x, y) && !at(x, y - 1)) set(y * sw + x, rim);
-  }
-  // Outline: empty pixels touching the figure.
-  for (let y = 0; y < sh; y++) for (let x = 0; x < sw; x++) {
-    if (!at(x, y) && (at(x - 1, y) || at(x + 1, y) || at(x, y - 1) || at(x, y + 1))) set(y * sw + x, ink);
+    if (top(x, y) && (top(x - 1, y) || top(x + 1, y))) set(y * sw + x, rim);
   }
   // Eyes: one pixel wide, two tall (one when blinking), on the face only.
   for (const [ex, ey] of eyes) {
