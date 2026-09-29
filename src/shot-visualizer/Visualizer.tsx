@@ -9,9 +9,9 @@ import { COPY } from "./copy";
 import type { Clock } from "./clock";
 import {
   DEFAULT_SHOT, SIZES, SIZE_ORDER, LENSES, F_STOPS, ANGLES, ANGLE_ORDER, MOVES, MOVE_ORDER,
-  rig, type Shot,
+  rig, framedDistance, type Shot,
 } from "./shots";
-import { depthOfField, formatMetres } from "./optics";
+import { depthOfField, formatMetres, hFov } from "./optics";
 import type { ShotEntry } from "./export";
 import { ACCENTS, DEFAULT_LOOK, PLACES, PLACE_ORDER, type Look } from "./scenes";
 import s from "./visualizer.module.css";
@@ -46,22 +46,28 @@ function writeStore(key: string, value: unknown) {
   }
 }
 
-/** The camera view as a 480×270 JPEG, for the shot list and the PDF. */
-async function snapshot(svg: SVGSVGElement | null): Promise<string> {
-  if (!svg) return "";
-  const src = "data:image/svg+xml;charset=utf-8," + encodeURIComponent(new XMLSerializer().serializeToString(svg));
-  const img = new Image();
-  img.src = src;
-  try {
-    await img.decode();
-  } catch {
-    return "";
-  }
+/** The camera view at 2× its pixels (640×360 PNG), for the shot list and the PDF. */
+function snapshot(canvas: HTMLCanvasElement | null): string {
+  if (!canvas) return "";
   const c = document.createElement("canvas");
-  c.width = 480;
-  c.height = 270;
-  c.getContext("2d")?.drawImage(img, 0, 0, c.width, c.height);
-  return c.toDataURL("image/jpeg", 0.8);
+  c.width = canvas.width * 2;
+  c.height = canvas.height * 2;
+  const ctx = c.getContext("2d");
+  if (!ctx) return "";
+  ctx.imageSmoothingEnabled = false;
+  ctx.drawImage(canvas, 0, 0, c.width, c.height);
+  return c.toDataURL("image/png");
+}
+
+/** The aperture, drawn: blades round an opening sized for the f-number (f/1.4 widest). */
+function Iris({ fStop }: { fStop: number }) {
+  const r = 11 * (1.4 / fStop);
+  return (
+    <svg className={s.iris} viewBox="-16 -16 32 32" aria-hidden="true">
+      <circle r="15" className={s.irisBody} />
+      <circle r={Math.max(1.2, r)} className={s.irisHole} />
+    </svg>
+  );
 }
 
 function Chips<T extends string | number>({ label, options, value, onChange, show }: {
@@ -97,7 +103,7 @@ export default function Visualizer({ brand, signup }: {
   const [look, setLook] = useState<Look>(DEFAULT_LOOK);
   const [playing, setPlaying] = useState(true);
   const clock = useRef<Clock>({ t0: 0, playing: true });
-  const svg = useRef<SVGSVGElement | null>(null);
+  const view = useRef<HTMLCanvasElement | null>(null);
 
   const [list, setList] = useState<ShotEntry[]>([]);
   const [unlocked, setUnlocked] = useState(false);
@@ -125,7 +131,16 @@ export default function Visualizer({ brand, signup }: {
   }, []);
 
   const change = <K extends keyof Shot>(key: K, value: Shot[K]) => {
-    setShot((prev) => ({ ...prev, [key]: value }));
+    setShot((prev) => {
+      const next = { ...prev, [key]: value };
+      // Holding the camera still: a lens change keeps the distance. Anything that
+      // sets the framing (shot size, angle, switching the hold on) re-solves it.
+      if (next.hold === "camera") {
+        if (key === "lens") next.camDist = prev.camDist ?? framedDistance(prev.size, prev.lens);
+        else if (key === "size" || key === "hold") next.camDist = framedDistance(next.size, next.lens);
+      } else next.camDist = undefined;
+      return next;
+    });
     clock.current.t0 = performance.now(); // restart the move from its first frame
     posthog.capture("shot_visualizer_changed", { control: key, value });
   };
@@ -154,7 +169,7 @@ export default function Visualizer({ brand, signup }: {
       scene: list.at(-1)?.scene ?? "",
       description: "",
       notes: "",
-      thumb: await snapshot(svg.current),
+      thumb: snapshot(view.current),
     };
     saveList([...list, entry]);
     setEditing(entry.id);
@@ -191,19 +206,40 @@ export default function Visualizer({ brand, signup }: {
           </section>
 
           <section className={s.control}>
-            <h2 className={s.controlLabel}>Lens</h2>
-            <Chips label="Lens" options={LENSES} value={shot.lens}
+            <h2 className={s.controlLabel}>{COPY.lensLabel}</h2>
+            <Chips label="Lens (focal length)" options={LENSES} value={shot.lens}
               onChange={(v) => change("lens", v)} show={(v) => `${v}`} />
-            <p className={s.explain}>{COPY.lens}</p>
+            <p className={s.explain}>
+              <strong>{shot.lens}mm.</strong> {COPY.lenses[shot.lens]}{" "}
+              <span className={s.dim}>{Math.round(hFov(shot.lens))}° view.</span>
+            </p>
+            <div className={s.hold}>
+              <span className={s.holdLabel}>{COPY.holdLabel}</span>
+              <Chips label={COPY.holdLabel} options={["frame", "camera"] as const} value={shot.hold ?? "frame"}
+                onChange={(v) => change("hold", v)} show={(v) => COPY.holdChips[v]} />
+            </div>
+            <p className={s.explain}>{COPY.hold[shot.hold ?? "frame"]}</p>
+            <details className={s.define}>
+              <summary>{COPY.lensWhat}</summary>
+              <p>{COPY.lensDefinition}</p>
+            </details>
           </section>
 
           <section className={s.control}>
             <h2 className={s.controlLabel}>Aperture</h2>
             <Chips label="Aperture" options={F_STOPS} value={shot.fStop}
               onChange={(v) => change("fStop", v)} show={(v) => `f/${v}`} />
-            <p className={s.explain}>
-              {COPY.aperture} <span className={s.dim}>In focus: {formatMetres(dof.near)} – {formatMetres(dof.far)}.</span>
-            </p>
+            <div className={s.apertureRow}>
+              <Iris fStop={shot.fStop} />
+              <p className={s.explain}>
+                <strong>f/{shot.fStop}.</strong> {COPY.fStops[shot.fStop]}{" "}
+                <span className={s.dim}>In focus: {formatMetres(dof.near)} – {formatMetres(dof.far)}.</span>
+              </p>
+            </div>
+            <details className={s.define}>
+              <summary>{COPY.apertureWhat}</summary>
+              <p>{COPY.apertureDefinition}</p>
+            </details>
           </section>
 
           <section className={s.control}>
@@ -229,10 +265,11 @@ export default function Visualizer({ brand, signup }: {
 
         <div className={s.stage}>
           <div className={s.frame}>
-            <Frame2D shot={shot} look={look} clock={clock} playing={playing} svgRef={svg} />
+            <Frame2D shot={shot} look={look} clock={clock} playing={playing} canvasRef={view} />
             <div className={s.readout} aria-live="polite">
               <span className={s.readoutSize}>{SIZES[shot.size].abbr}</span>
               <span>{shot.lens}mm</span>
+              <span>{Math.round(hFov(shot.lens))}°</span>
               <span>f/{shot.fStop}</span>
               <span>{formatMetres(start.focus)}</span>
             </div>

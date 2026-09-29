@@ -101,7 +101,7 @@ export async function downloadPdf(list: ShotEntry[], brand: string) {
     doc.text(c[0], x + 1, y + 5);
     x += cols[0].w;
     try {
-      doc.addImage(e.thumb, "JPEG", x, y + 1, 48, 27);
+      doc.addImage(e.thumb, e.thumb.startsWith("data:image/png") ? "PNG" : "JPEG", x, y + 1, 48, 27);
     } catch {
       /* a missing thumbnail just leaves the cell empty */
     }

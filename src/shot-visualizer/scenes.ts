@@ -39,22 +39,33 @@ export const DEFAULT_LOOK: Look = { place: "city", time: "night", accent: ACCENT
 export type When = "day" | "night" | "always";
 
 /** A window or pane. `r` decides if it's lit (night) or catches the sun (day). */
-export type Win = { p: Vec3; w: number; h: number; r: number; pane?: boolean; accent?: boolean };
+export type Win = { p: Vec3; w: number; h: number; r: number; pane?: boolean; accent?: boolean; unlit?: boolean };
 /** One cut-paper flat. `t` is 0 (near) → 1 (far), for haze. */
 export type Flat = {
   t: number; polys: Vec3[][]; windows: Win[]; lit: number; neon: [Vec3, Vec3][];
   /** Pinned night colour and edge (the approved city); otherwise from the palette. */
   night?: string; edge?: number;
+  /** Shadow sides of buildings (a step darker) and rooftop clutter (same tone). */
+  shade?: Vec3[][]; details?: Vec3[][];
+  /** The layer's top height (m), for its fog band. */
+  top?: number;
+  /** Its depth (m). */
+  z: () => number;
+  /** The buildings (skylines only): side, extent and height, for facade colours by day. */
+  blocks?: { side: number; x0: number; x1: number; bh: number }[];
 };
 /** A cut-paper prop: any flat polygon. `edge` gets the backlit rim. */
-export type Piece = { pts: Vec3[]; shade: number; edge?: boolean; shadow?: boolean; night?: string };
-export type Light = { p: Vec3; size: number; accent: boolean; on: When; glow: number; dim?: boolean };
+/** `material`: its own colours (bark) rather than the location ramp. */
+export type Piece = { pts: Vec3[]; shade: number; edge?: boolean; shadow?: boolean; night?: string; material?: string };
+/** `warm`: a warm practical (lamps, bulbs) instead of paper white. */
+export type Light = { p: Vec3; size: number; accent: boolean; on: When; glow: number; dim?: boolean; warm?: boolean; ember?: boolean };
 export type Pool = { c: Vec3; r: number; on: When };
-export type Shaft = { pts: Vec3[]; on: When };
+export type Shaft = { pts: Vec3[]; on: When; warm?: boolean };
 /** `night`: pinned front, side and top colours. */
 export type Box = { c: Vec3; size: Vec3; rotY?: number; shade: number; night?: [string, string, string] };
 /** Ground, walls, ceiling. With `n`, drawn only from the side it faces. */
-export type Surface = { pts: Vec3[]; shade: number; mark?: "paper" | "accent"; opacity?: number; n?: Vec3; night?: string };
+/** `dither`: 0–1 of the next lighter shade mixed in, so the pixel dither makes a dot texture. */
+export type Surface = { pts: Vec3[]; shade: number; mark?: "paper" | "accent" | "paint"; opacity?: number; n?: Vec3; night?: string; dither?: number; material?: string };
 
 export type Plan = {
   lines: [number, number, number, number][];
@@ -67,11 +78,17 @@ export type Scene = {
   sun: { c: Vec3; r: number; nightRings?: string[] } | null;
   ground: Surface[];
   flats: Flat[];
+  /** Cut-paper clouds, far off in the sky. */
+  clouds: Vec3[][];
   pieces: Piece[];
   boxes: Box[];
   lights: Light[];
   pools: Pool[];
   shafts: Shaft[];
+  /** Overhead wires (sagging), with a few birds sitting on them. */
+  wires: { from: Vec3; to: Vec3; sag: number; birds?: number }[];
+  /** A wet or polished floor: lights reflect in it. */
+  wet?: boolean;
   plan: Plan;
 };
 
@@ -108,6 +125,28 @@ function ridgeWithGap(z: number, span: number, gap: number, step: number, h: (x:
   return [ridge(z, -span, -gap, step, h), ridge(z, gap, span, step, h)];
 }
 
+/**
+ * A bank of pixel clouds at z: flat bottoms, lumpy tops. `n` clouds spread
+ * across `span`, at heights between y0 and y1 (metres, so they sit in the sky).
+ */
+function cloudBank(seed: number, z: number, span: number, y0: number, y1: number, n: number): Vec3[][] {
+  const rand = rng(seed);
+  return Array.from({ length: n }, () => {
+    const cx = (rand() - 0.5) * span * 2, cy = y0 + rand() * (y1 - y0);
+    const w = span * (0.08 + rand() * 0.14), h = w * (0.12 + rand() * 0.1);
+    const lumps = 3 + Math.floor(rand() * 3);
+    const pts: Vec3[] = [[cx - w / 2, cy, z]];
+    for (let i = 0; i <= 24; i++) {
+      const u = i / 24;
+      // Lumps: the tallest in the middle, falling off to the ends.
+      const bump = Math.abs(Math.sin(u * Math.PI * lumps)) * 0.45 + 0.55;
+      pts.push([cx - w / 2 + u * w, cy + h * Math.sin(u * Math.PI) * bump, z]);
+    }
+    pts.push([cx + w / 2, cy, z]);
+    return pts;
+  });
+}
+
 /** A straight line of string lights between two points, sagging. */
 function strand(from: Vec3, to: Vec3, sag: number, n: number, on: When, every = 4, offset = 0): Light[] {
   return Array.from({ length: n + 1 }, (_, i) => {
@@ -118,8 +157,9 @@ function strand(from: Vec3, to: Vec3, sag: number, n: number, on: When, every = 
         from[1] + (to[1] - from[1]) * t - sag * 4 * t * (1 - t),
         from[2] + (to[2] - from[2]) * t,
       ] as Vec3,
-      size: 0.05,
+      size: 0.07,
       accent: (i + offset) % every === 0,
+      warm: true,
       on,
       glow: 0.3,
     };
@@ -146,6 +186,7 @@ function skyline(seed: number, z: number, t: number, span: number, gap: number, 
   const windows: Win[] = [];
   const neon: [Vec3, Vec3][] = [];
   const scale = hMax / 20;
+  const blocks: { side: number; x0: number; x1: number; bh: number }[] = [];
   for (const side of [-1, 1]) {
     const top: [number, number][] = [];
     let x = gap;
@@ -166,12 +207,17 @@ function skyline(seed: number, z: number, t: number, span: number, gap: number, 
         top.push([x1 - inset, sh], [x1 - inset, bh]);
       }
       top.push([x1, bh]);
+      blocks.push({ side, x0, x1, bh });
       // Windows: a grid of floors. Which ones are lit is decided per frame.
       const cols = Math.max(1, Math.floor((bw - 0.8) / 1.6));
       for (let fy = 2.2; fy < bh - 1.5; fy += 3.2) {
         for (let ci = 0; ci < cols; ci++) {
           const r = rand();
-          if (r > lit) continue;
+          if (r > lit) {
+            // Unlit: no extra random draw, so the lit pattern stays exactly as designed.
+            windows.push({ p: [side * (x0 + (bw / cols) * (ci + 0.5)), fy, z + 0.02], w: 0.55, h: 0.8, r: 1, unlit: true });
+            continue;
+          }
           windows.push({ p: [side * (x0 + (bw / cols) * (ci + 0.5)), fy, z + 0.02], w: 0.55, h: 0.8, r: r / lit, accent: rand() < 0.22 });
         }
       }
@@ -184,7 +230,37 @@ function skyline(seed: number, z: number, t: number, span: number, gap: number, 
     const pts: Vec3[] = [[side * gap, -0.5, z], ...top.map(([tx, ty]): Vec3 => [side * tx, ty, z]), [side * top[top.length - 1][0], -0.5, z]];
     polys.push(side < 0 ? pts.reverse() : pts);
   }
-  return { t, polys, windows, lit: 1, neon, night, edge };
+  // Detail pass on its own random stream, so the skyline itself never changes:
+  // each building's outer side a step darker; on the near flats, rooftop
+  // railings and the odd water tank.
+  const drand = rng(seed + 1000);
+  const shade: Vec3[][] = [];
+  const details: Vec3[][] = [];
+  for (const b of blocks) {
+    const w = b.x1 - b.x0;
+    const sx0 = b.x1 - w * (0.22 + drand() * 0.12);
+    shade.push([[b.side * sx0, -0.5, z + 0.01], [b.side * b.x1, -0.5, z + 0.01], [b.side * b.x1, b.bh, z + 0.01], [b.side * sx0, b.bh, z + 0.01]]);
+    if (t > 0.3) continue;
+    const roll = drand();
+    if (roll < 0.35) {
+      // A railing: a top rail and posts every 0.9m.
+      details.push([[b.side * b.x0, b.bh + 0.95, z], [b.side * b.x1, b.bh + 0.95, z], [b.side * b.x1, b.bh + 1.05, z], [b.side * b.x0, b.bh + 1.05, z]]);
+      for (let px = b.x0 + 0.2; px < b.x1 - 0.1; px += 0.9) {
+        details.push([[b.side * px, b.bh, z], [b.side * (px + 0.1), b.bh, z], [b.side * (px + 0.1), b.bh + 1, z], [b.side * px, b.bh + 1, z]]);
+      }
+    } else if (roll < 0.55 && w > 3) {
+      // A water tank on legs.
+      const cx = b.x0 + w * (0.3 + drand() * 0.4);
+      details.push([[b.side * (cx - 0.8), b.bh + 1.2, z], [b.side * (cx + 0.8), b.bh + 1.2, z], [b.side * (cx + 0.8), b.bh + 3, z], [b.side * (cx - 0.8), b.bh + 3, z]]);
+      details.push([[b.side * (cx - 0.9), b.bh + 3, z], [b.side * cx, b.bh + 3.5, z], [b.side * (cx + 0.9), b.bh + 3, z]]);
+      for (const lx of [cx - 0.65, cx + 0.55]) details.push([[b.side * lx, b.bh, z], [b.side * (lx + 0.1), b.bh, z], [b.side * (lx + 0.1), b.bh + 1.25, z], [b.side * lx, b.bh + 1.25, z]]);
+    } else if (roll < 0.7) {
+      // An AC unit or two.
+      const cx = b.x0 + w * (0.2 + drand() * 0.5);
+      details.push([[b.side * cx, b.bh, z], [b.side * (cx + 1.1), b.bh, z], [b.side * (cx + 1.1), b.bh + 0.8, z], [b.side * cx, b.bh + 0.8, z]]);
+    }
+  }
+  return { t, polys, windows, lit: 1, neon, night, edge, shade, details, top: hMax, z: () => z, blocks };
 }
 
 /* The city at night is the approved design (29 Sep): its colours, edges and
@@ -193,7 +269,7 @@ function city(): Scene {
   const ROAD = 2.6;
   const ground: Surface[] = [
     { pts: flatQuad(-300, 300, -150, 300, 0), shade: 0.05, n: [0, 1, 0], night: "#0b0d0b" },
-    { pts: flatQuad(-ROAD, ROAD, -150, 300, 0.002), shade: 0.12, night: "#101310" },
+    { pts: flatQuad(-ROAD, ROAD, -150, 300, 0.002), shade: 0.12, night: "#101310", dither: 0.22 },
     { pts: flatQuad(-ROAD - 0.18, -ROAD, -150, 300, 0.004), shade: 0.32, night: "#1f241f" },
     { pts: flatQuad(ROAD, ROAD + 0.18, -150, 300, 0.004), shade: 0.32, night: "#1f241f" },
   ];
@@ -209,14 +285,17 @@ function city(): Scene {
   const pieces: Piece[] = [];
   const lights: Light[] = [];
   const pools: Pool[] = [];
+  const shafts: Shaft[] = [];
   const lamps: Vec3[] = [[-3.4, 0, 3.5], [3.4, 0, -2.5], [-3.4, 0, -7], [3.4, 0, -11.5]];
   for (const at of lamps) {
     const toward = at[0] < 0 ? 1 : -1;
     pieces.push({ pts: rect(at[0] - 0.06, 0, at[0] + 0.06, 4.2, at[2]), shade: 0, shadow: false, night: "#090a09" });
     pieces.push({ pts: rect(Math.min(at[0], at[0] + toward * 0.9), 4.1, Math.max(at[0], at[0] + toward * 0.9), 4.22, at[2]), shade: 0, shadow: false, night: "#090a09" });
     const head: Vec3 = [at[0] + toward * 0.85, 4.05, at[2]];
-    lights.push({ p: head, size: 0.14, accent: false, on: "night", glow: 0.5 });
+    lights.push({ p: head, size: 0.18, accent: false, on: "night", glow: 0.6, warm: true });
     pools.push({ c: [head[0], 0, head[2]], r: 2.6, on: "night" });
+    // The cone of light under it.
+    shafts.push({ pts: [[head[0] - 0.12, 4.0, head[2]], [head[0] + 0.12, 4.0, head[2]], [head[0] + 1.5, 0.01, head[2]], [head[0] - 1.5, 0.01, head[2]]], on: "night", warm: true });
   }
   lights.push(
     ...strand([-4.8, 4.4, -5], [4.8, 4.6, -5.5], 0.7, 16, "night", 4, 0),
@@ -240,11 +319,22 @@ function city(): Scene {
       skyline(41, -24, 0.25, 60, 5.5, 5, 15, 0.28, "#0f140f", 0.45),
       skyline(53, -13, 0, 40, 4.5, 4, 11, 0.32, "#0c0f0c", 0.4),
     ],
+    clouds: cloudBank(61, -700, 900, 90, 260, 9),
     pieces,
     boxes,
     lights,
     pools,
-    shafts: [],
+    shafts,
+    // Power lines strung across the street and along it, lamp to lamp.
+    wires: [
+      { from: [-6, 7.2, -6], to: [6, 7.0, -6.5], sag: 0.7, birds: 3 },
+      { from: [-6, 6.6, -6.2], to: [6, 6.3, -6.6], sag: 0.8 },
+      { from: [-6.5, 7.8, -15], to: [6.5, 7.4, -15.5], sag: 0.9, birds: 2 },
+      { from: [-7, 8.2, -22], to: [7, 8.4, -22], sag: 1 },
+      { from: [-3.4, 4.3, 3.5], to: [-3.4, 4.3, -7], sag: 0.4 },
+      { from: [3.4, 4.3, -2.5], to: [3.4, 4.3, -11.5], sag: 0.35 },
+    ],
+    wet: true,
     plan: {
       lines: [[-ROAD, -40, -ROAD, 40], [ROAD, -40, ROAD, 40], [-40, -13, -4.5, -13], [4.5, -13, 40, -13]],
       dots: lamps.map(([x, , z]): [number, number, number] => [x, z, 0.08]),
@@ -279,14 +369,14 @@ function mesas(seed: number, z: number, t: number, span: number, hMin: number, h
     }
     return y;
   };
-  return { t, polys: [ridge(z, -span, span, span / 400, h)], windows: [], lit: 0, neon: [] };
+  return { t, polys: [ridge(z, -span, span, span / 400, h)], windows: [], lit: 0, neon: [], top: hMax, z: () => z };
 }
 
 function dunes(seed: number, z: number, t: number, span: number, gap: number, amp: number): Flat {
   const p = seed * 1.7;
   const h = (x: number) =>
     amp * (1 + 0.55 * Math.sin(x / (amp * 3.1) + p) + 0.3 * Math.sin(x / (amp * 1.3) + p * 2) + 0.15 * Math.sin(x / (amp * 0.55) + p * 3));
-  return { t, polys: ridgeWithGap(z, span, gap, Math.max(0.15, amp / 12), h), windows: [], lit: 0, neon: [] };
+  return { t, polys: ridgeWithGap(z, span, gap, Math.max(0.15, amp / 12), h), windows: [], lit: 0, neon: [], top: amp * 2.2, z: () => z };
 }
 
 /** A saguaro: a trunk and a couple of arms, as rounded paper strips. */
@@ -320,8 +410,8 @@ function desert(): Scene {
   const ROAD = 2.4;
   const rand = rng(91);
   const ground: Surface[] = [
-    { pts: flatQuad(-400, 400, -260, 300, 0), shade: 0.22, n: [0, 1, 0] },
-    { pts: flatQuad(-ROAD, ROAD, -260, 300, 0.002), shade: 0.1 },
+    { pts: flatQuad(-400, 400, -260, 300, 0), shade: 0.22, n: [0, 1, 0], dither: 0.35 },
+    { pts: flatQuad(-ROAD, ROAD, -260, 300, 0.002), shade: 0.1, dither: 0.18 },
   ];
   // Faded centre dashes, far apart, like a back road.
   for (let z = -80; z < 30; z += 6) {
@@ -367,11 +457,13 @@ function desert(): Scene {
       dunes(3, -55, 0.45, 110, 0, 3.2),
       dunes(8, -26, 0.2, 70, 3.5, 1.4),
     ],
+    clouds: cloudBank(71, -700, 900, 60, 200, 7),
     pieces,
     boxes: [{ c: [1.8, 0.3, -3.5], size: [0.9, 0.6, 0.6], rotY: -0.3, shade: 0.3 }],
     lights,
     pools: [],
     shafts: [],
+    wires: [],
     plan: {
       lines: [[-ROAD, -40, -ROAD, 40], [ROAD, -40, ROAD, 40]],
       dots: poles.map(([x, , z]): [number, number, number] => [x, z, 0.12]),
@@ -385,7 +477,7 @@ function desert(): Scene {
 function warehouse(): Scene {
   const X = 9.5, TOP = 12, BACK = -20;
   const ground: Surface[] = [
-    { pts: flatQuad(-X, X, BACK, 60, 0), shade: 0.38, n: [0, 1, 0] },
+    { pts: flatQuad(-X, X, BACK, 60, 0), shade: 0.38, n: [0, 1, 0], dither: 0.15, night: "#141614" },
     { pts: [[-X, 0, 60], [-X, 0, BACK], [-X, TOP, BACK], [-X, TOP, 60]], shade: 0.2, n: [1, 0, 0] },
     { pts: [[X, 0, BACK], [X, 0, 60], [X, TOP, 60], [X, TOP, BACK]], shade: 0.2, n: [-1, 0, 0] },
     { pts: flatQuad(-X, X, BACK, 60, TOP), shade: 0.08, n: [0, -1, 0] },
@@ -393,9 +485,9 @@ function warehouse(): Scene {
   // Floor joints every 4m (the depth markings), then the painted safety lanes.
   for (let z = BACK + 4; z < 40; z += 4) ground.push({ pts: flatQuad(-X, X, z, z + 0.03, 0.003), shade: 0, opacity: 0.35 });
   for (let x = -8; x <= 8; x += 4) ground.push({ pts: flatQuad(x, x + 0.03, BACK, 40, 0.003), shade: 0, opacity: 0.35 });
-  for (const x of [-2.3, 2.2]) ground.push({ pts: flatQuad(x, x + 0.1, BACK, 40, 0.005), shade: 1, mark: "accent", opacity: 0.8 });
+  for (const x of [-2.3, 2.2]) ground.push({ pts: flatQuad(x, x + 0.1, BACK, 40, 0.005), shade: 1, mark: "paint", opacity: 0.85 });
   // A hatched no-parking box by the racks.
-  for (let z = -9; z < -6; z += 0.5) ground.push({ pts: [[3.2, 0.005, z], [3.45, 0.005, z], [4.2, 0.005, z - 0.7], [3.95, 0.005, z - 0.7]], shade: 1, mark: "accent", opacity: 0.55 });
+  for (let z = -9; z < -6; z += 0.5) ground.push({ pts: [[3.2, 0.005, z], [3.45, 0.005, z], [4.2, 0.005, z - 0.7], [3.95, 0.005, z - 0.7]], shade: 1, mark: "paint", opacity: 0.6 });
 
   // The back wall: one flat with three bays of tall factory windows.
   const windows: Win[] = [];
@@ -406,7 +498,7 @@ function warehouse(): Scene {
       }
     }
   }
-  const back: Flat = { t: 0.45, polys: [rect(-X - 1, -0.5, X + 1, TOP + 0.5, BACK)], windows, lit: 1, neon: [] };
+  const back: Flat = { t: 0.45, polys: [rect(-X - 1, -0.5, X + 1, TOP + 0.5, BACK)], windows, lit: 1, neon: [], top: TOP, z: () => BACK };
 
   const pieces: Piece[] = [];
   const lights: Light[] = [];
@@ -419,7 +511,7 @@ function warehouse(): Scene {
     for (const x of [-3.6, 3.6]) {
       pieces.push({ pts: rect(x - 0.015, 6.4, x + 0.015, 10.2, z), shade: 0.02 });
       pieces.push({ pts: [[x - 0.45, 6.0, z], [x + 0.45, 6.0, z], [x + 0.12, 6.45, z], [x - 0.12, 6.45, z]], shade: 0.04 });
-      lights.push({ p: [x, 5.97, z], size: 0.2, accent: false, on: "night", glow: 0.5 });
+      lights.push({ p: [x, 5.97, z], size: 0.2, accent: false, on: "night", glow: 0.5, warm: true });
       pools.push({ c: [x, 0, z], r: 3, on: "night" });
     }
   }
@@ -456,11 +548,14 @@ function warehouse(): Scene {
     sun: null,
     ground,
     flats: [back],
+    clouds: [],
     pieces,
     boxes,
     lights,
     pools,
     shafts,
+    wires: [],
+    wet: true,
     plan: {
       lines: [[-X, BACK, X, BACK], [-X, BACK, -X, 40], [X, BACK, X, 40], [-2.3, BACK, -2.3, 40], [2.2, BACK, 2.2, 40]],
       dots: [-15.5, -10, -4.5, 1, 6.5].flatMap((z): [number, number, number][] => [[-X + 0.8, z, 0.25], [X - 0.8, z, 0.25]]),
@@ -507,7 +602,7 @@ function treeline(seed: number, z: number, t: number, span: number, gap: number,
     }
     return y;
   };
-  return { t, polys: ridgeWithGap(z, span, gap, Math.max(0.08, hMin / 30), h), windows: [], lit: 0, neon: [] };
+  return { t, polys: ridgeWithGap(z, span, gap, Math.max(0.08, hMin / 30), h), windows: [], lit: 0, neon: [], top: hMax, z: () => z };
 }
 
 function forest(): Scene {
@@ -520,7 +615,7 @@ function forest(): Scene {
   const pathX = (z: number) => Math.sin(z * 0.09) * 0.9 * Math.min(1, Math.max(0, -z / 6));
   for (let z = -70; z < 30; z += 1.5) {
     const a = pathX(z), b = pathX(z + 1.5);
-    ground.push({ pts: [[a - PATH, 0.002, z], [a + PATH, 0.002, z], [b + PATH, 0.002, z + 1.5], [b - PATH, 0.002, z + 1.5]], shade: 0.3 });
+    ground.push({ pts: [[a - PATH, 0.002, z], [a + PATH, 0.002, z], [b + PATH, 0.002, z + 1.5], [b - PATH, 0.002, z + 1.5]], shade: 0.3, dither: 0.3, material: "dirt" });
   }
   const pieces: Piece[] = [];
   const lights: Light[] = [];
@@ -530,11 +625,11 @@ function forest(): Scene {
   for (const [x, z] of spots) {
     const w = 0.22 + rand() * 0.3;
     trunks.push([x, z, w / 2]);
-    pieces.push({ pts: [[x - w / 2, -0.05, z], [x + w / 2, -0.05, z], [x + w * 0.4, 14, z], [x - w * 0.4, 14, z]], shade: 0.04, edge: true });
+    pieces.push({ pts: [[x - w / 2, -0.05, z], [x + w / 2, -0.05, z], [x + w * 0.4, 14, z], [x - w * 0.4, 14, z]], shade: 0.04, edge: true, material: "bark" });
     // A branch or two.
     if (rand() < 0.6) {
       const by = 3 + rand() * 4, dir = rand() < 0.5 ? -1 : 1;
-      pieces.push({ pts: [[x, by, z], [x + dir * 1.6, by + 1.2, z], [x + dir * 1.6, by + 1.32, z], [x, by + 0.25, z]], shade: 0.04 });
+      pieces.push({ pts: [[x, by, z], [x + dir * 1.6, by + 1.2, z], [x + dir * 1.6, by + 1.32, z], [x, by + 0.25, z]], shade: 0.04, material: "bark" });
     }
   }
   // Ferns along the path: small paper fans.
@@ -552,7 +647,8 @@ function forest(): Scene {
   // Night: fireflies over the path. Day: sun through gaps in the canopy.
   for (let i = 0; i < 44; i++) {
     const z = 3 - rand() * 30;
-    lights.push({ p: [pathX(z) + (rand() - 0.5) * 7, 0.4 + rand() * 2.4, z], size: 0.03, accent: true, on: "night", glow: 0.45 });
+    // Soft, glowy orange (Grace liked them warm): a warm light, not the accent.
+    lights.push({ p: [pathX(z) + (rand() - 0.5) * 7, 0.4 + rand() * 2.4, z], size: 0.035, accent: false, ember: true, on: "night", glow: 0.8 });
   }
   for (let i = 0; i < 38; i++) {
     lights.push({ p: [(rand() - 0.5) * 30, 3 + rand() * 7, -6 - rand() * 26], size: 0.18 + rand() * 0.2, accent: false, on: "day", glow: 0.25 });
@@ -571,11 +667,13 @@ function forest(): Scene {
       treeline(12, -45, 0.5, 90, 2.5, 10, 20),
       treeline(19, -26, 0.25, 60, 2.2, 8, 17),
     ],
+    clouds: cloudBank(83, -700, 900, 110, 280, 8),
     pieces,
     boxes: [{ c: [1.4, 0.2, -3], size: [0.9, 0.4, 0.5], rotY: 0.7, shade: 0.25 }],
     lights,
     pools: [],
     shafts,
+    wires: [],
     plan: {
       lines: [],
       dots: trunks,

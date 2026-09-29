@@ -23,7 +23,19 @@ export type Shot = {
   fStop: number;
   angle: AngleKey;
   move: MoveKey;
+  /**
+   * What a lens change holds: the framing (the camera moves; the default) or
+   * the camera (it stays at `camDist` and only the view widens or narrows).
+   */
+  hold?: "frame" | "camera";
+  /** With hold "camera": the camera's distance from the subject, metres. */
+  camDist?: number;
 };
+
+/** The distance a shot size puts the camera at on a lens (framing held). */
+export function framedDistance(size: SizeKey, lens: number): number {
+  return distanceForFrame(SIZES[size].frame, lens);
+}
 
 export const DEFAULT_SHOT: Shot = { size: "mcu", lens: 85, fStop: 2, angle: "eye", move: "static" };
 
@@ -37,7 +49,7 @@ export const SIZES: Record<SizeKey, { abbr: string; name: string; frame: number;
   mcu:    { abbr: "MCU", name: "Medium close-up", frame: 0.6, aim: [0, 1.52, 0] },
   cu:     { abbr: "CU",  name: "Close-up",     frame: 0.34, aim: [0, 1.65, 0] },
   ecu:    { abbr: "ECU", name: "Extreme close-up", frame: 0.12, aim: [0, 1.68, 0.09] },
-  insert: { abbr: "INS", name: "Insert",       frame: 0.2,  aim: [0.27, 0.8, 0.02] },
+  insert: { abbr: "INS", name: "Insert",       frame: 0.24, aim: [0.13, 1.09, 0.22] }, // the phone in hand
 };
 export const SIZE_ORDER: SizeKey[] = ["uws", "ws", "fs", "ms", "mcu", "cu", "ecu", "insert"];
 
@@ -119,7 +131,9 @@ export function rig(shot: Shot, p = 0, time = 0): Rig {
   // Zooms keep the camera where it started; everything else solves distance
   // from the focal length in use, which is what makes a dolly zoom hold size.
   const solveAt = shot.move === "zoomIn" || shot.move === "zoomOut" ? shot.lens : focal;
-  const d = distanceForFrame(size.frame, solveAt) * distScale;
+  // Holding the camera still, it stays where it was; a dolly zoom always solves.
+  const held = shot.hold === "camera" && shot.camDist && shot.move !== "dollyZoom";
+  const d = (held ? shot.camDist! : distanceForFrame(size.frame, solveAt)) * distScale;
 
   const e = rad(angle.elevation);
   const az = rad(angle.azimuth);
@@ -166,9 +180,19 @@ export function rig(shot: Shot, p = 0, time = 0): Rig {
   // whatever the shot size, looking past their head.
   if (shot.angle === "ots") position = [position[0], Math.max(position[1], 1.7), position[2]];
 
+  // Below the floor (a worm's eye on a long lens): put the camera on the floor
+  // but slide it back so it stays as far from what it's aimed at as the shot
+  // size asked for. The angle gets a little less steep; the framing holds, so
+  // a full shot still has their head in it.
   let floored = false;
   if (position[1] < FLOOR) {
-    position = [position[0], FLOOR, position[2]];
+    const reach = Math.hypot(position[0] - target[0], position[1] - target[1], position[2] - target[2]);
+    const dy = FLOOR - target[1];
+    const across = Math.sqrt(Math.max(reach * reach - dy * dy, 0.01));
+    let hx = position[0] - target[0], hz = position[2] - target[2];
+    const hl = Math.hypot(hx, hz);
+    if (hl < 1e-6) { hx = 0; hz = 1; } else { hx /= hl; hz /= hl; }
+    position = [target[0] + hx * across, FLOOR, target[2] + hz * across];
     floored = true;
   }
 
@@ -177,15 +201,17 @@ export function rig(shot: Shot, p = 0, time = 0): Rig {
   const fz = Math.max(aim[2], FRONT);
   const focus = Math.hypot(aim[0] - position[0], aim[1] - position[1], fz - position[2]);
 
-  // Over-the-shoulder: a second figure between camera and subject, facing the
-  // subject, a little off the line so its shoulder sits at the frame's edge.
+  // Over-the-shoulder: a second person between camera and subject, facing the
+  // subject, a little off the line so their shoulder and the back of their head
+  // fill the near edge of the frame. They stand a conversation away (≤1.2m) and
+  // at least 0.45m in front of the lens; closer than that there's no room.
   let partner: Rig["partner"] = null;
   if (shot.angle === "ots") {
-    const along = d - 1.0;
-    if (along > 0.65) {
+    const along = Math.min(1.2, d - 0.45);
+    if (along > 0.5) {
       const flat = Math.hypot(dir[0], dir[2]);
       const ux = dir[0] / flat, uz = dir[2] / flat;
-      const side = -0.3; // to camera-left
+      const side = -0.25; // to camera-left: their shoulder and the edge of their head frame the left
       partner = {
         position: [ux * along + uz * side, 0, uz * along - ux * side],
         facing: Math.atan2(-ux, -uz),

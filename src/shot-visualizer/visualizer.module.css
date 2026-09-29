@@ -124,6 +124,22 @@
 .chip:hover { border-color: rgba(255, 255, 255, 0.35); }
 .chipOn, .chipOn:hover { background: var(--sv-accent); border-color: var(--sv-accent); color: #0a0a0a; }
 
+/* Lens: the hold toggle and the fold-out definitions. */
+.hold { display: flex; flex-wrap: wrap; align-items: center; gap: 6px 10px; margin-top: 10px; }
+.holdLabel { color: var(--sv-sec); font-size: 12px; }
+/* Square, so this reads as a different kind of choice from the round chips. */
+.hold .chip { font-size: 12px; padding: 5px 9px; border-radius: 3px; }
+.define { margin-top: 6px; font-size: 12.5px; color: var(--sv-sec); }
+.define summary { cursor: pointer; color: var(--sv-text); font-weight: 500; font-size: 12.5px; }
+/* The site styles every <p> at 1rem; the definitions match the explain lines. */
+.define p { margin: 6px 0 0; font-size: 12.5px; line-height: 1.55; color: var(--sv-sec); }
+/* Aperture: the iris beside its line. */
+.apertureRow { display: flex; gap: 10px; align-items: flex-start; }
+.apertureRow .explain { margin-top: 8px; }
+.iris { width: 30px; height: 30px; flex: none; margin-top: 8px; }
+.irisBody { fill: #1c1c1c; stroke: var(--sv-line-hi); }
+.irisHole { fill: var(--sv-accent); transition: r 0.2s; }
+
 /* Location, time of day and accent: one small row under the camera view. */
 .setBar { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 14px; }
 .setBar .chip { font-size: 12px; padding: 5px 9px; }
