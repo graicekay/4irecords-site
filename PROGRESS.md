@@ -8,6 +8,15 @@ Live at www.4irecords.com (Vercel, team `graicekay`); Neon project
 `4irecords-site`, schema in `schema.sql`; `/admin` behind `ADMIN_PASSWORD`.
 Started 24 September 2026.
 
+## Paused 28 Sep: resume here
+
+Committed locally, **not pushed** (a push deploys). Waiting on that push:
+the rewritten resources email (Open, item 4: Grace's copy, 4iproductions.com
+link, links that no longer expire) and the shot visualizer at
+`/resources/shot-visualizer` (unlisted; see "Shot visualizer" below). The
+visualizer is still being debugged from the 4i Productions side; after any
+change there, copy `src/shot-visualizer/` across and `diff -r` the two.
+
 ## What's built
 
 Six pages replacing the Google Site (see README). Native inquiry and
@@ -35,6 +44,18 @@ build is fine.
    real material: releases, show photos and video from the T7 drive. The
    layouts hold it; the assets aren't in.
 
+## Shot visualizer (28 Sep)
+
+Shared with 4i Productions: `src/shot-visualizer/` is a verbatim copy (change
+both or neither; spec is `4iProductions-site/SHOT-VISUALIZER.md`). Page at
+`/resources/shot-visualizer`, working by link, `noindex` and off the
+resources index until `SHOT_VISUALIZER_LISTED` in `src/lib/flags.ts` is
+turned on. The download gate files the address in `contacts` (tags
+`resource-downloader`, `resource:shot-visualizer`), so artists sign up here
+and filmmakers on 4i Productions. Prose is `COPY:` placeholders in
+`src/shot-visualizer/copy.ts`. `schema.sql` now also records the `contacts`
+table, which existed live but was never written down.
+
 ## Planned (26 Sep list, not in order)
 
 3. **Gumroad references now point to 4i Productions.** The free editing
@@ -43,11 +64,12 @@ build is fine.
    179) and the matching lines in
    `content/4i-resources-content-and-design-spec.md` once the assets are
    live there. Grace writes the replacement copy.
-4. **Rewrite the resources email.** The "This link is tied to your email
-   address and expires in 7 days… that's what 4i Productions is for" block
-   in `src/lib/email.ts` (around line 110) needs new copy from Grace.
-   Note: its "4i Productions" link goes to `4irecords.com/visuals`, not
-   4iproductions.com; check that's intended.
+4. **Resources email rewritten (28 Sep)** with Grace's copy: "Your free
+   resources are here.", the asset name as the button, a line to
+   4irecords.com/resources, and "For world-immersive visuals, visit
+   4iproductions.com" (now the real domain). Download links no longer
+   expire (`src/lib/download-token.ts`), and links sent before this work
+   again.
 5. **The resources email went to spam** in Grace's test. Done in code
    (28 Sep): every email now has a plain-text part alongside the HTML, and
    the resource email carries `List-Unsubscribe` + one-click

@@ -19,3 +19,8 @@ export const EVENTS_ENABLED = false;
    the admin view of it all stay — but with this off there is no
    longer anywhere on the site to join the list. */
 export const FANS_ENABLED = false;
+
+/* `SHOT_VISUALIZER_LISTED` puts the shot visualizer on /resources and lets
+   search engines index it. Off until Grace launches it; the page works
+   by direct link either way (/resources/shot-visualizer). */
+export const SHOT_VISUALIZER_LISTED = false;

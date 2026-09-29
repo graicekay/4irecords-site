@@ -1,0 +1,236 @@
+/* Shot visualizer. Scoped to the tool; reads the sites' shared tokens
+   with fallbacks, so it looks the same on both 4i sites. */
+
+.root {
+  --sv-accent: var(--accent, #57ff52);
+  --sv-bg: var(--bg, #0a0a0a);
+  --sv-card: var(--bg-card, #111111);
+  --sv-text: var(--text, #f0f0f0);
+  --sv-sec: var(--text-sec, #888888);
+  --sv-line: var(--border, rgba(255, 255, 255, 0.07));
+  --sv-line-hi: var(--border-hi, rgba(255, 255, 255, 0.14));
+  max-width: 1240px;
+  margin: 0 auto;
+  padding: calc(var(--nav-h, 64px) + 20px) 24px 96px;
+  color: var(--sv-text);
+  font-family: var(--font, Inter, system-ui, sans-serif);
+}
+
+.head { display: flex; align-items: baseline; gap: 18px; flex-wrap: wrap; margin-bottom: 16px; }
+.title {
+  font-size: clamp(24px, 3vw, 30px);
+  font-weight: 600;
+  letter-spacing: -0.02em;
+  margin: 0;
+}
+.intro { color: var(--sv-sec); margin: 0; line-height: 1.5; font-size: 14px; }
+.dim { color: var(--sv-sec); font-weight: 400; }
+
+/* ---------- workspace: controls left, view right ---------- */
+
+.workspace {
+  display: grid;
+  grid-template-columns: minmax(320px, 410px) minmax(0, 1fr);
+  gap: 28px;
+  align-items: start;
+}
+
+/* The view stays on screen while the controls are used. */
+.stage {
+  position: sticky;
+  top: calc(var(--nav-h, 64px) + 16px);
+  min-width: 0;
+  display: grid;
+  gap: 10px;
+}
+.frame {
+  position: relative;
+  aspect-ratio: 16 / 9;
+  background: #070707;
+  border: 1px solid var(--sv-line-hi);
+  border-radius: 4px;
+  overflow: hidden;
+}
+.readout {
+  position: absolute; left: 12px; bottom: 12px;
+  display: flex; gap: 10px;
+  font: 500 12px/1 ui-monospace, "SF Mono", Menlo, monospace;
+  letter-spacing: 0.04em;
+  color: rgba(255, 255, 255, 0.85);
+  background: rgba(0, 0, 0, 0.55);
+  padding: 7px 10px;
+  border-radius: 3px;
+  pointer-events: none;
+}
+.readoutSize { color: var(--sv-accent); }
+.play {
+  position: absolute; right: 12px; bottom: 12px;
+  font: 500 12px/1 var(--font, system-ui);
+  color: var(--sv-text);
+  background: rgba(0, 0, 0, 0.55);
+  border: 1px solid var(--sv-line-hi);
+  border-radius: 3px;
+  padding: 7px 11px;
+  cursor: pointer;
+}
+.play:hover { border-color: var(--sv-accent); }
+.warn { color: #ffd152; font-size: 13px; margin: 0; }
+
+/* Top-down plan, a compact strip under the view. */
+.plan {
+  margin: 0;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  background: var(--sv-card);
+  border: 1px solid var(--sv-line);
+  border-radius: 4px;
+  padding: 8px 14px 8px 8px;
+}
+.plan svg { display: block; width: 120px; height: 120px; flex: none; }
+.planCaption { color: var(--sv-sec); font-size: 13px; line-height: 1.55; }
+.planWall { stroke: #333; stroke-width: 2; }
+.planProp { fill: #2a2a2a; }
+.planFov { fill: rgba(255, 255, 255, 0.04); stroke: rgba(255, 255, 255, 0.25); stroke-width: 1; }
+.planFocus { fill: rgba(87, 255, 82, 0.2); stroke: var(--sv-accent); stroke-width: 1; }
+.planSubject { fill: #c9c4bb; }
+.planPartner { fill: #7d7870; }
+.planCam { fill: var(--sv-text); }
+.planBar { stroke: var(--sv-sec); stroke-width: 2; }
+.planText { fill: var(--sv-sec); font-size: 11px; font-family: var(--font, system-ui); }
+
+/* ---------- controls ---------- */
+
+.controls { display: grid; gap: 16px; min-width: 0; }
+.control { min-width: 0; }
+.controlLabel {
+  display: block;
+  font-size: 11px; font-weight: 600;
+  letter-spacing: 0.14em; text-transform: uppercase;
+  color: var(--sv-sec);
+  margin: 0 0 8px;
+}
+.chips { display: flex; flex-wrap: wrap; gap: 6px; }
+.chip {
+  font: 500 13px/1 var(--font, system-ui);
+  color: var(--sv-text);
+  background: transparent;
+  border: 1px solid var(--sv-line-hi);
+  border-radius: 999px;
+  padding: 7px 10px;
+  cursor: pointer;
+  transition: border-color 0.15s, background 0.15s, color 0.15s;
+}
+.chip:hover { border-color: rgba(255, 255, 255, 0.35); }
+.chipOn, .chipOn:hover { background: var(--sv-accent); border-color: var(--sv-accent); color: #0a0a0a; }
+.select {
+  width: 100%;
+  font: 500 14px/1.2 var(--font, system-ui);
+  color: var(--sv-text);
+  background: var(--sv-card);
+  border: 1px solid var(--sv-line-hi);
+  border-radius: 4px;
+  padding: 10px 12px;
+}
+.explain { color: var(--sv-sec); font-size: 13px; line-height: 1.5; margin: 8px 0 0; }
+.explain strong { color: var(--sv-text); font-weight: 600; }
+
+.add, .btn {
+  font: 600 13px/1 var(--font, system-ui);
+  border-radius: 4px;
+  padding: 12px 18px;
+  cursor: pointer;
+  border: 1px solid var(--sv-line-hi);
+  background: transparent;
+  color: var(--sv-text);
+}
+.btn:hover:not(:disabled) { border-color: rgba(255, 255, 255, 0.35); }
+.btn:disabled { opacity: 0.4; cursor: default; }
+.add, .btnOn { background: var(--sv-accent); border-color: var(--sv-accent); color: #0a0a0a; }
+.add { justify-self: start; }
+.add:hover, .btnOn:hover:not(:disabled) { background: #7aff76; border-color: #7aff76; }
+
+/* ---------- shot list ---------- */
+
+.list { margin-top: 56px; border-top: 1px solid var(--sv-line-hi); padding-top: 24px; }
+.listHead { display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap; }
+.listTitle { font-size: 20px; font-weight: 600; margin: 0; }
+.listActions { display: flex; gap: 8px; }
+
+.gate {
+  margin: 16px 0 8px;
+  padding: 16px;
+  background: var(--sv-card);
+  border: 1px solid var(--sv-line-hi);
+  border-radius: 4px;
+}
+.gateText { margin-bottom: 12px; }
+.gateTitle { margin: 0; font-size: 16px; font-weight: 600; }
+.gateRow { display: flex; gap: 8px; flex-wrap: wrap; }
+.gateRow .input { flex: 1 1 220px; }
+.hp { position: absolute; left: -9999px; width: 1px; height: 1px; opacity: 0; }
+.error { color: #ff8a7a; font-size: 13px; margin: 10px 0 0; }
+
+.input {
+  font: 400 14px/1.4 var(--font, system-ui);
+  color: var(--sv-text);
+  background: var(--sv-bg);
+  border: 1px solid var(--sv-line-hi);
+  border-radius: 4px;
+  padding: 10px 12px;
+  width: 100%;
+  resize: vertical;
+}
+.input:focus { outline: none; border-color: var(--sv-accent); }
+
+.rows { list-style: none; margin: 18px 0 0; padding: 0; display: grid; gap: 10px; }
+.row {
+  display: grid;
+  grid-template-columns: 28px 176px minmax(0, 1fr) auto;
+  gap: 14px;
+  align-items: start;
+  padding: 10px;
+  background: var(--sv-card);
+  border: 1px solid var(--sv-line);
+  border-radius: 4px;
+}
+.rowNum { font-weight: 600; color: var(--sv-accent); padding-top: 4px; text-align: center; }
+.rowThumb {
+  padding: 0; border: 0; background: #070707; cursor: pointer;
+  aspect-ratio: 16 / 9; border-radius: 3px; overflow: hidden;
+}
+.rowThumb img { display: block; width: 100%; height: 100%; object-fit: cover; }
+.rowBody { min-width: 0; }
+.rowSpec { margin: 2px 0 6px; font: 500 12px/1.4 ui-monospace, "SF Mono", Menlo, monospace; color: var(--sv-text); }
+.rowText {
+  display: block; width: 100%; text-align: left;
+  font: 400 14px/1.5 var(--font, system-ui);
+  color: var(--sv-text); background: none; border: 0; padding: 0; cursor: text;
+}
+.rowNotes { display: block; color: var(--sv-sec); font-size: 13px; margin-top: 2px; }
+.rowFields { display: grid; gap: 6px; }
+.rowFields .btn { justify-self: start; padding: 8px 14px; }
+.rowTools { display: flex; gap: 2px; }
+.rowTools button {
+  width: 30px; height: 30px;
+  border: 1px solid transparent; border-radius: 3px;
+  background: none; color: var(--sv-sec); cursor: pointer; font-size: 14px;
+}
+.rowTools button:hover:not(:disabled) { color: var(--sv-text); border-color: var(--sv-line-hi); }
+.rowTools button:disabled { opacity: 0.3; cursor: default; }
+
+/* ---------- narrow screens ---------- */
+
+/* Stacked: the view first and pinned to the top, controls scroll under it. */
+@media (max-width: 900px) {
+  .workspace { grid-template-columns: 1fr; gap: 16px; }
+  .stage { order: -1; top: var(--nav-h, 64px); z-index: 2; background: var(--sv-bg); padding: 8px 0; }
+  .plan { display: none; }
+}
+@media (max-width: 640px) {
+  .root { padding-left: 16px; padding-right: 16px; }
+  .row { grid-template-columns: 22px 110px minmax(0, 1fr); }
+  .rowTools { grid-column: 1 / -1; justify-content: flex-end; }
+  .readout { font-size: 11px; gap: 7px; left: 8px; bottom: 8px; }
+  .play { right: 8px; bottom: 8px; }
+}

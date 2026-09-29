@@ -52,3 +52,17 @@ CREATE INDEX IF NOT EXISTS rsvps_event_idx ON rsvps (event_slug, created_at DESC
 -- One RSVP per person per show; a second one updates the first.
 CREATE UNIQUE INDEX IF NOT EXISTS rsvps_event_email_key
   ON rsvps (event_slug, lower(email));
+
+-- The contacts list: one row per address, tags accumulating (resource
+-- downloads, inquiry branches). Created by hand before this file tracked it;
+-- written down 28 Sep 2026 to match the live table.
+CREATE TABLE IF NOT EXISTS contacts (
+  id           uuid PRIMARY KEY DEFAULT gen_random_uuid(),
+  created_at   timestamptz NOT NULL DEFAULT now(),
+  updated_at   timestamptz NOT NULL DEFAULT now(),
+  email        text NOT NULL,
+  tags         text[] NOT NULL DEFAULT '{}',
+  source       text,
+  unsubscribed boolean NOT NULL DEFAULT false
+);
+CREATE UNIQUE INDEX IF NOT EXISTS contacts_email_key ON contacts (lower(email));
