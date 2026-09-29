@@ -1,5 +1,6 @@
 "use client";
 
+import { useEffect, useState } from "react";
 import FormShell from "@/components/FormShell";
 import { announceUnlock } from "@/components/Locked";
 import { requestResource } from "@/lib/gate-actions";
@@ -8,11 +9,36 @@ import { requestResource } from "@/lib/gate-actions";
    us", no account. The privacy line under it is required by §4 and
    sets the expectation before the click, not after. */
 export default function DownloadGate({
-  slug, label,
+  slug, label, payWhatYouWant = false,
 }: {
   slug: string;
   label: string;
+  /* The Gumroad-style "$ 0+" box. Off unless the resource asks for it
+     and Stripe is configured. */
+  payWhatYouWant?: boolean;
 }) {
+  /* Stripe sends donors back with ?thanks=1. Read on the client so the
+     page itself stays static. */
+  const [thanked, setThanked] = useState(false);
+  useEffect(() => {
+    setThanked(new URLSearchParams(window.location.search).get("thanks") === "1");
+  }, []);
+
+  if (thanked) {
+    return (
+      <div className="gate">
+        <p className="eyebrow">Free download</p>
+        <div className="notice" role="status" style={{ marginTop: 12 }}>
+          {/* COPY: the thank-you after a donation (placeholder). */}
+          <p style={{ margin: 0, fontWeight: 500, color: "var(--accent)" }}>Thank you.</p>
+          <p style={{ margin: "8px 0 0" }}>
+            The file is in your email. If it hasn&apos;t shown up, look in spam, then tell us at info@4irecords.com.
+          </p>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="gate">
       <p className="eyebrow">Free download</p>
@@ -41,6 +67,21 @@ export default function DownloadGate({
               />
               {errors.email && <p className="error" role="alert">{errors.email}</p>}
             </div>
+            {payWhatYouWant && (
+              <div className="field" style={{ marginBottom: 12 }}>
+                <label className="label" htmlFor="amount">Name a fair price</label>
+                <div className="price-input">
+                  <span aria-hidden="true">$</span>
+                  <input
+                    id="amount" name="amount" type="text" inputMode="decimal"
+                    className="input" placeholder="0+" autoComplete="off"
+                    defaultValue={values.amount ?? ""}
+                  />
+                </div>
+                {errors.amount && <p className="error" role="alert">{errors.amount}</p>}
+                <p className="gate-byline">Your donation goes towards helping independent artists.</p>
+              </div>
+            )}
           </>
         )}
       </FormShell>

@@ -45,6 +45,8 @@ export type ResourceMeta = {
      signed link is still checked, then redirected here. The folder name
      is random so the file can't be guessed. */
   downloadHosted?: string;
+  /* Shows the Gumroad-style "name a fair price" box in the gate. */
+  payWhatYouWant?: boolean;
 };
 
 export type Resource = ResourceMeta & { body: string };

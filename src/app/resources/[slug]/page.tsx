@@ -12,6 +12,7 @@ import { CtaLink, EndCta, Quote } from "@/components/resource-mdx";
 import { Checklist, ChecklistItem } from "@/components/Checklist";
 import DownloadGate from "@/components/DownloadGate";
 import { FourILower } from "@/components/FourIMark";
+import { donationsEnabled } from "@/lib/donation";
 import {
   FORMAT_LABEL, allResources, relatedResources, resourceBySlug,
 } from "@/lib/resources";
@@ -152,7 +153,11 @@ export default async function ResourcePage(
 
             <aside className="gate-col">
               {resource.downloadFile ? (
-                <DownloadGate slug={resource.slug} label={resource.downloadLabel} />
+                <DownloadGate
+                  slug={resource.slug}
+                  label={resource.downloadLabel}
+                  payWhatYouWant={Boolean(resource.payWhatYouWant) && donationsEnabled()}
+                />
               ) : (
                 <div className="gate">
                   <p className="eyebrow">No download</p>

@@ -89,6 +89,10 @@ export default function FormShell({
     if (state.ok) onSuccess?.();
   }, [state.ok, onSuccess]);
 
+  useEffect(() => {
+    if (state.ok && state.redirect) window.location.assign(state.redirect);
+  }, [state.ok, state.redirect]);
+
   if (state.ok) {
     return (
       <div className="notice" role="status">

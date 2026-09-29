@@ -683,6 +683,27 @@ a { color: inherit; text-decoration: none; }
   margin: 10px 0 18px;
   line-height: 1.4;
 }
+/* "$ 0+" — the dollar sign sits inside the field, like Gumroad's. */
+.price-input {
+  position: relative;
+}
+.price-input > span {
+  position: absolute;
+  left: 14px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--text-sec);
+  pointer-events: none;
+}
+.price-input .input {
+  padding-left: 28px;
+}
+.gate-byline {
+  font-size: 12px;
+  line-height: 1.5;
+  color: var(--text-sec);
+  margin: 8px 0 0;
+}
 .gate-privacy {
   font-size: 11.5px;
   line-height: 1.55;

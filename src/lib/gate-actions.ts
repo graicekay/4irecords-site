@@ -7,6 +7,9 @@ import { makeToken } from "@/lib/download-token";
 import { resourceBySlug } from "@/lib/resources";
 import { rateLimit, clientIp } from "@/lib/rate-limit";
 import { isBot } from "@/lib/forms";
+import {
+  MAX_CENTS, MIN_CENTS, createDonationCheckout, donationsEnabled, parseAmount,
+} from "@/lib/donation";
 import type { FormState } from "@/lib/actions";
 
 /* ============================================================
@@ -43,6 +46,20 @@ export async function requestResource(
   }
 
   const { slug, email } = parsed.data;
+
+  /* Optional "name a fair price". Blank or 0 is the free download. */
+  const rawAmount = formData.get("amount");
+  const cents = parseAmount(typeof rawAmount === "string" ? rawAmount : "");
+  const amountValues = { email, amount: typeof rawAmount === "string" ? rawAmount : "" };
+  if (cents === null) {
+    return { errors: { amount: "Enter an amount like 5 or 5.00, or leave it at 0." }, values: amountValues };
+  }
+  if (cents > 0 && cents < MIN_CENTS) {
+    return { errors: { amount: "The smallest amount a card can take is $0.50, or leave it at 0." }, values: amountValues };
+  }
+  if (cents > MAX_CENTS) {
+    return { errors: { amount: "That's more than this box takes. Email info@4irecords.com instead." }, values: amountValues };
+  }
 
   /* Keyed on IP rather than email: limiting by address would let
      someone lock a stranger out of their own download. */
@@ -99,8 +116,17 @@ export async function requestResource(
       formError: sent.skipped
         ? "Email isn't switched on yet, so we couldn't send the file. We've got your address — email info@4irecords.com and we'll send it over."
         : "We saved your address but couldn't send the email. Try again shortly, or email info@4irecords.com.",
-      values: { email },
+      values: amountValues,
     };
+  }
+
+  /* The file has already gone out; a donation never gates it. If
+     Checkout can't be opened, they still have what they came for. */
+  if (cents > 0 && resource.payWhatYouWant && donationsEnabled()) {
+    const checkout = await createDonationCheckout({
+      cents, title: resource.title, slug, email, base: BASE,
+    });
+    if (checkout) return { ok: true, redirect: checkout };
   }
 
   return { ok: true };

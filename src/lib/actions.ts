@@ -27,6 +27,9 @@ export type FormState = {
      with the answers still in it. Only ever populated on a failure;
      a success swaps the form out for the thank-you note. */
   values?: Record<string, string>;
+  /* Where to send the browser once the action succeeds — the resource
+     gate uses it to hand a donation over to Stripe Checkout. */
+  redirect?: string;
 };
 
 /* Pulls the submitted fields back out of FormData for that echo.
