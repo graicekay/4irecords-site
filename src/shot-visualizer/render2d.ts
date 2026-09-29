@@ -52,10 +52,8 @@ export type Shape = {
   accentStep?: number;
   /** A material with its own colours (bark, dirt), instead of the location's ramp. */
   material?: string;
-  /** An eye's centre (px): the sprite also stamps it onto its grid as solid pixels. */
+  /** An eye: its centre (px); the sprite draws it as whole sprite pixels. */
   eye?: [number, number];
-  /** A figure face's highest and lowest points in the world, on screen (x1, y1, x2, y2): its shading falls off along it. */
-  shadeLine?: [number, number, number, number];
   /** A figure part: the pixel palette's colour for it (the figure keeps its own colours). */
   region?: Region;
   /** A building's facade by day: which of the location's facade colours, and its haze. */
@@ -133,6 +131,8 @@ export type Palette = {
   paneLight: boolean;
   /** Warm practicals (street lamps, bulbs): the pixel palette's second light colour. */
   warm: string;
+  /** The figure's rim light (its colours are the pixel palette's own). */
+  fig: { rim: string };
 };
 
 export function palette(look: Look): Palette {
@@ -152,6 +152,7 @@ export function palette(look: Look): Palette {
       pane: mix(INK, a, 0.16),
       paneLight: false,
       warm: WARM,
+      fig: { rim: a },
     };
   }
   const sky = mix(PAPER, a, 0.1);
@@ -170,6 +171,7 @@ export function palette(look: Look): Palette {
     pane: "#ffffff",
     paneLight: true,
     warm: "#ffffff",
+    fig: { rim: "#ffffff" },
   };
 }
 
@@ -256,18 +258,10 @@ function clipNear(poly: Vec3[]): Vec3[] {
   return out;
 }
 
-/**
- * `flat`: draw with flattened perspective (a figure drawn like a 2D sprite):
- * every point's depth is pulled toward depth `z` by `keep` (0 = no
- * perspective within the figure, 1 = true perspective). It still moves and
- * scales correctly with the camera; only its own shape tapers less.
- */
-function project(cam: Cam, world: Vec3[], flat?: { z: number; keep: number }): { pts: [number, number][]; depth: number } | null {
+function project(cam: Cam, world: Vec3[]): { pts: [number, number][]; depth: number } | null {
   const c = clipNear(world.map(cam.toCam));
   if (c.length < 3) return null;
-  const pts = flat
-    ? c.map(([px, py, pz]) => cam.proj([px, py, Math.max(NEAR, flat.z + (pz - flat.z) * flat.keep)]))
-    : c.map(cam.proj);
+  const pts = c.map(cam.proj);
   let x0 = Infinity, x1 = -Infinity, y0 = Infinity, y1 = -Infinity;
   for (const [x, y] of pts) {
     if (x < x0) x0 = x;
@@ -556,16 +550,10 @@ function reflections(x: Ctx, s: Scene) {
    blocky bob (top, back, sides and fringe slabs), a boxy oversized hoodie with
    square shoulders, box limbs and chunky box sneakers. Shading comes from the
    boxes' own faces, the way the crates are lit: tops a step lighter, faces
-   turned from the light a step darker. Two pixel eyes that blink, and a phone in
-   the right hand at chest height, screen toward the face (so the insert has
-   something in hand). Everything in metres, so every angle and lens is true.
-
-   The 3D is only the guide. It's drawn like a 2D pixel sprite: perspective
-   within the figure mostly flattened (FIGURE_PERSPECTIVE), and pixel.ts
-   shades each face in dithered bands, darkens the silhouette's edge pixels
-   (no black stroke) and lights its top edges, all at the frame's own pixel
-   size, so moves stay smooth (Grace: "cheat the 3d look… keeping the pixel
-   vibe").
+   turned from the light a step darker. A thin rim of light on its top edges.
+   Two pixel eyes that blink, and a phone in the right hand at chest height,
+   screen toward the face (so the insert has something in hand). Everything
+   in metres, so every angle and lens is true. pixel.ts draws it as a sprite.
    ---------------------------------------------------------------------- */
 
 export type Region = "hair" | "skin" | "nose" | "hood" | "sleeve" | "pocket" | "trousers" | "shoes" | "sole" | "eyes" | "phone" | "line";
@@ -584,9 +572,8 @@ const BODY: Block[] = (() => {
     B([0, 1.53, 0.005], [0, 1.79, 0.005], 0.22, 0.22, "skin"),
     B([0, 1.76, -0.005], [0, 1.845, -0.005], 0.25, 0.25, "hair"), // top
     B([0, 1.55, -0.105], [0, 1.8, -0.105], 0.25, 0.05, "hair"), // back
-    // Sides to ear level, set back from the face, so they don't frame it like an outline.
-    B([-0.12, 1.65, -0.04], [-0.12, 1.8, -0.04], 0.03, 0.17, "hair"),
-    B([0.12, 1.65, -0.04], [0.12, 1.8, -0.04], 0.03, 0.17, "hair"),
+    B([-0.12, 1.58, -0.005], [-0.12, 1.8, -0.005], 0.03, 0.235, "hair"), // sides, to the jaw
+    B([0.12, 1.58, -0.005], [0.12, 1.8, -0.005], 0.03, 0.235, "hair"),
     B([0.01, 1.72, FACE_Z], [0.01, 1.8, FACE_Z], 0.24, 0.028, "hair"), // fringe
     B([0, 1.615, FACE_Z + 0.02], [0, 1.66, FACE_Z + 0.02], 0.036, 0.04, "nose"), // a small nose: the face has depth, so a fisheye bends it
     B([0, 1.42, 0], [0, 1.54, 0], 0.085, 0.085, "skin"), // neck
@@ -612,9 +599,6 @@ const BODY: Block[] = (() => {
   return out;
 })();
 
-/** How much of the figure's own perspective is kept (the rest is flattened, sprite-like). */
-const FIGURE_PERSPECTIVE = 0.35;
-
 /** The light the figure's faces are shaded by: high, from the front left. */
 const KEY: Vec3 = norm([-0.55, 0.6, 0.6]);
 
@@ -631,25 +615,9 @@ function figure(x: Ctx, at: Vec3, facing: number, blink: boolean, group: number,
   if (sh) x.back.push({ d: toPath(sh.pts), fill: "#000", opacity: pal.night ? 0.6 : 0.3, blur: soften(bucket(cam.blurAt(sh.depth)), 3), depth: 1e3 });
 
   const toEye = sub(cam.eye, at);
-  // Drawn like a 2D sprite: perspective within the figure is mostly flattened
-  // (a little kept, so a 14mm close-up still bends the face).
-  const chestZ = cam.toCam(place([0, 1.2, 0], at, facing))[2];
-  const flat = chestZ > NEAR ? { z: chestZ, keep: FIGURE_PERSPECTIVE } : undefined;
-  // Eyes: two small black boxes standing proud of the face, never smaller
-  // than one sprite pixel wide and two tall (one when blinking), so they read
-  // as crisp pixel eyes at any size. The sprite pixel matches pixel.ts.
-  const heightPx = chestZ > NEAR ? (1.83 * cam.fpx) / chestZ : 1;
-  const spriteM = chestZ > NEAR ? ((Math.max(1, Math.min(6, (heightPx * (320 / W)) / 64)) / (320 / W)) * chestZ) / cam.fpx : 0.03;
-  const ew = Math.max(0.022, spriteM * 1.05), eh = blink ? Math.max(0.006, spriteM * 1.05) : Math.max(0.028, spriteM * 2.05);
-  const eyes: Block[] = [-0.045, 0.045].map((ex) => ({ a: [ex, 1.666 - eh / 2, FACE_Z + 0.004], b: [ex, 1.666 + eh / 2, FACE_Z + 0.004], w: ew, d: 0.012, c: "eyes" }));
   // Every visible face of every box, shaded by which way it faces.
-  const faces: { pts: [number, number][]; depth: number; c: Region; shade: number; line?: [number, number, number, number]; blur: number }[] = [];
-  // A single point through the same flattened projection as the faces.
-  const flatProj = (w: Vec3): [number, number] => {
-    const c = cam.toCam(w);
-    return cam.proj([c[0], c[1], flat ? Math.max(NEAR, flat.z + (c[2] - flat.z) * flat.keep) : Math.max(NEAR, c[2])]);
-  };
-  for (const bl of [...BODY, ...eyes]) {
+  const faces: { pts: [number, number][]; depth: number; c: Region; shade: number; blur: number }[] = [];
+  for (const bl of BODY) {
     const u = norm(sub(bl.b, bl.a));
     // Across: world x for an upright box; for one lying along z, world y.
     let side = cross(u, [0, 0, 1]);
@@ -673,46 +641,50 @@ function figure(x: Ctx, at: Vec3, facing: number, blink: boolean, group: number,
       const n = place(n0, [0, 0, 0], facing);
       const mid = pts.reduce<Vec3>((m, p) => [m[0] + p[0] / 4, m[1] + p[1] / 4, m[2] + p[2] / 4], [0, 0, 0]);
       if (dot(n, sub(cam.eye, mid)) <= 0) continue; // facing away
-      const p = project(cam, pts, flat);
+      const p = project(cam, pts);
       if (!p) continue;
-      // Shade from the 3D: how squarely the face meets the key light, plus sky
-      // light on anything facing up. Tops are lightest, undersides darkest.
-      const lambert = 0.5 + 0.5 * dot(n, KEY);
-      const shade = Math.max(-1.6, Math.min(1, -1.45 + 2 * lambert + 0.55 * Math.max(0, n[1]) - 0.35 * Math.max(0, -n[1])));
-      // Light falls off with height: the face's gradient runs from its highest
-      // corner to its lowest, in the world. A level face (a jaw's underside) is flat.
-      let hi = pts[0], lo = pts[0];
-      for (const q of pts) {
-        if (q[1] > hi[1]) hi = q;
-        if (q[1] < lo[1]) lo = q;
-      }
-      const line = hi[1] - lo[1] > 0.01 ? [...flatProj(hi), ...flatProj(lo)] as [number, number, number, number] : undefined;
-      faces.push({ pts: p.pts, depth: p.depth, c: bl.c, shade, line, blur: bucket(cam.blurAt(p.depth)) });
+      const shade = n[1] > 0.6 ? 1 : dot(n, KEY) < -0.05 ? -1 : 0;
+      faces.push({ pts: p.pts, depth: p.depth, c: bl.c, shade, blur: bucket(cam.blurAt(p.depth)) });
     }
   }
-  // The figure is painted as one layer: its blur is its sharpest part's (the
-  // face in a close-up, the phone in the insert).
-  // Its sprite: 1.83m tall in px at the chest's distance, and a grid anchor at its feet.
-  const feet = cam.toCam(place([0, 0, 0], at, facing));
-  if (chestZ > NEAR) {
+  // The sprite's pixel size: 1.83m over SPRITE_ROWS at the chest's distance, and
+  // the figure's blur there. Outline, rim light and eyes are drawn in sprite pixels.
+  const chest = cam.toCam(place([0, 1.2, 0], at, facing));
+  if (chest[2] > NEAR) {
     figures.push({
       group,
+      spritePx: ((1.83 / SPRITE_ROWS) * cam.fpx) / chest[2],
+      // One layer, one blur: the sharpest part's (the face in a close-up, the phone in the insert).
       blur: faces.reduce((m, f) => Math.min(m, f.blur), BLUR_LEVELS.length - 1),
-      heightPx: (1.83 * cam.fpx) / chestZ,
-      anchor: feet[2] > NEAR ? cam.proj(feet) : cam.proj(cam.toCam(place([0, 1.2, 0], at, facing))),
+      rim: pal.fig.rim,
       blink,
     });
   }
   for (const f of faces) {
-    const eye = f.c === "eyes" ? ([f.pts.reduce((m, q) => m + q[0], 0) / f.pts.length, f.pts.reduce((m, q) => m + q[1], 0) / f.pts.length] as [number, number]) : undefined;
-    x.items.push({ d: toPath(f.pts), region: f.c, shadeStep: f.shade, shadeLine: f.line, eye, blur: 0, depth: f.depth, group });
+    x.items.push({ d: toPath(f.pts), region: f.c, shadeStep: f.shade, blur: 0, depth: f.depth, group });
   }
 
-  phone(x, at, facing, group, flat);
+  // Eyes: two small dark blocks on the face, from the front only. A blink
+  // squashes them to a line.
+  const faceDot = dot(norm([toEye[0], 0, toEye[2]]), [Math.sin(facing), 0, Math.cos(facing)]);
+  if (faceDot > 0.25) {
+    for (const ex of [-0.045, 0.045]) {
+      const e = cam.toCam(place([ex, 1.665, FACE_Z + 0.003], at, facing));
+      if (e[2] < NEAR + 0.05) continue;
+      const [px, py] = cam.proj(e);
+      const k = cam.fpx / e[2];
+      const w = Math.max(5, 0.011 * k), h = blink ? Math.max(3, 0.003 * k) : Math.max(5, 0.016 * k);
+      // Narrower as the head turns away.
+      const ww = w * Math.min(1, faceDot * 1.3);
+      x.items.push({ d: `M${n1(px - ww / 2)} ${n1(py - h / 2)}h${n1(ww)}v${n1(h)}h${n1(-ww)}Z`, region: "eyes", blur: 0, depth: e[2] - 0.02, group, eye: [px, py] });
+    }
+  }
+
+  phone(x, at, facing, group);
 }
 
 /** The phone: a slab in the hand, dark back with a lens, lit screen facing the face. */
-function phone(x: Ctx, at: Vec3, facing: number, group: number, flat?: { z: number; keep: number }) {
+function phone(x: Ctx, at: Vec3, facing: number, group: number) {
   const { cam, pal } = x;
   const { c, w, h, tilt } = PHONE;
   const t = 0.009;
@@ -731,7 +703,7 @@ function phone(x: Ctx, at: Vec3, facing: number, group: number, flat?: { z: numb
     const n = place(f.n, [0, 0, 0], facing);
     const mid = f.pts.reduce<Vec3>((a, p) => [a[0] + p[0] / 4, a[1] + p[1] / 4, a[2] + p[2] / 4], [0, 0, 0]);
     if (dot(n, sub(cam.eye, mid)) <= 0) continue;
-    const p = project(cam, f.pts, flat);
+    const p = project(cam, f.pts);
     if (!p) continue;
     const blur = bucket(cam.blurAt(p.depth));
     if (f.kind === "screen") {
@@ -744,7 +716,7 @@ function phone(x: Ctx, at: Vec3, facing: number, group: number, flat?: { z: numb
     } else if (f.kind === "back") {
       // The case: a lighter back, a dark camera bump top-left.
       x.items.push({ d: toPath(p.pts), region: "phone", blur, depth: p.depth - 0.001, group });
-      const lens = project(cam, [P(-w * 0.34, h * 0.28, -t - 0.002), P(-w * 0.1, h * 0.28, -t - 0.002), P(-w * 0.1, h * 0.43, -t - 0.002), P(-w * 0.34, h * 0.43, -t - 0.002)], flat);
+      const lens = project(cam, [P(-w * 0.34, h * 0.28, -t - 0.002), P(-w * 0.1, h * 0.28, -t - 0.002), P(-w * 0.1, h * 0.43, -t - 0.002), P(-w * 0.34, h * 0.43, -t - 0.002)]);
       if (lens) x.items.push({ d: toPath(lens.pts), region: "hair", blur, depth: p.depth - 0.003, group });
     } else {
       x.items.push({ d: toPath(p.pts), region: "phone", shadeStep: -1, blur, depth: p.depth - 0.001, group });
@@ -768,8 +740,11 @@ export type Frame = {
   back: Shape[];
   items: Shape[];
   /** Each figure, painted as one sprite layer: its blur, height (px of 1600) and grid anchor. */
-  figures: { group: number; blur: number; heightPx: number; anchor: [number, number]; blink: boolean }[];
+  figures: { group: number; spritePx: number; blur: number; rim: string; blink: boolean }[];
 };
+
+/** A figure is drawn as a sprite about this many sprite pixels tall. */
+export const SPRITE_ROWS = 64;
 
 export function drawFrame(r: Rig, fStop: number, look: Look, blink = false): Frame {
   const cam = camera(r, fStop);

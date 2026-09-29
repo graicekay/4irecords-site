@@ -21,7 +21,7 @@ import type { Look, PlaceKey, TimeKey } from "./scenes";
 
 export const PW = 320;
 /** A figure is drawn as a sprite about this many pixels tall (more, up close). */
-const SPRITE_ROWS = 64;
+
 export const PH = 180;
 const SCALE = PW / W;
 
@@ -177,11 +177,9 @@ export function pixelPalette(look: Look): PixelPalette {
   const rings = lp.sun ?? (look.place === "city" ? null : [0.1, 0.18, 0.28, 0.4, 0.55].map((k) => mix(lp.sky[1], mix(a, "#ffffff", 0.3), k)).concat(mix(a, "#ffffff", 0.45)));
   const figBase = FIGURE[look.time];
   const shadeTo = night ? ramp[0] : ramp[1];
-  // A part's shade ramp: -2 (its edge) … 0 (base) … +1 (lit); fractions blend.
   const figure = (region: string, shade: number) => {
     const c = figBase[region] ?? figBase.hood;
-    const lit = night ? "#ffffff" : "#fff3dc";
-    return shade < 0 ? mix(c, shadeTo, Math.min(1, -shade * 0.33)) : shade > 0 ? mix(c, lit, Math.min(1, shade) * 0.22) : c;
+    return shade < 0 ? mix(c, shadeTo, 0.35) : shade > 0 ? mix(c, night ? "#ffffff" : "#fff3dc", 0.22) : c;
   };
   // Paint (safety lines) keeps its own yellow, in two shades.
   const paints = [mix(PAINT, ramp[1], 0.35), PAINT];
@@ -268,18 +266,7 @@ function paintShape(ctx: CanvasRenderingContext2D, s: Shape, look: Look, pp: Pix
     return;
   }
   if (s.region !== undefined) {
-    // Pixel-art shading: each face runs lighter at the top to darker at the
-    // bottom; snapping later turns the blend into dithered bands of the ramp.
-    const sh = s.shadeStep ?? 0;
-    if (s.region === "eyes" || !s.shadeLine) ctx.fillStyle = pp.figure(s.region, sh);
-    else {
-      // Lighter at the face's highest point in the world, darker at its lowest.
-      const [x1, y1, x2, y2] = s.shadeLine;
-      const g = ctx.createLinearGradient(x1, y1, x2, y2);
-      g.addColorStop(0, pp.figure(s.region, Math.min(1, sh + 0.25)));
-      g.addColorStop(1, pp.figure(s.region, sh - 0.4));
-      ctx.fillStyle = g;
-    }
+    ctx.fillStyle = pp.figure(s.region, s.shadeStep ?? 0);
     ctx.fill(path);
   } else if (s.material && pp.materials[s.material]) {
     const [dk, md, lt] = pp.materials[s.material];
@@ -355,9 +342,10 @@ function make(w: number, h: number): HTMLCanvasElement {
 /**
  * `moving`: a camera move is playing. The defocus scatter is fixed to the screen,
  * so under a moving picture it boils; while moving, blur stays smooth (the
- * dither still pixelates it).
+ * dither still pixelates it). `spritePx`: hold each figure's sprite-pixel size
+ * (e.g. at the move's first frame) so it doesn't pop between block sizes mid-move.
  */
-export function paintPixels(out: HTMLCanvasElement, frame: Frame, look: Look, opts: { moving?: boolean; spriteRows?: number[] } = {}) {
+export function paintPixels(out: HTMLCanvasElement, frame: Frame, look: Look, opts: { moving?: boolean; spritePx?: number[] } = {}) {
   let sf = surfaces.get(out);
   if (!sf) {
     sf = { main: make(PW, PH), layer: make(PW, PH), tiny: make(PW, PH), sprite: make(PW + 4, PH + 4) };
@@ -391,7 +379,8 @@ export function paintPixels(out: HTMLCanvasElement, frame: Frame, look: Look, op
       if (!done.has(g)) {
         done.add(g);
         const info = frame.figures.find((f) => f.group === g);
-        if (info) paintSprite(ctx, sf.sprite, shapes.filter((q) => q.group === g), info, look, pp, filter, opts.spriteRows?.[g]);
+        const held = opts.spritePx?.[g];
+        if (info) paintSprite(ctx, sf.sprite, shapes.filter((q) => q.group === g), held ? { ...info, spritePx: held } : info, look, pp, filter);
       }
       i++;
       continue;
@@ -453,7 +442,7 @@ export function paintPixels(out: HTMLCanvasElement, frame: Frame, look: Look, op
   ctx.globalAlpha = 1;
 
   // The whole picture is reduced to the palette: ramp, accent family, white.
-  const figs = Object.keys(FIGURE.day).flatMap((k) => [-2, -1, 0, 1].map((sh) => pp.figure(k, sh)));
+  const figs = Object.keys(FIGURE.day).flatMap((k) => [-1, 0, 1].map((sh) => pp.figure(k, sh)));
   const used = [...new Set([...pp.ramp, ...pp.haze, ...pp.sky, ...(pp.rings ?? []), ...pp.accents, ...pp.warms, ...pp.paints, ...pp.facadeColours, ...Object.values(pp.materials).flat(), ...figs, "#ffffff"])];
   quantize(ctx, used.map(rgbOf));
 
@@ -500,21 +489,12 @@ function scatter(from: CanvasRenderingContext2D, to: CanvasRenderingContext2D, r
 
 /* ---------- figure sprites ---------- */
 
-/** Frame pixels per sprite pixel for a figure this tall (px of 1600): 1–6. */
-function spriteK(heightPx: number): number {
-  return Math.max(1, Math.min(6, (heightPx * SCALE) / SPRITE_ROWS));
-}
-
-/** A figure's sprite height in sprite pixels, to hold through a move. */
-export function spriteRows(heightPx: number): number {
-  return (heightPx * SCALE) / spriteK(heightPx);
-}
-
 /**
  * Paint a figure as a sprite: its shapes rasterized onto a grid of sprite
  * pixels (k screen pixels each, k from its size in frame, 1–6), hard-edged and
- * snapped to the figure's own colours. No outline or rim line: the box shading
- * carries the 3D (Crossy Road). Scaled up by k with no smoothing, so close-ups get chunky pixels.
+ * snapped to the palette, then a one-sprite-pixel ink outline round the outside,
+ * a one-pixel rim light along its top edges, and the eyes as whole sprite
+ * pixels. Scaled up by k with no smoothing, so close-ups get chunky pixels.
  */
 function paintSprite(
   ctx: CanvasRenderingContext2D,
@@ -524,96 +504,61 @@ function paintSprite(
   look: Look,
   pp: PixelPalette,
   filter: boolean,
-  rows?: number,
 ) {
-  // A sprite about SPRITE_ROWS pixels tall: its pixels scale smoothly with the
-  // figure (never snapping between sizes), capped so close-ups keep detail. The
-  // grid is pinned to the figure's feet, so it travels with the figure.
-  // During a move `rows` holds the sprite's pixel count from the first frame, so
-  // the sprite is only stretched or shrunk (like a 2D game) and never re-cut.
-  const k = rows ? Math.max(1, (info.heightPx * SCALE) / rows) : spriteK(info.heightPx);
-  const ax = info.anchor[0] * SCALE, ay = info.anchor[1] * SCALE;
-  const ox = (ax % k) - k, oy = (ay % k) - k;
-  const sw = Math.min(canvas.width, Math.ceil(PW / k) + 2), sh = Math.min(canvas.height, Math.ceil(PH / k) + 2);
+  const k = Math.max(1, Math.min(6, Math.round(info.spritePx * SCALE)));
+  const sw = Math.ceil(PW / k), sh = Math.ceil(PH / k);
   const sctx = canvas.getContext("2d", { willReadFrequently: true })!;
   sctx.setTransform(1, 0, 0, 1, 0, 0);
   sctx.globalAlpha = 1;
   sctx.globalCompositeOperation = "source-over";
-  sctx.clearRect(0, 0, canvas.width, canvas.height);
-  sctx.setTransform(SCALE / k, 0, 0, SCALE / k, -ox / k, -oy / k);
-  // Eyes aren't painted as shapes: they're stamped onto the grid below.
-  for (const s of shapes) if (!s.eye) paintShape(sctx, s, look, pp);
+  sctx.clearRect(0, 0, PW, PH);
+  sctx.setTransform(SCALE / k, 0, 0, SCALE / k, 0, 0);
+  const eyes: [number, number][] = [];
+  for (const s of shapes) {
+    if (s.eye) eyes.push(s.eye);
+    else paintShape(sctx, s, look, pp);
+  }
   sctx.setTransform(1, 0, 0, 1, 0, 0);
 
   const img = sctx.getImageData(0, 0, sw, sh);
   const d = img.data;
-  // The figure's colours: each part's ramp (-2 edge … +1 lit), plus the screen's accent.
-  const SH = [-2, -1, 0, 1];
-  const entries = [
-    ...Object.keys(FIGURE.day).flatMap((region) => SH.map((shade) => ({ rgb: rgbOf(pp.figure(region, shade)), region, shade }))),
-    ...pp.accents.map((c) => ({ rgb: rgbOf(c), region: "", shade: 0 })),
-  ];
+  // Snap to the figure's own colours (and the phone screen's accent).
+  const flat = [...Object.keys(FIGURE.day).flatMap((k) => [-1, 0, 1].map((sh) => pp.figure(k, sh))), ...pp.accents].map(rgbOf);
   const solid = new Uint8Array(sw * sh);
-  const which = new Int16Array(sw * sh).fill(-1);
-  // Hard edges, and each pixel one palette colour: between its two nearest,
-  // by ordered dither, so shading gradients become pixel bands.
-  const memo = new Map<number, [number, number, number]>();
-  for (let y = 0; y < sh; y++) for (let x = 0; x < sw; x++) {
-    const p = y * sw + x, o = p * 4;
+  // Hard edges: a sprite pixel is either figure or not, and one palette colour.
+  for (let p = 0; p < sw * sh; p++) {
+    const o = p * 4;
     if (d[o + 3] < 128) { d[o + 3] = 0; continue; }
     solid[p] = 1;
-    const key = (d[o] << 16) | (d[o + 1] << 8) | d[o + 2];
-    let m = memo.get(key);
-    if (!m) {
-      let a = 0, b = 0, da = Infinity, db = Infinity;
-      for (let c = 0; c < entries.length; c++) {
-        const [pr, pg, pb] = entries[c].rgb;
-        const dist = (pr - d[o]) ** 2 + (pg - d[o + 1]) ** 2 + (pb - d[o + 2]) ** 2;
-        if (dist < da) { db = da; b = a; da = dist; a = c; } else if (dist < db) { db = dist; b = c; }
-      }
-      // Dither only between shades of the same part; otherwise take the nearest.
-      const same = entries[a].region && entries[a].region === entries[b].region;
-      const t = same ? Math.sqrt(da) / (Math.sqrt(da) + Math.sqrt(db) || 1) : 0;
-      m = [a, b, t];
-      memo.set(key, m);
+    let best = 0, bd = Infinity;
+    for (let c = 0; c < flat.length; c++) {
+      const [pr, pg, pb] = flat[c];
+      const dist = (pr - d[o]) ** 2 + (pg - d[o + 1]) ** 2 + (pb - d[o + 2]) ** 2;
+      if (dist < bd) { bd = dist; best = c; }
     }
-    const pick = m[2] > BAYER[(y & 3) * 4 + (x & 3)] ? m[1] : m[0];
-    which[p] = pick;
-    [d[o], d[o + 1], d[o + 2], d[o + 3]] = [...entries[pick].rgb, 255];
+    [d[o], d[o + 1], d[o + 2], d[o + 3]] = [...flat[best], 255];
   }
-  // Pixel-art edges: the silhouette's own pixels take a darker shade of their
-  // colour (no black stroke), and pixels with open space above catch the light.
-  const at = (x: number, y: number) => x >= 0 && y >= 0 && x < sw && y < sh && solid[y * sw + x] === 1;
-  const recolour = (p: number, shade: number) => {
-    const e = entries[which[p]];
-    if (!e || !e.region || e.region === "eyes") return;
+  const set = (p: number, [r, g, b]: [number, number, number]) => {
     const o = p * 4;
-    [d[o], d[o + 1], d[o + 2]] = rgbOf(pp.figure(e.region, shade));
+    d[o] = r; d[o + 1] = g; d[o + 2] = b; d[o + 3] = 255;
   };
+  const at = (x: number, y: number) => x >= 0 && y >= 0 && x < sw && y < sh && solid[y * sw + x] === 1;
+  const ink = rgbOf(pp.figure("eyes", 0)), rim = rgbOf(info.rim.length === 7 ? pp.grade(info.rim) : info.rim);
+  // Rim light: figure pixels with open sky above them (not where the figure
+  // simply runs off the top of the frame).
+  for (let y = 1; y < sh; y++) for (let x = 0; x < sw; x++) {
+    if (at(x, y) && !at(x, y - 1)) set(y * sw + x, rim);
+  }
+  // Outline: empty pixels touching the figure.
   for (let y = 0; y < sh; y++) for (let x = 0; x < sw; x++) {
+    if (!at(x, y) && (at(x - 1, y) || at(x + 1, y) || at(x, y - 1) || at(x, y + 1))) set(y * sw + x, ink);
+  }
+  // Eyes: one pixel wide, two tall (one when blinking), on the face only.
+  for (const [ex, ey] of eyes) {
+    const x = Math.floor((ex * SCALE) / k), y = Math.floor((ey * SCALE) / k);
     if (!at(x, y)) continue;
-    const p = y * sw + x;
-    if (y > 0 && !at(x, y - 1)) recolour(p, 1);
-    else if (!at(x - 1, y) || !at(x + 1, y) || !at(x, y + 1)) recolour(p, -2);
-  }
-  // Eyes: stamped onto the grid as solid pixels, one wide and two tall (one
-  // when blinking), so they're always crisp pixel eyes.
-  const ink = rgbOf(pp.figure("eyes", 0));
-  // Each eye box has a few visible faces: merge their centres into one eye each.
-  const eyes: { x: number; y: number; n: number }[] = [];
-  for (const e of shapes) {
-    if (!e.eye) continue;
-    const ex = (e.eye[0] * SCALE - ox) / k, ey = (e.eye[1] * SCALE - oy) / k;
-    const near = eyes.find((q) => Math.hypot(q.x / q.n - ex, q.y / q.n - ey) < 1.6);
-    if (near) { near.x += ex; near.y += ey; near.n++; } else eyes.push({ x: ex, y: ey, n: 1 });
-  }
-  for (const q of eyes) {
-    const x = Math.floor(q.x / q.n), y = Math.floor(q.y / q.n);
-    for (const yy of info.blink ? [y] : [y - 1, y]) {
-      if (!at(x, yy)) continue;
-      const o = (yy * sw + x) * 4;
-      [d[o], d[o + 1], d[o + 2]] = ink;
-    }
+    set(y * sw + x, ink);
+    if (!info.blink && at(x, y + 1)) set((y + 1) * sw + x, ink);
   }
   sctx.putImageData(img, 0, 0);
 
@@ -624,7 +569,7 @@ function paintSprite(
   ctx.imageSmoothingEnabled = false;
   const sd = BLUR_LEVELS[info.blur] * SCALE;
   if (sd >= 0.35 && filter) ctx.filter = `blur(${sd.toFixed(2)}px)`;
-  ctx.drawImage(canvas, 0, 0, sw, sh, ox, oy, sw * k, sh * k);
+  ctx.drawImage(canvas, 0, 0, sw, sh, 0, 0, sw * k, sh * k);
   ctx.filter = "none";
   ctx.restore();
 }

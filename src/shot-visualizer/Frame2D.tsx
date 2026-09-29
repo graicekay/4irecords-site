@@ -2,7 +2,7 @@
 
 import { useEffect, useLayoutEffect, useMemo, useRef, useState, type MutableRefObject } from "react";
 import { drawFrame } from "./render2d";
-import { paintPixels, spriteRows, PW, PH } from "./pixel";
+import { paintPixels, PW, PH } from "./pixel";
 import { currentRig, type Clock } from "./clock";
 import { rig, type Shot } from "./shots";
 import type { Look } from "./scenes";
@@ -50,15 +50,15 @@ export default function Frame2D({ shot, look, clock, playing, canvasRef }: {
     return () => cancelAnimationFrame(raf);
   }, [animating]);
 
-  // During a move, each figure's sprite keeps its first frame's pixel count.
-  const rows = useMemo(
-    () => (animating ? drawFrame(rig(shot, 0), shot.fStop, look).figures.map((f) => spriteRows(f.heightPx)) : undefined),
+  // During a move, each figure keeps the sprite-pixel size of the move's first frame.
+  const heldSprite = useMemo(
+    () => (animating ? drawFrame(rig(shot, 0), shot.fStop, look).figures.map((f) => f.spritePx) : undefined),
     [animating, shot, look],
   );
 
   useLayoutEffect(() => {
     if (own.current) {
-      paintPixels(own.current, drawFrame(currentRig(shot, clock.current), shot.fStop, look, blink), look, { moving: animating, spriteRows: rows });
+      paintPixels(own.current, drawFrame(currentRig(shot, clock.current), shot.fStop, look, blink), look, { moving: animating, spritePx: heldSprite });
     }
   });
 
