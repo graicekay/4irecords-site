@@ -35,7 +35,7 @@ export const inquirySchema = z.object({
   /* Honeypot. Real people never see this field, so anything in it
      is a bot — we accept the submission and drop it silently, which
      is quieter than a 400 that tells the bot to try again. */
-  website: z.string().max(0).optional().or(z.string().optional()),
+  hp_4i: z.string().max(0).optional().or(z.string().optional()),
 });
 
 export type InquiryInput = z.infer<typeof inquirySchema>;
@@ -48,7 +48,7 @@ export const subscribeSchema = z
     area: optional(trimmed.max(120)),
     wantsEmail: z.coerce.boolean().default(false),
     wantsSms: z.coerce.boolean().default(false),
-    website: z.string().optional(),
+    hp_4i: z.string().optional(),
   })
   /* Each chosen channel needs the contact detail it runs on, and at
      least one channel has to be chosen — otherwise the row is a
@@ -74,7 +74,7 @@ export const rsvpSchema = z.object({
   email: trimmed.email("That email doesn't look right."),
   guests: z.coerce.number().int().min(1, "At least one.").max(10, "More than ten? Message us instead."),
   note: optional(trimmed.max(1000)),
-  website: z.string().optional(),
+  hp_4i: z.string().optional(),
 });
 
 export type RsvpInput = z.infer<typeof rsvpSchema>;
@@ -98,5 +98,5 @@ export function checkbox(value: FormDataEntryValue | null): boolean {
 }
 
 export function isBot(formData: FormData): boolean {
-  return String(formData.get("website") ?? "").length > 0;
+  return String(formData.get("hp_4i") ?? "").length > 0;
 }

@@ -83,7 +83,7 @@ export async function submitBranchedInquiry(
 
   const values: Record<string, string> = {};
   for (const [k, v] of formData.entries()) {
-    if (typeof v === "string" && v && k !== "website") values[k] = v;
+    if (typeof v === "string" && v && k !== "hp_4i") values[k] = v;
   }
 
   const parsed = schemas[branch].safeParse(Object.fromEntries(formData.entries()));

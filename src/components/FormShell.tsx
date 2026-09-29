@@ -52,14 +52,19 @@ export function Field({
 }
 
 /* Off-screen rather than display:none — a few bots skip hidden
-   fields but fill visible ones, and this stays "visible". */
+   fields but fill visible ones, and this stays "visible".
+
+   Deliberately NOT called "website": Chrome autofill filled a field by
+   that name when Grace picked her saved email (29 Sep), so real people
+   got the fake bot success and nothing was sent. The name and label
+   must stay meaningless to autofill. */
 export function Honeypot() {
   return (
     <div aria-hidden="true" style={{
       position: "absolute", left: "-9999px", width: 1, height: 1, overflow: "hidden",
     }}>
-      <label htmlFor="website">Website</label>
-      <input id="website" name="website" type="text" tabIndex={-1} autoComplete="off" />
+      <label htmlFor="hp_4i">Leave this empty</label>
+      <input id="hp_4i" name="hp_4i" type="text" tabIndex={-1} autoComplete="off" />
     </div>
   );
 }
