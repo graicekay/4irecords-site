@@ -34,6 +34,14 @@ export async function GET(
     return new NextResponse(DENIED, { status: 403 });
   }
 
+  /* Too big for a function response: hand off to the static copy. */
+  if (resource.downloadHosted) {
+    return NextResponse.redirect(new URL(resource.downloadHosted, request.url), {
+      status: 302,
+      headers: { "cache-control": "private, no-store" },
+    });
+  }
+
   const path = downloadPath(resource.downloadFile);
   if (!path) {
     console.error(`[4i] download missing on disk: ${resource.downloadFile}`);

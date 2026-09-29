@@ -18,7 +18,7 @@ const FILES = join(process.cwd(), "content", "files");
 /* "template" came from the spec's content model, but nothing here is one —
    a template is a file you fill in and make your own. Added "checklist"
    rather than mislabel the thing the resource is actually called. */
-export type ResourceFormat = "guide" | "template" | "breakdown" | "checklist";
+export type ResourceFormat = "guide" | "template" | "breakdown" | "checklist" | "pack";
 
 export type ResourceMeta = {
   title: string;
@@ -37,6 +37,14 @@ export type ResourceMeta = {
      resources land, so it can be listed differently and never
      quietly go live as if it were finished. */
   draft?: boolean;
+  /* A cover image in /public, shown at the top of the page. The asset
+     packs have one; the written resources don't. */
+  cover?: string;
+  /* A path in /public for a download too big to stream. Vercel functions
+     return at most ~4.5 MB, so a pack is served by the CDN instead: the
+     signed link is still checked, then redirected here. The folder name
+     is random so the file can't be guessed. */
+  downloadHosted?: string;
 };
 
 export type Resource = ResourceMeta & { body: string };
@@ -101,4 +109,5 @@ export const FORMAT_LABEL: Record<ResourceFormat, string> = {
   template: "Template",
   breakdown: "Breakdown",
   checklist: "Checklist",
+  pack: "Asset pack",
 };
