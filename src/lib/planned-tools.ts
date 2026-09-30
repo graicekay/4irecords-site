@@ -15,6 +15,8 @@ export const PLANNED_TOOLS: PlannedTool[] = SHOT_VISUALIZER_LISTED
       /* Grace's line from the 4i Productions resources card. */
       blurb: "Specify lenses, focal length, and aperture for your shot lists with this handy tool.",
       href: `${PRODUCTIONS_SITE}/resources/shot-visualizer`,
-      banner: "/resources/shot-visualizer/banner.svg",
+      /* The banner 4i Productions uses (a frame from the tool: FS 35mm f/2, low
+         angle, city at night), loaded from there so the two stay in step. */
+      banner: `${PRODUCTIONS_SITE}/resources/shot-visualizer/banner.png`,
     }]
   : [];
