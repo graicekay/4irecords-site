@@ -8,13 +8,32 @@ Live at www.4irecords.com (Vercel, team `graicekay`); Neon project
 `4irecords-site`, schema in `schema.sql`; `/admin` behind `ADMIN_PASSWORD`.
 Started 24 September 2026.
 
-## Paused 28 Sep: resume here
+## Pushed 29 Sep: resume here
 
-Committed locally, **not pushed** (a push deploys). Waiting on that push:
-the rewritten resources email (Open, item 4: Grace's copy, 4iproductions.com
-link, links that no longer expire) and the shot visualizer at
-`/resources/shot-visualizer` (unlisted; see "Shot visualizer" below). Since
-29 Sep the visualizer lives only on 4i Productions; this site just links to it.
+Everything below "What's built" is live as of the 29 Sep push, including the
+resources email (Grace's copy) and the gig poster scribbles pack.
+
+**Gig poster scribbles pack** (`/resources/gig-poster-scribbles`): the two
+Gumroad scribble packs combined, 64 PNGs. Sources, the pack folder and the
+cover script (`make_cover.py`, `wide` for the 16:9 page cover) are on the T7 at
+`4i/4i Records/Resources/Gig Poster Scribbles/`. The zip is 21 MB, too big for a
+function response (~4.5 MB), so `downloadHosted` sends the checked signed link
+on to a static copy under a random folder in `public/dl/`. New frontmatter:
+`format: pack`, `cover`, `downloadHosted`, `payWhatYouWant`.
+
+**Donation box: built, switched off.** The Gumroad-style "Name a fair price
+$ 0+" box (`src/lib/donation.ts`) emails the file first, then opens a Stripe
+Checkout for any amount over $0 (invoiCE's Stripe account; invoiCE's webhook
+ignores these). It only shows when `STRIPE_SECRET_KEY` is set **at build
+time**. It's missing on Vercel because Grace's Stripe passkey is stuck with
+Stripe support. To switch it on: create a live restricted key (Checkout
+Sessions: Write), add it to Vercel as Sensitive/Production, redeploy, then
+test with a real $1 and refund it. Local `.env.local` has a sandbox key; the
+local `RESEND_API_KEY` is invalid (production's is fine), so full local tests
+fail at the email step.
+
+**Honeypot renamed** `website` → `hp_4i` (29 Sep): Chrome autofill filled the
+old field, so real people got the silent bot success and nothing was sent.
 
 ## What's built
 
