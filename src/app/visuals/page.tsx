@@ -3,6 +3,7 @@ import CaseStudy from "@/components/CaseStudy";
 import { caseStudies } from "@/lib/case-studies";
 import { PRODUCTIONS_INTAKE_URL, productionsIntake, type ProductionsType } from "@/lib/links";
 import { FourIText, FourILower } from "@/components/FourIMark";
+import { VisualsSmoke } from "@/components/VisualsSmoke";
 
 export const metadata: Metadata = {
   title: "Visuals",
@@ -29,13 +30,33 @@ const OFFER: [string, string, ProductionsType][] = [
 export default function Visuals() {
   return (
     <>
-      <section className="wrap page-head">
+      <section className="wrap page-head has-smoke">
+        <VisualsSmoke />
         <p className="eyebrow"><FourILower /> Productions</p>
         <h1 className="display">Visuals</h1>
         <p className="sub">
           Music videos, performance content, and the short-form that comes out
           of the same shoot.
         </p>
+      </section>
+
+      {/* The ask comes first now (Grace, 29 Sep), with a second one at the end. */}
+      <section className="section" style={{ borderTop: 0, paddingTop: 36 }}>
+        <div className="wrap center">
+          <h2 className="display">Get pro visuals</h2>
+          <p className="lede muted">
+            Send the specs of your project and we&apos;ll follow up within five
+            business days.
+          </p>
+          <div className="cta" style={{ justifyContent: "center", marginTop: 30 }}>
+            <a href={PRODUCTIONS_INTAKE_URL} className="btn btn-solid">
+              Start a project at <FourILower /> Productions
+            </a>
+          </div>
+          <p className="muted" style={{ fontSize: 12.5, marginTop: 18 }}>
+            This opens 4iproductions.com.
+          </p>
+        </div>
       </section>
 
       {/* Leads with work, not copy — but only when there is work to
@@ -80,17 +101,12 @@ export default function Visuals() {
         </div>
       </section>
 
-
       <section className="section">
         <div className="wrap center">
-          <h2 className="display">Get pro visuals</h2>
-          <p className="lede muted">
-            Send the specs of your project and we&apos;ll follow up within five
-            business days.
-          </p>
+          <h2 className="display">Let&apos;s get started</h2>
           <div className="cta" style={{ justifyContent: "center", marginTop: 30 }}>
             <a href={PRODUCTIONS_INTAKE_URL} className="btn btn-solid">
-              Start a project at <FourILower /> Productions
+              Submit an inquiry
             </a>
           </div>
           <p className="muted" style={{ fontSize: 12.5, marginTop: 18 }}>

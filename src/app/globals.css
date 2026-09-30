@@ -1297,3 +1297,27 @@ a.planned-name:hover { color: var(--accent); }
 /* Headers that carry stickers: the type sits above the layer. */
 .has-stickers { position: relative; }
 .has-stickers > :not(.stickers) { position: relative; z-index: 1; }
+
+/* ── /visuals: 4i Productions' hero smoke behind the header ──
+   Full-bleed past the .wrap column, from under the nav to a little below the
+   heading, faded out downward so it's a gradient rather than a box. */
+.has-smoke { position: relative; }
+.has-smoke > :not(.visuals-smoke) { position: relative; z-index: 1; }
+/* The smoke runs on under the next section too; its words sit above it. */
+.has-smoke + .section { position: relative; z-index: 1; }
+.visuals-smoke {
+  position: absolute; z-index: 0; pointer-events: none;
+  top: -90px; bottom: -260px; left: 50%; width: 100vw; transform: translateX(-50%);
+  /* A long, eased fade: a short one left a visible edge under the heading. */
+  -webkit-mask-image: linear-gradient(to bottom, #000 0%, rgba(0,0,0,.85) 30%, rgba(0,0,0,.45) 58%, rgba(0,0,0,.15) 80%, transparent 100%);
+          mask-image: linear-gradient(to bottom, #000 0%, rgba(0,0,0,.85) 30%, rgba(0,0,0,.45) 58%, rgba(0,0,0,.15) 80%, transparent 100%);
+}
+.visuals-smoke canvas {
+  display: block; width: 100%; height: 100%;
+  mix-blend-mode: screen; filter: blur(2px);
+}
+/* On a phone the same smoke fills a much smaller box and turns solid green
+   behind the copy: dim it there. */
+@media (max-width: 720px) {
+  .visuals-smoke canvas { opacity: 0.55; }
+}
