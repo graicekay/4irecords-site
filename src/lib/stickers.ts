@@ -29,7 +29,7 @@ export const HERO_STICKERS: Sticker[] = [
   { src: S("phone-heart"), left: 92, top: 26, width: 7, rotate: 12, depth: "far" },
   { src: S("lens"), left: 16, top: 70, width: 11, rotate: 0, depth: "far", wide: true },
   { src: S("poster-y2k"), left: 88, top: 76, width: 11, rotate: -6, depth: "mid", wide: true },
-  { src: S("sparkle"), left: 7, top: 34, width: 2.4, depth: "near", wide: true },
+  { src: S("sparkle"), left: 7, top: 34, width: 2.4, depth: "mid", wide: true },
   { src: S("sparkle"), left: 74, top: 30, width: 1.8, depth: "mid", wide: true },
 ];
 
