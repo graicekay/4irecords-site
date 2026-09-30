@@ -23,9 +23,6 @@ const S = (n: string) => `/stickers/${n}.svg`;
 export const HERO_STICKERS: Sticker[] = [
   { src: S("record"), left: -6, top: 6, width: 20, rotate: -12, depth: "far" },
   { src: S("camera"), left: 80, top: 4, width: 17, rotate: 8, depth: "mid", wide: true },
-  /* Green, not white paper, so it doesn't compete with the white headline
-     (orange dims to brown at this depth). */
-  { src: S("checklist-green"), left: 13, top: 0, width: 7, rotate: 10, depth: "mid", wide: true },
   { src: S("pricetag"), left: 70, top: 72, width: 10, rotate: -18, depth: "far", wide: true },
   { src: S("filmstrip"), left: 60, top: -2, width: 20, rotate: -9, depth: "far", wide: true },
   { src: S("phone-heart"), left: 92, top: 26, width: 7, rotate: 12, depth: "far" },
