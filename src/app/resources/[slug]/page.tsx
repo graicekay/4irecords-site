@@ -161,10 +161,11 @@ export default async function ResourcePage(
                 <div className="gate">
                   <p className="eyebrow">Free download</p>
                   <p className="gate-label">{resource.downloadExternalLabel}</p>
-                  <a href={resource.downloadExternal} className="btn btn-solid" rel="noopener">
+                  {/* New tab, so the visitor stays on 4irecords.com. */}
+                  <a href={resource.downloadExternal} className="btn btn-solid" target="_blank" rel="noopener noreferrer">
                     Get it on Gumroad
                   </a>
-                  <p className="gate-privacy">Opens graicekay.gumroad.com. Pay what you want, $0 and up.</p>
+                  <p className="gate-privacy">Opens graicekay.gumroad.com in a new tab. Pay what you want, $0 and up.</p>
                 </div>
               ) : resource.downloadFile ? (
                 <DownloadGate
