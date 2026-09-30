@@ -4,7 +4,8 @@ import { SpinningRecord } from "@/components/SpinningRecord";
 import { ScrollCue } from "@/components/ScrollCue";
 import { FourIText, FourILower } from "@/components/FourIMark";
 import { caseStudies } from "@/lib/case-studies";
-import { FORMAT_LABEL, featuredResources } from "@/lib/resources";
+import { featuredResources } from "@/lib/resources";
+import { ResourceCard } from "@/components/ResourceCard";
 
 /* ============================================================
    §3.1 — landing page.
@@ -89,17 +90,7 @@ export default function Home() {
               The full PDFs and spreadsheet trackers go straight to your email.
             </p>
             <div className="grid-3" style={{ marginTop: 26 }}>
-              {featured.map((r) => (
-                <Link key={r.slug} href={`/resources/${r.slug}`} className="card">
-                  <span className={r.downloadFile ? "badge badge-has-dl" : "badge"}>
-                    {FORMAT_LABEL[r.format]}
-                  </span>
-                  <h3 className="card-title">{r.title}</h3>
-                  <p className="muted" style={{ fontSize: 13.5, margin: 0 }}>
-                    {r.description}
-                  </p>
-                </Link>
-              ))}
+              {featured.map((r) => <ResourceCard key={r.slug} resource={r} />)}
             </div>
           </div>
         </section>

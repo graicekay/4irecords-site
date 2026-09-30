@@ -13,8 +13,10 @@ import { Checklist, ChecklistItem } from "@/components/Checklist";
 import DownloadGate from "@/components/DownloadGate";
 import { FourILower } from "@/components/FourIMark";
 import { donationsEnabled } from "@/lib/donation";
+import { Gallery } from "@/components/Gallery";
+import { ResourceCard } from "@/components/ResourceCard";
 import {
-  FORMAT_LABEL, allResources, relatedResources, resourceBySlug,
+  FORMAT_LABEL, allResources, mainResources, relatedResources, resourceBySlug,
 } from "@/lib/resources";
 
 /* ============================================================
@@ -50,7 +52,8 @@ export async function generateMetadata(
       description: resource.description,
       url,
       publishedTime: new Date(resource.publishedAt).toISOString(),
-      ...(resource.cover ? { images: [{ url: resource.cover }] } : {}),
+      ...((resource.gallery?.[0] ?? resource.cover)
+        ? { images: [{ url: (resource.gallery?.[0] ?? resource.cover)! }] } : {}),
     },
     twitter: {
       card: "summary_large_image",
@@ -102,7 +105,7 @@ export default async function ResourcePage(
         </p>
         <h1>{resource.title}</h1>
         <p className="standfirst">{resource.description}</p>
-        <ResourceNav resources={allResources()} current={resource.slug} />
+        <ResourceNav resources={mainResources()} current={resource.slug} />
       </section>
 
       <section className="section" style={{ borderTop: 0, paddingTop: 34 }}>
@@ -116,10 +119,12 @@ export default async function ResourcePage(
                   it&apos;s excluded from search engines.
                 </p>
               )}
-              {resource.cover && (
+              {resource.gallery?.length ? (
+                <Gallery slides={resource.gallery} label={resource.title} />
+              ) : resource.cover ? (
                 // eslint-disable-next-line @next/next/no-img-element
                 <img src={resource.cover} alt="" className="res-cover" />
-              )}
+              ) : null}
               <div className="prose">
                 {/* GitHub-flavoured markdown is not on by default in
                     next-mdx-remote, and every resource is mostly tables —
@@ -152,7 +157,16 @@ export default async function ResourcePage(
             </div>
 
             <aside className="gate-col">
-              {resource.downloadFile ? (
+              {resource.downloadExternal ? (
+                <div className="gate">
+                  <p className="eyebrow">Free download</p>
+                  <p className="gate-label">{resource.downloadExternalLabel}</p>
+                  <a href={resource.downloadExternal} className="btn btn-solid" rel="noopener">
+                    Get it on Gumroad
+                  </a>
+                  <p className="gate-privacy">Opens graicekay.gumroad.com. Pay what you want, $0 and up.</p>
+                </div>
+              ) : resource.downloadFile ? (
                 <DownloadGate
                   slug={resource.slug}
                   label={resource.downloadLabel}
@@ -177,17 +191,7 @@ export default async function ResourcePage(
           <div className="wrap">
             <h2 className="display" style={{ fontSize: 30 }}>More resources</h2>
             <div className="grid-3" style={{ marginTop: 26 }}>
-              {related.map((r) => (
-                <Link key={r.slug} href={`/resources/${r.slug}`} className="card">
-                  <span className={r.downloadFile ? "badge badge-has-dl" : "badge"}>
-                    {FORMAT_LABEL[r.format]}
-                  </span>
-                  <h3 className="card-title">{r.title}</h3>
-                  <p className="muted" style={{ fontSize: 13.5, margin: 0 }}>
-                    {r.description}
-                  </p>
-                </Link>
-              ))}
+              {related.map((r) => <ResourceCard key={r.slug} resource={r} />)}
             </div>
           </div>
         </section>

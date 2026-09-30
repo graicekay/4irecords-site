@@ -1,8 +1,7 @@
 import type { Metadata } from "next";
-import Link from "next/link";
-import { FORMAT_LABEL, allResources } from "@/lib/resources";
-import { SHOT_VISUALIZER_LISTED } from "@/lib/flags";
-import { PRODUCTIONS_SITE } from "@/lib/links";
+import { mainResources, toolResources } from "@/lib/resources";
+import { ResourceCard } from "@/components/ResourceCard";
+import { PLANNED_TOOLS } from "@/lib/planned-tools";
 
 export const metadata: Metadata = {
   title: "Resources",
@@ -15,7 +14,8 @@ export const metadata: Metadata = {
    and the spreadsheets. Ordered by the explicit `order` field, then
    newest, which `allResources` already handles. */
 export default function ResourcesIndex() {
-  const resources = allResources();
+  const resources = mainResources();
+  const tools = toolResources();
 
   return (
     <>
@@ -40,33 +40,39 @@ export default function ResourcesIndex() {
             </div>
           ) : (
             <div className="grid-3">
-              {/* The shot visualizer lives on 4i Productions; this card links there. */}
-              {SHOT_VISUALIZER_LISTED && (
-                <a href={`${PRODUCTIONS_SITE}/resources/shot-visualizer`} className="card">
-                  <span className="badge">Tool</span>
-                  <h3 className="card-title">Shot visualizer</h3>
-                  <p className="muted" style={{ fontSize: 13.5, margin: "0 0 14px" }}>
-                    COPY: one line on the shot visualizer.
-                  </p>
-                  <p style={{ margin: 0, fontSize: 12 }} className="muted">Interactive · opens 4iproductions.com</p>
-                </a>
-              )}
-              {resources.map((r) => (
-                <Link key={r.slug} href={`/resources/${r.slug}`} className="card">
-                  <span className={r.downloadFile ? "badge badge-has-dl" : "badge"}>
-                    {FORMAT_LABEL[r.format]}
-                  </span>
-                  <h3 className="card-title">{r.title}</h3>
-                  <p className="muted" style={{ fontSize: 13.5, margin: "0 0 14px" }}>
-                    {r.description}
-                  </p>
-                  <p style={{ margin: 0, fontSize: 12 }} className="muted">
-                    {r.downloadFile ? "Includes a download" : "Read only"}
-                  </p>
-                </Link>
-              ))}
+              {resources.map((r) => <ResourceCard key={r.slug} resource={r} showMeta />)}
             </div>
           )}
+        </div>
+      </section>
+
+      {/* Tools: packs hosted elsewhere and what's being built next. Kept at
+          the bottom so the roadmap never reads as the headline. */}
+      <section className="section">
+        <div className="wrap">
+          <h2 className="display" style={{ fontSize: 30, margin: 0 }}>Tools</h2>
+          {tools.length > 0 && (
+            <div className="grid-3" style={{ marginTop: 26 }}>
+              {tools.map((r) => <ResourceCard key={r.slug} resource={r} showMeta />)}
+            </div>
+          )}
+          <ul className="planned">
+            {PLANNED_TOOLS.map((t) => (
+              <li key={t.name} className="planned-item">
+                <span className={t.href ? "badge badge-has-dl" : "badge"}>
+                  {t.href ? "Live" : "In the works"}
+                </span>
+                <div>
+                  {t.href ? (
+                    <a href={t.href} className="planned-name">{t.name} →</a>
+                  ) : (
+                    <span className="planned-name">{t.name}</span>
+                  )}
+                  <p className="muted planned-blurb">{t.blurb}</p>
+                </div>
+              </li>
+            ))}
+          </ul>
         </div>
       </section>
     </>

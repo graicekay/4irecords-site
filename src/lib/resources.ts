@@ -18,7 +18,7 @@ const FILES = join(process.cwd(), "content", "files");
 /* "template" came from the spec's content model, but nothing here is one —
    a template is a file you fill in and make your own. Added "checklist"
    rather than mislabel the thing the resource is actually called. */
-export type ResourceFormat = "guide" | "template" | "breakdown" | "checklist" | "pack";
+export type ResourceFormat = "guide" | "template" | "breakdown" | "checklist" | "pack" | "tool";
 
 export type ResourceMeta = {
   title: string;
@@ -47,6 +47,19 @@ export type ResourceMeta = {
   downloadHosted?: string;
   /* Shows the Gumroad-style "name a fair price" box in the gate. */
   payWhatYouWant?: boolean;
+  /* Card art: a 2:1 image in /public across the top half of the card.
+     Made by design/resource_art.py so every banner shares one treatment. */
+  banner?: string;
+  /* Swipeable slides at the top of the page (cover, then contact sheets),
+     in place of the single `cover`. */
+  gallery?: string[];
+  /* "tools" moves a resource out of the main grid into the Tools section
+     at the bottom of /resources (and out of the numbered strip). */
+  section?: "tools";
+  /* A download that lives elsewhere (the Weapons pack stays on Gumroad):
+     the gate is replaced by a plain link out. */
+  downloadExternal?: string;
+  downloadExternalLabel?: string;
 };
 
 export type Resource = ResourceMeta & { body: string };
@@ -83,13 +96,27 @@ export function resourceBySlug(slug: string): Resource | undefined {
   return readAll().find((r) => r.slug === slug);
 }
 
+/* The numbered resources: everything not moved to the Tools section. */
+export function mainResources(): Resource[] {
+  return allResources().filter((r) => !r.section);
+}
+
+export function toolResources(): Resource[] {
+  return allResources().filter((r) => r.section === "tools");
+}
+
+/* Has something to take away, whether gated here or hosted elsewhere. */
+export function hasDownload(r: ResourceMeta): boolean {
+  return Boolean(r.downloadFile || r.downloadExternal);
+}
+
 export function featuredResources(limit = 4): Resource[] {
-  return allResources().slice(0, limit);
+  return mainResources().slice(0, limit);
 }
 
 export function relatedResources(slug: string, limit = 3): Resource[] {
-  const all = allResources();
-  const self = all.find((r) => r.slug === slug);
+  const all = mainResources();
+  const self = allResources().find((r) => r.slug === slug);
   if (!self) return all.slice(0, limit);
   /* Same format first, then anything else, never itself. */
   const others = all.filter((r) => r.slug !== slug);
@@ -112,4 +139,5 @@ export const FORMAT_LABEL: Record<ResourceFormat, string> = {
   breakdown: "Breakdown",
   checklist: "Checklist",
   pack: "Asset pack",
+  tool: "Tool",
 };
