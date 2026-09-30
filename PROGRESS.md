@@ -32,9 +32,12 @@ is a `section: tools` resource whose download (`downloadExternal`) is on
 Gumroad. The Tools list (`src/lib/planned-tools.ts`) only shows live tools:
 the shot visualizer appears once `SHOT_VISUALIZER_LISTED` is on.
 
-**Fixed 29 Sep:** the Cutdown Matrix PDF meta row said "DRAFT — YOUR COPY GOES HERE"; now "29–55 DELIVERABLES", and all three PDFs read "4i RECORDS" (was "4I"). Patched in place with PyMuPDF (the PDF source is not in this repo); the running headers still say "4IRECORDS.COM/RESOURCES".
-and inside `4i-cutdown-matrix.zip`) still has "DRAFT — YOUR COPY GOES HERE"
-in page 1's meta row. The PDF's source isn't in this repo.
+**Fixed 29 Sep:** the Cutdown Matrix PDF's meta row said "DRAFT — YOUR
+COPY GOES HERE" and now says "29–55 DELIVERABLES", and all three PDFs read
+"4i RECORDS" (was "4I"). They were patched in place with PyMuPDF, because the
+PDFs' source isn't in this repo. Still capital-I: the running header
+"4IRECORDS.COM/RESOURCES" on every page, and "4I PRODUCTIONS IS HERE…" on
+page 8 of the costs PDF.
 
 **Donation box: built, switched off.** The Gumroad-style "Name a fair price
 $ 0+" box (`src/lib/donation.ts`) emails the file first, then opens a Stripe
