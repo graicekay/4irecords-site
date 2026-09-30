@@ -31,8 +31,10 @@ scribbles cover, contact sheets and untoned slides come from
 is a `section: tools` resource whose download (`downloadExternal`) is on
 Gumroad. The Tools list (`src/lib/planned-tools.ts`) only shows live tools.
 The shot visualizer went live on 4i Productions on 29 Sep, so
-`SHOT_VISUALIZER_LISTED` is on: it's a Tools card with its own SVG banner
-and Grace's line, opening in a new tab.
+`SHOT_VISUALIZER_LISTED` is on: it's a Tools card with Grace's line, opening
+in a new tab. Its banner is 4i Productions' own (a frame from the tool),
+loaded from `4iproductions.com/resources/shot-visualizer/banner.png`, so the
+two sites match (the card's own SVG didn't).
 
 **Stickers (29 Sep, pushed):** the banner illustrations are cut out in
 `public/stickers/` and scattered behind the home hero, /resources and each
@@ -58,6 +60,18 @@ Sessions: Write), add it to Vercel as Sensitive/Production, redeploy, then
 test with a real $1 and refund it. Local `.env.local` has a sandbox key; the
 local `RESEND_API_KEY` is invalid (production's is fine), so full local tests
 fail at the email step.
+
+**Visuals, Mission, Inquire (29 Sep night, pushed):** 4i Productions' hero
+behind the headers (`src/components/VisualsSmoke.tsx`). On /visuals: its hero
+video and overlay under its green smoke, faded out downward, dimmed on phones
+(55%, worth a look on a real phone). The video and poster load from
+`4iproductions.com/hero.mp4` and `/hero-poster.jpg` (18 MB, not copied), so
+they must stay at those paths there. The smoke is a verbatim copy of 4i
+Productions' `src/lib/fluidSmoke.ts`. The /visuals title is the 4i
+Productions lockup (`public/4i-productions-lockup.svg`), left, with an sr-only
+heading. "Get pro visuals" is at the top now, and the page ends with "Let's
+get started" and Submit an inquiry. No rules between sections there. /mission
+and /inquire have the smoke alone, no video (`video={false}`).
 
 **Honeypot renamed** `website` → `hp_4i` (29 Sep): Chrome autofill filled the
 old field, so real people got the silent bot success and nothing was sent.
@@ -94,9 +108,9 @@ build is fine.
 Grace, 29 Sep: the tool "is just going to live on 4i Productions but it'll be
 linked on 4irecords." The copy that was here (`src/shot-visualizer/`, the
 `/resources/shot-visualizer` page and its own email gate) is removed; its
-history is in git (last shared version `ffcbb0e`). `/resources` has a card
-linking to `4iproductions.com/resources/shot-visualizer`, shown once
-`SHOT_VISUALIZER_LISTED` in `src/lib/flags.ts` is on. Spec and progress:
+history is in git (last shared version `ffcbb0e`). `/resources` has a Tools card
+linking to `4iproductions.com/resources/shot-visualizer`
+(`SHOT_VISUALIZER_LISTED` in `src/lib/flags.ts`, on since its launch on 29 Sep). Spec and progress:
 `4iProductions-site/SHOT-VISUALIZER.md`. `schema.sql` still records the
 `contacts` table (the other resources use it).
 
