@@ -50,16 +50,16 @@ PDFs' source isn't in this repo. The running header
 "4iRECORDS.COM/RESOURCES" on every page and "4i PRODUCTIONS IS HERE…" on
 page 8 of the costs PDF got the same fix: the I after the 4 was swapped for a dotted i (Arimo = Liberation Sans metrics, Anton).
 
-**Donation box: built, switched off.** The Gumroad-style "Name a fair price
+**Donation box: live 30 Sep 2026.** The Gumroad-style "Name a fair price
 $ 0+" box (`src/lib/donation.ts`) emails the file first, then opens a Stripe
 Checkout for any amount over $0 (invoiCE's Stripe account; invoiCE's webhook
 ignores these). It only shows when `STRIPE_SECRET_KEY` is set **at build
-time**. It's missing on Vercel because Grace's Stripe passkey is stuck with
-Stripe support. To switch it on: create a live restricted key (Checkout
-Sessions: Write), add it to Vercel as Sensitive/Production, redeploy, then
-test with a real $1 and refund it. Local `.env.local` has a sandbox key; the
-local `RESEND_API_KEY` is invalid (production's is fine), so full local tests
-fail at the email step.
+time**. Grace added a live restricted key on Vercel (Sensitive, Production)
+on 30 Sep and production was redeployed; the box is on
+/resources/gig-poster-scribbles (the only pack with `payWhatYouWant`). Still
+to do: a real $1 test, then refund it. Rotating the key needs a redeploy.
+Local `.env.local` has a sandbox key; the local `RESEND_API_KEY` is invalid
+(production's is fine), so full local tests fail at the email step.
 
 **Visuals, Mission, Inquire (29 Sep night, pushed):** 4i Productions' hero
 behind the headers (`src/components/VisualsSmoke.tsx`). On /visuals: its hero
