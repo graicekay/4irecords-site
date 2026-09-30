@@ -29,8 +29,17 @@ scribbles cover, contact sheets and untoned slides come from
 `design/resource_art.py`. The style rules are on the T7 at
 `Editing Refs/Aesthetic References/4i/4i - Style Rules.md`. The Weapons pack
 is a `section: tools` resource whose download (`downloadExternal`) is on
-Gumroad. The Tools list (`src/lib/planned-tools.ts`) only shows live tools:
-the shot visualizer appears once `SHOT_VISUALIZER_LISTED` is on.
+Gumroad. The Tools list (`src/lib/planned-tools.ts`) only shows live tools.
+The shot visualizer went live on 4i Productions on 29 Sep, so
+`SHOT_VISUALIZER_LISTED` is on: it's a Tools card with its own SVG banner
+and Grace's line, opening in a new tab.
+
+**Stickers (29 Sep, pushed):** the banner illustrations are cut out in
+`public/stickers/` and scattered behind the home hero, /resources and each
+resource page head. There are three blur depths; the layouts are in
+`src/lib/stickers.ts`. On the home hero everything is blurred: Grace wants
+the spinning record to be the only sharp thing. She took out the checklist
+sticker there (white, then green; neither worked).
 
 **Fixed 29 Sep:** the Cutdown Matrix PDF's meta row said "DRAFT — YOUR
 COPY GOES HERE" and now says "29–55 DELIVERABLES", and all three PDFs read
