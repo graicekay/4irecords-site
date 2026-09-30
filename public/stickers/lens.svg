@@ -1,0 +1,38 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="-256 -256 512 512" width="512" height="512">
+  <defs>
+    <pattern id="dots" width="14" height="14" patternUnits="userSpaceOnUse" patternTransform="rotate(45)">
+      <circle cx="7" cy="7" r="2.6" fill="#57FF52"/>
+    </pattern>
+    <pattern id="dotsFine" width="9" height="9" patternUnits="userSpaceOnUse" patternTransform="rotate(45)">
+      <circle cx="4.5" cy="4.5" r="1.5" fill="#F0F0F0"/>
+    </pattern>
+    <radialGradient id="fade"><stop offset="0" stop-color="#fff" stop-opacity=".55"/><stop offset="1" stop-color="#fff" stop-opacity="0"/></radialGradient>
+    <mask id="glow"><rect width="1600" height="800" fill="url(#fade)"/></mask>
+    <clipPath id="vf"><rect x="640" y="150" width="760" height="500"/></clipPath>
+  </defs>
+  <!-- lens, face on -->
+  <g transform="translate(0 0)">
+    <circle r="250" fill="#141414" stroke="#F0F0F0" stroke-width="7"/>
+    <circle r="250" fill="url(#dotsFine)" opacity=".14"/>
+    <circle r="205" fill="none" stroke="#57FF52" stroke-width="16"/>
+    <g stroke="#F0F0F0" stroke-width="4">
+      <line x1="0" y1="-236" x2="0" y2="-218"/><line x1="118" y1="-204" x2="109" y2="-189"/>
+      <line x1="204" y1="-118" x2="189" y2="-109"/><line x1="236" y1="0" x2="218" y2="0"/>
+      <line x1="204" y1="118" x2="189" y2="109"/><line x1="118" y1="204" x2="109" y2="189"/>
+      <line x1="0" y1="236" x2="0" y2="218"/><line x1="-118" y1="204" x2="-109" y2="189"/>
+      <line x1="-204" y1="118" x2="-189" y2="109"/><line x1="-236" y1="0" x2="-218" y2="0"/>
+      <line x1="-204" y1="-118" x2="-189" y2="-109"/><line x1="-118" y1="-204" x2="-109" y2="-189"/>
+    </g>
+    <circle r="175" fill="#050505"/>
+    <!-- aperture blades -->
+    <g fill="#1c1c1c" stroke="#2e2e2e" stroke-width="3">
+      <path d="M 0 -175 L 70 -40 L -60 -60 Z"/><path d="M 151 -88 L 34 70 L 70 -40 Z"/>
+      <path d="M 151 88 L -40 75 L 34 70 Z"/><path d="M 0 175 L -72 -10 L -40 75 Z"/>
+      <path d="M -151 88 L -60 -60 L -72 -10 Z"/><path d="M -151 -88 L 70 -40 L -60 -60 Z"/>
+    </g>
+    <polygon points="70,-40 34,70 -40,75 -72,-10 -60,-60" fill="#57FF52"/>
+    <polygon points="70,-40 34,70 -40,75 -72,-10 -60,-60" fill="url(#dotsFine)" opacity=".3"/>
+    <path d="M -120 -110 A 165 165 0 0 1 40 -160" fill="none" stroke="#F0F0F0" stroke-width="9" stroke-linecap="round" opacity=".5"/>
+  </g>
+
+</svg>

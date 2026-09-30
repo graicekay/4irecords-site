@@ -14,6 +14,8 @@ import DownloadGate from "@/components/DownloadGate";
 import { FourILower } from "@/components/FourIMark";
 import { donationsEnabled } from "@/lib/donation";
 import { Gallery } from "@/components/Gallery";
+import { Stickers } from "@/components/Stickers";
+import { PAGE_STICKERS } from "@/lib/stickers";
 import { ResourceCard } from "@/components/ResourceCard";
 import {
   FORMAT_LABEL, allResources, mainResources, relatedResources, resourceBySlug,
@@ -96,7 +98,8 @@ export default async function ResourcePage(
       />
 
       <div className="res">
-      <section className="wrap page-head">
+      <section className={PAGE_STICKERS[resource.slug] ? "wrap page-head has-stickers" : "wrap page-head"}>
+        {PAGE_STICKERS[resource.slug] && <Stickers items={PAGE_STICKERS[resource.slug]} />}
         <Link href="/resources" className="eyebrow" style={{ textDecoration: "none" }}>
           ← All resources
         </Link>

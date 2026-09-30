@@ -1261,3 +1261,39 @@ a.planned-name:hover { color: var(--accent); }
 @media (max-width: 640px) {
   .planned-item { grid-template-columns: 1fr; gap: 8px; }
 }
+
+/* ---------- Stickers: the resource illustrations behind headers ----------
+   Three depths. Far = soft and dim, near = sharp; the blur is what gives
+   the layer depth. See src/lib/stickers.ts for the layouts. */
+.stickers {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  overflow: hidden;
+  pointer-events: none;
+}
+.hero > .stickers { position: absolute; z-index: 0; }
+.sticker {
+  position: absolute;
+  height: auto;
+  max-width: none;
+  transform: rotate(var(--rot));
+  animation: sticker-float 11s ease-in-out infinite;
+  animation-delay: var(--delay);
+}
+.sticker-far  { filter: blur(7px); opacity: .32; }
+.sticker-mid  { filter: blur(2.5px); opacity: .55; }
+.sticker-near { opacity: .9; }
+@keyframes sticker-float {
+  0%, 100% { transform: translateY(0) rotate(var(--rot)); }
+  50%      { transform: translateY(-10px) rotate(calc(var(--rot) + 1.5deg)); }
+}
+@media (prefers-reduced-motion: reduce) { .sticker { animation: none; } }
+@media (max-width: 720px) {
+  .sticker-wide { display: none; }
+  .sticker-near { opacity: .6; }
+}
+
+/* Headers that carry stickers: the type sits above the layer. */
+.has-stickers { position: relative; }
+.has-stickers > :not(.stickers) { position: relative; z-index: 1; }

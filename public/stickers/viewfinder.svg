@@ -1,0 +1,44 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="630 140 780 520" width="780" height="520">
+  <defs>
+    <pattern id="dots" width="14" height="14" patternUnits="userSpaceOnUse" patternTransform="rotate(45)">
+      <circle cx="7" cy="7" r="2.6" fill="#57FF52"/>
+    </pattern>
+    <pattern id="dotsFine" width="9" height="9" patternUnits="userSpaceOnUse" patternTransform="rotate(45)">
+      <circle cx="4.5" cy="4.5" r="1.5" fill="#F0F0F0"/>
+    </pattern>
+    <radialGradient id="fade"><stop offset="0" stop-color="#fff" stop-opacity=".55"/><stop offset="1" stop-color="#fff" stop-opacity="0"/></radialGradient>
+    <mask id="glow"><rect width="1600" height="800" fill="url(#fade)"/></mask>
+    <clipPath id="vf"><rect x="640" y="150" width="760" height="500"/></clipPath>
+  </defs>
+  <!-- viewfinder -->
+  <rect x="640" y="150" width="760" height="500" fill="#141414"/>
+  <g clip-path="url(#vf)">
+    <rect x="640" y="150" width="760" height="500" fill="url(#dotsFine)" opacity=".1"/>
+    <!-- horizon + a flat figure on the right third -->
+    <rect x="640" y="520" width="760" height="130" fill="#1c1c1c"/>
+    <g transform="translate(1147 300)">
+      <circle cx="0" cy="0" r="46" fill="#F0F0F0"/>
+      <path d="M -80 250 C -80 120, -50 70, 0 70 C 50 70, 80 120, 80 250 Z" fill="#F0F0F0"/>
+      <path d="M 46 0 A 46 46 0 0 1 20 42 M 60 90 C 76 120, 80 180, 80 250" fill="none" stroke="#57FF52" stroke-width="9"/>
+    </g>
+  </g>
+  <!-- thirds -->
+  <g stroke="#F0F0F0" stroke-width="2" opacity=".35">
+    <line x1="893" y1="150" x2="893" y2="650"/><line x1="1147" y1="150" x2="1147" y2="650"/>
+    <line x1="640" y1="317" x2="1400" y2="317"/><line x1="640" y1="483" x2="1400" y2="483"/>
+  </g>
+  <!-- corner brackets -->
+  <g fill="none" stroke="#F0F0F0" stroke-width="8" stroke-linecap="square">
+    <path d="M 640 210 L 640 150 L 700 150"/><path d="M 1340 150 L 1400 150 L 1400 210"/>
+    <path d="M 1400 590 L 1400 650 L 1340 650"/><path d="M 700 650 L 640 650 L 640 590"/>
+  </g>
+  <!-- rec + readout -->
+  <circle cx="690" cy="190" r="11" fill="#57FF52"/>
+  <g font-family="Arial Black, Arial, sans-serif" font-weight="900" font-size="24" fill="#F0F0F0">
+    <text x="712" y="199">MCU</text>
+    <text x="1240" y="630" opacity=".8">50mm f/2</text>
+  </g>
+  <!-- focus square on the face -->
+  <rect x="1105" y="258" width="84" height="84" fill="none" stroke="#57FF52" stroke-width="5"/>
+
+</svg>

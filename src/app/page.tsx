@@ -6,6 +6,8 @@ import { FourIText, FourILower } from "@/components/FourIMark";
 import { caseStudies } from "@/lib/case-studies";
 import { featuredResources } from "@/lib/resources";
 import { ResourceCard } from "@/components/ResourceCard";
+import { Stickers } from "@/components/Stickers";
+import { HERO_STICKERS } from "@/lib/stickers";
 
 /* ============================================================
    §3.1 — landing page.
@@ -24,6 +26,7 @@ export default function Home() {
   return (
     <>
       <section className="hero">
+        <Stickers items={HERO_STICKERS} />
         <SpinningRecord />
         <h1 className="display">
           A record label that lets artists be their own record label.

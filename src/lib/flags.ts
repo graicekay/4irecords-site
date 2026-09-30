@@ -22,6 +22,6 @@ export const FANS_ENABLED = false;
 
 /* `SHOT_VISUALIZER_LISTED` puts a card for the shot visualizer on
    /resources. The tool itself lives on 4i Productions
-   (4iproductions.com/resources/shot-visualizer); the card links there. Off
-   until Grace launches it. */
-export const SHOT_VISUALIZER_LISTED = false;
+   (4iproductions.com/resources/shot-visualizer); the card links there.
+   Launched 29 Sep 2026. */
+export const SHOT_VISUALIZER_LISTED = true;

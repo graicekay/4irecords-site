@@ -2,6 +2,8 @@ import type { Metadata } from "next";
 import { mainResources, toolResources } from "@/lib/resources";
 import { ResourceCard } from "@/components/ResourceCard";
 import { PLANNED_TOOLS } from "@/lib/planned-tools";
+import { Stickers } from "@/components/Stickers";
+import { RESOURCES_STICKERS } from "@/lib/stickers";
 
 export const metadata: Metadata = {
   title: "Resources",
@@ -19,7 +21,8 @@ export default function ResourcesIndex() {
 
   return (
     <>
-      <section className="wrap page-head">
+      <section className="wrap page-head has-stickers">
+        <Stickers items={RESOURCES_STICKERS} />
         <p className="eyebrow">Free</p>
         <h1 className="display">Resources</h1>
         <p className="sub">
@@ -51,23 +54,29 @@ export default function ResourcesIndex() {
       <section className="section">
         <div className="wrap">
           <h2 className="display" style={{ fontSize: 30, margin: 0 }}>Tools</h2>
-          {tools.length > 0 && (
-            <div className="grid-3" style={{ marginTop: 26 }}>
-              {tools.map((r) => <ResourceCard key={r.slug} resource={r} showMeta />)}
-            </div>
-          )}
-          {PLANNED_TOOLS.length > 0 && <ul className="planned">
-            {PLANNED_TOOLS.map((t) => (
+          <div className="grid-3" style={{ marginTop: 26 }}>
+            {/* Live tools that live on another 4i site: open in a new tab so
+                the visitor keeps their place here. */}
+            {PLANNED_TOOLS.filter((t) => t.href).map((t) => (
+              <a key={t.name} href={t.href} target="_blank" rel="noopener" className={t.banner ? "card card-has-banner" : "card"}>
+                {t.banner && (
+                  // eslint-disable-next-line @next/next/no-img-element
+                  <img src={t.banner} alt="" className="card-banner" loading="lazy" />
+                )}
+                <span className="badge badge-has-dl">Tool</span>
+                <h3 className="card-title">{t.name}</h3>
+                <p className="muted" style={{ fontSize: 13.5, margin: "0 0 14px" }}>{t.blurb}</p>
+                <p style={{ margin: 0, fontSize: 12 }} className="muted">Interactive · opens 4iproductions.com</p>
+              </a>
+            ))}
+            {tools.map((r) => <ResourceCard key={r.slug} resource={r} showMeta />)}
+          </div>
+          {PLANNED_TOOLS.some((t) => !t.href) && <ul className="planned">
+            {PLANNED_TOOLS.filter((t) => !t.href).map((t) => (
               <li key={t.name} className="planned-item">
-                <span className={t.href ? "badge badge-has-dl" : "badge"}>
-                  {t.href ? "Live" : "In the works"}
-                </span>
+                <span className="badge">In the works</span>
                 <div>
-                  {t.href ? (
-                    <a href={t.href} className="planned-name">{t.name} →</a>
-                  ) : (
-                    <span className="planned-name">{t.name}</span>
-                  )}
+                  <span className="planned-name">{t.name}</span>
                   <p className="muted planned-blurb">{t.blurb}</p>
                 </div>
               </li>

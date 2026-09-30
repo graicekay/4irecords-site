@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="955 165 180 312" width="180" height="312">
+  <defs>
+    <pattern id="dots" width="14" height="14" patternUnits="userSpaceOnUse" patternTransform="rotate(45)"><circle cx="7" cy="7" r="2.6" fill="#FF5C87"/></pattern>
+    <pattern id="dotsFine" width="9" height="9" patternUnits="userSpaceOnUse" patternTransform="rotate(45)"><circle cx="4.5" cy="4.5" r="1.5" fill="#F0F0F0"/></pattern>
+    <pattern id="dotsInk" width="11" height="11" patternUnits="userSpaceOnUse" patternTransform="rotate(45)"><circle cx="5.5" cy="5.5" r="1.8" fill="#0A0A0A"/></pattern>
+  </defs>
+    <rect x="960" y="170" width="170" height="302" rx="22" fill="#141414" stroke="#F0F0F0" stroke-width="6"/>
+    <rect x="976" y="200" width="138" height="242" fill="#FF5C87"/>
+    <rect x="976" y="200" width="138" height="242" fill="url(#dotsFine)" opacity=".3"/>
+    <path d="M 1030 290 L 1030 350 L 1080 320 Z" fill="#F0F0F0"/>
+
+</svg>
