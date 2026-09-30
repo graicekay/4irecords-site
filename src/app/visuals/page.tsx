@@ -32,12 +32,14 @@ export default function Visuals() {
     <>
       <section className="wrap page-head has-smoke">
         <VisualsSmoke />
-        <p className="eyebrow"><FourILower /> Productions</p>
-        <h1 className="display">Visuals</h1>
-        <p className="sub">
-          Music videos, performance content, and the short-form that comes out
-          of the same shoot.
-        </p>
+        {/* The 4i Productions lockup in place of a title (Grace, 29 Sep). The
+            SVG's text is outlined, so the heading's words are for screen
+            readers and search. */}
+        <h1 className="visuals-lockup">
+          <span className="sr-only">4i Productions visuals</span>
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img src="/4i-productions-lockup.svg" alt="" width={1290} height={162} />
+        </h1>
       </section>
 
       {/* The ask comes first now (Grace, 29 Sep), with a second one at the end. */}
@@ -80,7 +82,8 @@ export default function Visuals() {
         </section>
       )}
 
-      <section className="section">
+      {/* No rules between the sections on this page (Grace, 29 Sep). */}
+      <section className="section" style={{ borderTop: 0 }}>
         <div className="wrap">
           <h2 className="display">What&apos;s on offer</h2>
           <div className="grid-2" style={{ marginTop: 26 }}>
@@ -101,7 +104,7 @@ export default function Visuals() {
         </div>
       </section>
 
-      <section className="section">
+      <section className="section" style={{ borderTop: 0 }}>
         <div className="wrap center">
           <h2 className="display">Let&apos;s get started</h2>
           <div className="cta" style={{ justifyContent: "center", marginTop: 30 }}>
