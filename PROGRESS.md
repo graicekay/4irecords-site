@@ -21,6 +21,21 @@ function response (~4.5 MB), so `downloadHosted` sends the checked signed link
 on to a static copy under a random folder in `public/dl/`. New frontmatter:
 `format: pack`, `cover`, `downloadHosted`, `payWhatYouWant`.
 
+**Resources look (29 Sep, pushed):** every card has a 2:1 banner
+(`banner:` frontmatter), and packs open with a swipeable `gallery:` (cover,
+the original art, contact sheets) in `src/components/Gallery.tsx`. The guide
+banners are hand-built SVGs in `public/resources/<slug>/banner.svg`; the
+scribbles cover, contact sheets and untoned slides come from
+`design/resource_art.py`. The style rules are on the T7 at
+`Editing Refs/Aesthetic References/4i/4i - Style Rules.md`. The Weapons pack
+is a `section: tools` resource whose download (`downloadExternal`) is on
+Gumroad. The Tools list (`src/lib/planned-tools.ts`) only shows live tools:
+the shot visualizer appears once `SHOT_VISUALIZER_LISTED` is on.
+
+**Open:** the Cutdown Matrix PDF (`content/files/…/4i-03-the-cutdown-matrix.pdf`,
+and inside `4i-cutdown-matrix.zip`) still has "DRAFT — YOUR COPY GOES HERE"
+in page 1's meta row. The PDF's source isn't in this repo.
+
 **Donation box: built, switched off.** The Gumroad-style "Name a fair price
 $ 0+" box (`src/lib/donation.ts`) emails the file first, then opens a Stripe
 Checkout for any amount over $0 (invoiCE's Stripe account; invoiCE's webhook
