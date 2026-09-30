@@ -15,7 +15,9 @@ import { PRODUCTIONS_SITE } from "@/lib/links";
  *
  * Paused off screen; one still frame for reduced motion.
  */
-export function VisualsSmoke() {
+/** `video`: the hero video and its overlay under the smoke (/visuals). Without
+ *  it, just the smoke on ink (the /mission and /inquire headers). */
+export function VisualsSmoke({ video = true }: { video?: boolean } = {}) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
 
   useEffect(() => {
@@ -35,11 +37,15 @@ export function VisualsSmoke() {
   }, []);
 
   return (
-    <div className="visuals-smoke" aria-hidden="true">
-      <video autoPlay muted loop playsInline preload="auto" poster={`${PRODUCTIONS_SITE}/hero-poster.jpg`}>
-        <source src={`${PRODUCTIONS_SITE}/hero.mp4`} type="video/mp4" />
-      </video>
-      <div className="visuals-smoke-overlay" />
+    <div className={video ? "visuals-smoke" : "visuals-smoke smoke-only"} aria-hidden="true">
+      {video && (
+        <>
+          <video autoPlay muted loop playsInline preload="auto" poster={`${PRODUCTIONS_SITE}/hero-poster.jpg`}>
+            <source src={`${PRODUCTIONS_SITE}/hero.mp4`} type="video/mp4" />
+          </video>
+          <div className="visuals-smoke-overlay" />
+        </>
+      )}
       <canvas ref={canvasRef} />
     </div>
   );

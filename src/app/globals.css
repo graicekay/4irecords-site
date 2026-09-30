@@ -1304,7 +1304,9 @@ a.planned-name:hover { color: var(--accent); }
 .has-smoke { position: relative; }
 .has-smoke > :not(.visuals-smoke) { position: relative; z-index: 1; }
 /* The smoke runs on under the next section too; its words sit above it. */
-.has-smoke + .section { position: relative; z-index: 1; }
+.has-smoke + * { position: relative; z-index: 1; }
+/* Smoke alone (/mission, /inquire): a shorter run under the heading. */
+.visuals-smoke.smoke-only { bottom: -140px; }
 .visuals-smoke {
   position: absolute; z-index: 0; pointer-events: none;
   top: -90px; bottom: -260px; left: 50%; width: 100vw; transform: translateX(-50%);

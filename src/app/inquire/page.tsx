@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import BranchedInquireForm from "@/components/BranchedInquireForm";
 import type { Branch } from "@/lib/inquire-actions";
+import { VisualsSmoke } from "@/components/VisualsSmoke";
 
 export const metadata: Metadata = {
   title: "Inquire",
@@ -23,7 +24,9 @@ export default async function Inquire({
 
   return (
     <>
-      <section className="wrap page-head">
+      <section className="wrap page-head has-smoke">
+        {/* 4i Productions' green smoke, on its own (no video here). */}
+        <VisualsSmoke video={false} />
         <p className="eyebrow">Get in touch</p>
         <h1 className="display">Inquire</h1>
         <p className="sub">

@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import { VisualsSmoke } from "@/components/VisualsSmoke";
 
 export const metadata: Metadata = {
   title: "Mission",
@@ -13,7 +14,9 @@ export const metadata: Metadata = {
 export default function Mission() {
   return (
     <>
-      <section className="wrap page-head">
+      <section className="wrap page-head has-smoke">
+        {/* 4i Productions' green smoke, on its own (no video here). */}
+        <VisualsSmoke video={false} />
         <p className="eyebrow">Empower Expression</p>
         <h1 className="display">Our Mission</h1>
       </section>
