@@ -1,9 +1,13 @@
 """Card banners, pack galleries and contact sheets for /resources.
 
-One look across the site: every banner and cover goes through `four_i_tone`,
-which snaps each colour to the nearest of 4i green, orange or pink (neutrals
-stay neutral), then gets a fine print halftone. Contact sheets are the files
-exactly as they download, so they are never toned.
+One look across the site: flat SVG illustrations on ink, one accent each
+(4i green, orange or warm pink), with print-dot shading. The three guides'
+banners are hand-built SVGs in public/resources/<slug>/banner.svg; the
+scribbles cover is generated here (scribbles_svg) with Grace's real scribbles
+embedded. Photos that must stay as shot (the Weapons cover, the original
+scribbles collage) are copied untoned; `four_i_tone` is kept for photos that
+need pulling into the palette. Contact sheets are the files exactly as they
+download, so they are never toned.
 
 Sources are real: the resource PDFs (content/files), the scribbles cover and
 pack on the T7, the Weapons thumbnail and PNGs on the T7, and the black
@@ -159,9 +163,10 @@ def from_image_banner(slug, src, size=BANNER, name="banner.jpg", anchor=(.5, .5)
 def banners():
     # The three written resources use hand-built SVG banners
     # (public/resources/<slug>/banner.svg); pdf_banner is kept for reference.
-    wide = SCRIB + "_cover/gig-poster-scribbles-cover-wide.png"
-    from_image_banner("gig-poster-scribbles", wide)
-    from_image_banner("gig-poster-scribbles", wide, SLIDE, "gallery-01.jpg")
+    # Scribbles: an SVG cover in the guides' style, plus the photo collage
+    # untouched as the second gallery slide (Grace, 29 Sep).
+    scribbles_svg()
+    scribbles_og()
     thumb = WEAP + "Thumbnail/Weapons_Thumbnail.png"
     # Weapons stays as shot: Grace wants its cover untreated (29 Sep).
     from_image_banner("weapons-graffiti", thumb, anchor=(.5, .35), tone=False)
@@ -219,3 +224,105 @@ if __name__ == "__main__":
     what = sys.argv[1] if len(sys.argv) > 1 else "all"
     if what in ("banners", "all"): banners()
     if what in ("sheets", "all"): sheets()
+
+
+# ---------- scribbles cover, in the same flat SVG language as the guides ----------
+# Flat poster shapes, one accent (green) plus pink tape, print dots, and
+# Grace's real scribbles embedded as recoloured PNGs (an SVG shown through
+# <img> can't load outside files, so they go in as data URIs).
+
+import base64, io
+
+
+def scribble_uri(name, color, height=260):
+    src = SCRIB + "Hand-drawn Scribbles for Gig Posters/" + name
+    im = Image.open(src).convert("RGBA")
+    ink = ImageOps.invert(im.convert("L"))
+    a = Image.composite(ink, Image.new("L", im.size, 0), im.getchannel("A"))
+    a = a.point(lambda v: 255 if v > 90 else int(v * 2.8))
+    bb = a.getbbox(); a = a.crop(bb)
+    s = height / a.height
+    a = a.resize((max(1, int(a.width * s)), height), Image.LANCZOS)
+    out = Image.new("RGBA", a.size, color + (0,)); out.putalpha(a)
+    buf = io.BytesIO(); out.save(buf, "PNG", optimize=True)
+    return "data:image/png;base64," + base64.b64encode(buf.getvalue()).decode(), out.size
+
+
+def scribbles_svg():
+    W, H = 1920, 1080
+    PINK = ACCENTS["pink"]
+    parts = []
+
+    def img(name, color, h, x, y, rot=0):
+        uri, (w, hh) = scribble_uri(name, color, h)
+        cx, cy = x + w / 2, y + hh / 2
+        parts.append(f'<image href="{uri}" x="{x}" y="{y}" width="{w}" height="{hh}" '
+                     f'transform="rotate({rot} {cx:.0f} {cy:.0f})"/>')
+        return w
+
+    hexc = lambda c: "#%02X%02X%02X" % c
+    parts.append(f'''<defs>
+  <pattern id="dots" width="16" height="16" patternUnits="userSpaceOnUse" patternTransform="rotate(45)"><circle cx="8" cy="8" r="3" fill="#57FF52"/></pattern>
+  <pattern id="dotsInk" width="11" height="11" patternUnits="userSpaceOnUse" patternTransform="rotate(45)"><circle cx="5.5" cy="5.5" r="1.8" fill="#0A0A0A"/></pattern>
+  <pattern id="dotsFine" width="10" height="10" patternUnits="userSpaceOnUse" patternTransform="rotate(45)"><circle cx="5" cy="5" r="1.6" fill="#F0F0F0"/></pattern>
+  <radialGradient id="fade"><stop offset="0" stop-color="#fff" stop-opacity=".55"/><stop offset="1" stop-color="#fff" stop-opacity="0"/></radialGradient>
+  <mask id="glow"><rect width="{W}" height="{H}" fill="url(#fade)"/></mask>
+</defs>
+<rect width="{W}" height="{H}" fill="#0A0A0A"/>
+<ellipse cx="960" cy="560" rx="900" ry="560" fill="url(#dots)" mask="url(#glow)"/>''')
+
+    # poster 1: dark, off-white stroke — UNDERGROUND
+    parts.append('<g transform="rotate(-8 520 560)"><rect x="300" y="250" width="440" height="600" fill="#141414" stroke="#F0F0F0" stroke-width="7"/>'
+                 '<rect x="300" y="250" width="440" height="600" fill="url(#dotsFine)" opacity=".14"/>')
+    img("4i1.png", OFF, 150, 330, 280, 0)
+    img("Underground-HandDrawn-2.png", OFF, 70, 322, 460, 0)
+    img("Stars-HandDrawn-2.png", (87, 255, 82), 190, 360, 560, 0)
+    img("630.png", OFF, 70, 520, 760, 0)
+    parts.append('</g>')
+
+    # poster 3 (back right): pink — Y2K
+    parts.append(f'<g transform="rotate(9 1420 540)"><rect x="1200" y="230" width="440" height="600" fill="{hexc(PINK)}"/>'
+                 '<rect x="1200" y="230" width="440" height="600" fill="url(#dotsInk)" opacity=".22"/>')
+    img("y2k.png", INK, 210, 1235, 270, 0)
+    img("rock on.png", INK, 230, 1420, 290, 0)
+    img("predor.png", INK, 90, 1240, 520, 0)
+    img("drum.png", INK, 170, 1260, 630, 0)
+    parts.append('</g>')
+
+    # poster 2 (front middle): off-white paper — LIVE SHOW, green tape
+    parts.append('<g transform="rotate(3 960 560)"><rect x="720" y="190" width="480" height="660" fill="#F0F0F0"/>'
+                 '<rect x="720" y="190" width="480" height="660" fill="url(#dotsInk)" opacity=".07"/>')
+    img("Live-HandDrawn-2.png", INK, 120, 760, 230, -2)
+    img("Show-HandDrawn-1.png", INK, 115, 760, 360, 1)
+    img("punkrcknight.png", INK, 130, 770, 500, 0)
+    img("guitar.png", INK, 210, 1060, 600, 8)
+    img("covers.png", INK, 36, 770, 660, 0)
+    img("gdsm.png", INK, 130, 780, 700, 0)
+    parts.append('<rect x="1060" y="480" width="110" height="100" fill="#57FF52"/>'
+                 '<rect x="1060" y="480" width="110" height="100" fill="url(#dotsInk)" opacity=".25"/>')
+    img("star5.png", INK, 80, 1075, 490, 0)
+    parts.append('</g>')
+
+    # tape
+    parts.append(f'<rect x="880" y="160" width="180" height="54" fill="{hexc(PINK)}" opacity=".85" transform="rotate(-5 970 187)"/>'
+                 f'<rect x="360" y="215" width="150" height="48" fill="{hexc(PINK)}" opacity=".85" transform="rotate(-14 435 239)"/>'
+                 f'<rect x="1380" y="200" width="150" height="48" fill="#F0F0F0" opacity=".8" transform="rotate(12 1455 224)"/>')
+
+    # loose scribbles on the dark around them
+    img("star3.png", OFF, 170, 110, 110, -10)
+    img("Line-HandDrawn-4.png", (87, 255, 82), 250, 1700, 90, 0)
+    img("ExclamationPoints-HandDrawn-1.png", OFF, 200, 1730, 790, 10)
+    img("sticks.png", OFF, 150, 150, 850, 0)
+    img("star6.png", (87, 255, 82), 120, 640, 120, 8)
+    img("3Lines-HandDrawn-1.png", OFF, 110, 1180, 900, 0)
+
+    svg = f'<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 {W} {H}" width="{W}" height="{H}">\n' + "\n".join(parts) + "\n</svg>\n"
+    path = os.path.join(PUB, "gig-poster-scribbles", "cover.svg")
+    open(path, "w").write(svg)
+    print(path, f"{len(svg) / 1024:.0f} KB")
+
+
+def scribbles_og():
+    """The approved photo collage, untoned, as the gallery's second slide."""
+    im = Image.open(SCRIB + "_cover/gig-poster-scribbles-cover-wide.png").convert("RGB")
+    save(ImageOps.fit(im, SLIDE, Image.LANCZOS), "gig-poster-scribbles", "gallery-01.jpg")
