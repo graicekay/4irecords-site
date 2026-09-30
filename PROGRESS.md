@@ -35,9 +35,9 @@ the shot visualizer appears once `SHOT_VISUALIZER_LISTED` is on.
 **Fixed 29 Sep:** the Cutdown Matrix PDF's meta row said "DRAFT — YOUR
 COPY GOES HERE" and now says "29–55 DELIVERABLES", and all three PDFs read
 "4i RECORDS" (was "4I"). They were patched in place with PyMuPDF, because the
-PDFs' source isn't in this repo. Still capital-I: the running header
-"4IRECORDS.COM/RESOURCES" on every page, and "4I PRODUCTIONS IS HERE…" on
-page 8 of the costs PDF.
+PDFs' source isn't in this repo. The running header
+"4iRECORDS.COM/RESOURCES" on every page and "4i PRODUCTIONS IS HERE…" on
+page 8 of the costs PDF got the same fix: the I after the 4 was swapped for a dotted i (Arimo = Liberation Sans metrics, Anton).
 
 **Donation box: built, switched off.** The Gumroad-style "Name a fair price
 $ 0+" box (`src/lib/donation.ts`) emails the file first, then opens a Stripe
