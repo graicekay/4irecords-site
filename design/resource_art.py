@@ -35,7 +35,9 @@ INK, OFF, GREEN = (10, 10, 10), (240, 240, 240), (87, 255, 82)
 # The three hues a colour may land on (degrees). Green is the 4i accent;
 # orange and pink are the supporting colours the brand allows. No red,
 # purple or blue survives: each is pulled to its nearest of these.
-HUES = {"green": 118, "orange": 30, "pink": 328}
+HUES = {"green": 118, "orange": 30, "pink": 343}
+# Pink is warmed toward orange (Grace, 29 Sep, after the IYLILID refs: the
+# coral-pink hearts on the Doja Cat / Avril posters), not the cooler #FF4FA3.
 
 
 def four_i_tone(im, halftone=True, cell=7):
@@ -56,6 +58,10 @@ def four_i_tone(im, halftone=True, cell=7):
     nh = targets[d.argmin(-1)]
     ns = np.clip(s * 1.1, 0, 1)
     ns = np.where(s < 0.12, 0, ns)            # greys stay grey
+    # No brown on 4i: an orange that is dark or dull reads as brown, so it
+    # goes neutral instead (Grace, 29 Sep).
+    brown = (nh == HUES["orange"]) & ((v < 0.72) | (s < 0.55))
+    ns = np.where(brown, 0, ns)
     # hsv -> rgb
     hh = nh / 60; i = np.floor(hh) % 6; f = hh - np.floor(hh)
     p, q, t = v * (1 - ns), v * (1 - ns * f), v * (1 - ns * (1 - f))
@@ -117,7 +123,7 @@ def pdf_pages(pdf, n):
     return out
 
 
-ACCENTS = {"green": GREEN, "orange": (255, 146, 43), "pink": (255, 79, 163)}
+ACCENTS = {"green": GREEN, "orange": (255, 146, 43), "pink": (255, 92, 135)}
 
 
 def gradient_map(im, accent):
@@ -145,21 +151,21 @@ def pdf_banner(slug, pdf, seed, accent):
     save(Image.fromarray((np.clip(rgb * print_screen(rgb, 7)[..., None], 0, 1) * 255).astype(np.uint8)), slug, "banner.jpg")
 
 
-def from_image_banner(slug, src, size=BANNER, name="banner.jpg", anchor=(.5, .5)):
+def from_image_banner(slug, src, size=BANNER, name="banner.jpg", anchor=(.5, .5), tone=True):
     im = ImageOps.fit(Image.open(src).convert("RGB"), size, Image.LANCZOS, centering=anchor)
-    save(four_i_tone(im), slug, name)
+    save(four_i_tone(im) if tone else im, slug, name)
 
 
 def banners():
-    pdf_banner("release-label-visuals-checklist", glob.glob(FILES + "/01/*.pdf")[0], 1, "green")
-    pdf_banner("what-pro-visuals-cost", glob.glob(FILES + "/02/*.pdf")[0], 2, "orange")
-    pdf_banner("cutdown-matrix", glob.glob(FILES + "/03/*.pdf")[0], 3, "pink")
+    # The three written resources use hand-built SVG banners
+    # (public/resources/<slug>/banner.svg); pdf_banner is kept for reference.
     wide = SCRIB + "_cover/gig-poster-scribbles-cover-wide.png"
     from_image_banner("gig-poster-scribbles", wide)
     from_image_banner("gig-poster-scribbles", wide, SLIDE, "gallery-01.jpg")
     thumb = WEAP + "Thumbnail/Weapons_Thumbnail.png"
-    from_image_banner("weapons-graffiti", thumb, anchor=(.5, .35))
-    from_image_banner("weapons-graffiti", thumb, SLIDE, "gallery-01.jpg")
+    # Weapons stays as shot: Grace wants its cover untreated (29 Sep).
+    from_image_banner("weapons-graffiti", thumb, anchor=(.5, .35), tone=False)
+    from_image_banner("weapons-graffiti", thumb, SLIDE, "gallery-01.jpg", tone=False)
 
 
 # ---------- contact sheets ----------

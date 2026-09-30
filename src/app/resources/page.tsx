@@ -56,7 +56,7 @@ export default function ResourcesIndex() {
               {tools.map((r) => <ResourceCard key={r.slug} resource={r} showMeta />)}
             </div>
           )}
-          <ul className="planned">
+          {PLANNED_TOOLS.length > 0 && <ul className="planned">
             {PLANNED_TOOLS.map((t) => (
               <li key={t.name} className="planned-item">
                 <span className={t.href ? "badge badge-has-dl" : "badge"}>
@@ -72,7 +72,7 @@ export default function ResourcesIndex() {
                 </div>
               </li>
             ))}
-          </ul>
+          </ul>}
         </div>
       </section>
     </>
