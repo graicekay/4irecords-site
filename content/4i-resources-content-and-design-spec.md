@@ -258,7 +258,7 @@ Here's how that looks.
 #### Tier 1 — No budget
 
 - Filmed on iPhone or camera at home
-- Edited by yourself with tutorials and free assets you can find online (like graicekay.gumroad.com)
+- Edited by yourself with tutorials and free assets you can find online (like 4irecords.com/resources)
 - Grab a friend to film for you, or set up a tripod
 - Get super creative and have fun
 
@@ -385,7 +385,7 @@ Three columns: Resource · What it's for · Cost. Category column uses `rowspan`
 
 **Crew & cast** — Film school Facebook and Discord groups, where students look for portfolio work · Actors Access (actorsaccess.com), casting calls, free to post · Backstage (backstage.com) / Mandy (mandy.com), casting and crew calls, posting fee · Your own socials, a crew call post is the highest-yield thing on this list
 
-**Post & assets** — graicekay.gumroad.com, free editing assets, presets, overlays · Pexels / Pixabay / Freesound, free stock footage, stills, sound design
+**Post & assets** — 4irecords.com/resources, free editing assets: hand-drawn scribbles, graffiti PNGs · Pexels / Pixabay / Freesound, free stock footage, stills, sound design
 
 ### Filmmaker vocab
 

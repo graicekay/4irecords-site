@@ -93,12 +93,11 @@ linking to `4iproductions.com/resources/shot-visualizer`, shown once
 
 ## Planned (26 Sep list, not in order)
 
-3. **Gumroad references now point to 4i Productions.** The free editing
-   assets are moving from graicekay.gumroad.com to 4i Productions (see that
-   doc). Update `content/resources/what-pro-visuals-cost.mdx` (lines 36 and
-   179) and the matching lines in
-   `content/4i-resources-content-and-design-spec.md` once the assets are
-   live there. Grace writes the replacement copy.
+3. **Gumroad references: done 29 Sep.** The costs guide (MDX, spec and PDF)
+   now points to 4irecords.com/resources for free editing assets
+   ("hand-drawn scribbles, graffiti PNGs"), and the PDF's links go there
+   too. graicekay.com's links page is being changed in Grace's other
+   session.
 4. **Resources email rewritten (28 Sep)** with Grace's copy: "Your free
    resources are here.", the asset name as the button, a line to
    4irecords.com/resources, and "For world-immersive visuals, visit
