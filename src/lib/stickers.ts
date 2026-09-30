@@ -18,12 +18,11 @@ export type Sticker = {
 
 const S = (n: string) => `/stickers/${n}.svg`;
 
-/* Home hero: everything, around the edges, clear of the headline. */
+/* Home hero: background only (all blurred), around the edges. Nothing sharp
+   in front: the spinning record is the star (Grace, 29 Sep). */
 export const HERO_STICKERS: Sticker[] = [
   { src: S("record"), left: -6, top: 6, width: 20, rotate: -12, depth: "far" },
   { src: S("camera"), left: 80, top: 4, width: 17, rotate: 8, depth: "mid", wide: true },
-  { src: S("phone-play"), left: 4, top: 52, width: 8, rotate: -14, depth: "near", wide: true },
-  { src: S("scissors"), left: 84, top: 66, width: 14, rotate: 18, depth: "near" },
   { src: S("checklist"), left: 14, top: -4, width: 11, rotate: 10, depth: "mid", wide: true },
   { src: S("pricetag"), left: 70, top: 72, width: 10, rotate: -18, depth: "far", wide: true },
   { src: S("filmstrip"), left: 60, top: -2, width: 20, rotate: -9, depth: "far", wide: true },
