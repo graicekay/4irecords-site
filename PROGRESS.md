@@ -55,9 +55,11 @@ $ 0+" box (`src/lib/donation.ts`) emails the file first, then opens a Stripe
 Checkout for any amount over $0 (invoiCE's Stripe account; invoiCE's webhook
 ignores these). It only shows when `STRIPE_SECRET_KEY` is set **at build
 time**. Grace added a live restricted key on Vercel (Sensitive, Production)
-on 30 Sep and production was redeployed; the box is on
-/resources/gig-poster-scribbles (the only pack with `payWhatYouWant`). Still
-to do: a real $1 test, then refund it. Rotating the key needs a redeploy.
+on 30 Sep and production was redeployed; Grace's real $1
+test worked the same day. The box is on every emailed pack (`payWhatYouWant:
+true` in the frontmatter): gig-poster-scribbles, cutdown-matrix,
+release-label-visuals-checklist, what-pro-visuals-cost. Not on the Weapons
+pack, which links out to Gumroad (Gumroad has its own price box). Rotating the key needs a redeploy.
 Local `.env.local` has a sandbox key; the local `RESEND_API_KEY` is invalid
 (production's is fine), so full local tests fail at the email step.
 
