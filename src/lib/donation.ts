@@ -44,7 +44,7 @@ export async function createDonationCheckout(opts: {
     success_url: `${back}?thanks=1`,
     cancel_url: back,
     customer_email: opts.email,
-    submit_type: "donate",
+    submit_type: "pay",
     "line_items[0][quantity]": "1",
     "line_items[0][price_data][currency]": "usd",
     "line_items[0][price_data][unit_amount]": String(opts.cents),

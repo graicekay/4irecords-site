@@ -79,7 +79,6 @@ export default function DownloadGate({
                   />
                 </div>
                 {errors.amount && <p className="error" role="alert">{errors.amount}</p>}
-                <p className="gate-byline">Your donation goes towards helping independent artists.</p>
               </div>
             )}
           </>
