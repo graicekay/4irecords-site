@@ -40,6 +40,8 @@ export function setInternal(on: boolean): void {
                       4irecords-<link id>
      data-event       a named event to fire on click instead, for
                       in-site CTAs (spotlight_cta_clicked)
+     data-tile        with data-event, the /links tile code
+                      (bio_link_clicked { page, tile, destination_url })
 
    Every http(s) link off this host fires outbound_link_clicked, and
    every link to another 4i site gets its href rewritten by
@@ -82,7 +84,9 @@ function onClick(event: MouseEvent): void {
 
   const placement = a.dataset.placement ?? null;
   if (a.dataset.event) {
-    capture(a.dataset.event, { placement }, true);
+    // A link-page tile (data-tile) also says which tile and where it went.
+    const tile: EventProps = a.dataset.tile ? { page: "links", tile: a.dataset.tile, destination_url: destinationOf(a)?.toString() ?? null } : {};
+    capture(a.dataset.event, { placement, ...tile }, true);
     return;
   }
 
