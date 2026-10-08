@@ -1,5 +1,6 @@
 import { NextResponse, type NextRequest } from "next/server";
 import { SESSION_COOKIE, sessionAllows, adminMode } from "@/lib/auth";
+import { resourcesTypoTarget } from "@/lib/typo-redirect";
 
 /* Next 16 renamed `middleware.ts` to `proxy.ts`; same thing, and it
    runs on the Node runtime, which is what lets it share the HMAC
@@ -12,6 +13,16 @@ import { SESSION_COOKIE, sessionAllows, adminMode } from "@/lib/auth";
    and the writes happen. */
 
 export function proxy(request: NextRequest) {
+  const { pathname } = request.nextUrl;
+  if (pathname !== "/admin" && !pathname.startsWith("/admin/")) {
+    /* Misspelled /resources: a permanent redirect, query (UTMs) kept. */
+    const target = resourcesTypoTarget(pathname);
+    if (!target) return NextResponse.next();
+    const url = request.nextUrl.clone();
+    url.pathname = target;
+    return NextResponse.redirect(url, 308);
+  }
+
   const mode = adminMode();
 
   if (mode.kind === "misconfigured") {
@@ -31,5 +42,11 @@ export function proxy(request: NextRequest) {
 }
 
 export const config = {
-  matcher: ["/admin", "/admin/:path*"],
+  matcher: [
+    "/admin",
+    "/admin/:path*",
+    /* Single-segment paths only, for the /resources typo redirect; never
+       the API, Next's own assets, or anything with a file extension. */
+    "/((?!api|_next|admin)[^/.]+)",
+  ],
 };
