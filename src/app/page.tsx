@@ -99,7 +99,12 @@ export default function Home() {
             isn&apos;t a guarantee. We&apos;ll reach out if it&apos;s a good fit.
           </p>
           <div className="cta" style={{ marginTop: 24 }}>
-            <Link href="/inquire?for=spotlight" className="btn btn-solid">Submit for a Spotlight</Link>
+            <Link
+              href="/inquire?for=spotlight" className="btn btn-solid"
+              data-event="spotlight_cta_clicked" data-placement="home_spotlight"
+            >
+              Submit for a Spotlight
+            </Link>
           </div>
         </div>
       </section>
@@ -161,7 +166,8 @@ export default function Home() {
             New tools, first. One email when we publish.
           </p>
           <div className="cta" style={{ justifyContent: "center", marginTop: 30 }}>
-            <Link href="/inquire?for=updates" className="btn btn-solid">
+            {/* `from` names this button on the /inquire side (email_signup_submitted). */}
+            <Link href="/inquire?for=updates&from=home-newsletter" className="btn btn-solid">
               Keep me posted
             </Link>
           </div>

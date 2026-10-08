@@ -1,9 +1,9 @@
 "use client";
 
-import { useActionState, useEffect } from "react";
+import { useActionState, useEffect, useRef } from "react";
 import { useFormStatus } from "react-dom";
-import posthog from "posthog-js";
 import type { FormState } from "@/lib/actions";
+import { capture, type EventProps } from "@/lib/analytics";
 
 /* ============================================================
    The chrome every public form shares: pending state on the
@@ -70,7 +70,8 @@ export function Honeypot() {
 }
 
 export default function FormShell({
-  action, submitLabel, successTitle, successBody, onSuccess, analyticsEvent, analyticsProperties, children,
+  action, submitLabel, successTitle, successBody, onSuccess, onBeforeSubmit, onBeforeRedirect,
+  analyticsEvent, analyticsSuccessEvent, analyticsProperties, children,
 }: {
   action: (prev: FormState, formData: FormData) => Promise<FormState>;
   submitLabel: string;
@@ -81,21 +82,38 @@ export default function FormShell({
      so it fires after the render that flipped the state rather than
      during it. */
   onSuccess?: () => void;
+  /* Runs on submit, before the FormData is read: a form can fill hidden
+     fields or fire its own events here. */
+  onBeforeSubmit?: (form: HTMLFormElement) => void;
+  /* Runs right before the browser follows `state.redirect`. */
+  onBeforeRedirect?: () => void;
+  /* Fired on submit, before the server has validated anything. */
   analyticsEvent?: string;
-  analyticsProperties?: Record<string, string | boolean | number>;
+  /* Fired once the action comes back ok, with the same properties: the
+     difference between the two counts is the failures. */
+  analyticsSuccessEvent?: string;
+  /* A function gets the submitted FormData, for properties that depend
+     on what was typed. */
+  analyticsProperties?: EventProps | ((data: FormData) => EventProps);
   children: (
     errors: Record<string, string>,
     values: Record<string, string>,
   ) => React.ReactNode;
 }) {
   const [state, formAction] = useActionState<FormState, FormData>(action, {});
+  /* The properties of the submission in flight, for the success event. */
+  const submitted = useRef<EventProps | undefined>(undefined);
 
   useEffect(() => {
-    if (state.ok) onSuccess?.();
-  }, [state.ok, onSuccess]);
+    if (!state.ok) return;
+    onSuccess?.();
+    if (analyticsSuccessEvent) capture(analyticsSuccessEvent, submitted.current);
+  }, [state.ok]);
 
   useEffect(() => {
-    if (state.ok && state.redirect) window.location.assign(state.redirect);
+    if (!state.ok || !state.redirect) return;
+    onBeforeRedirect?.();
+    window.location.assign(state.redirect);
   }, [state.ok, state.redirect]);
 
   if (state.ok) {
@@ -111,14 +129,12 @@ export default function FormShell({
     <form
       action={formAction}
       style={{ position: "relative" }}
-      onSubmit={() => {
-        if (
-          analyticsEvent
-          && process.env.NEXT_PUBLIC_POSTHOG_PROJECT_TOKEN
-          && process.env.NEXT_PUBLIC_POSTHOG_HOST
-        ) {
-          posthog.capture(analyticsEvent, analyticsProperties);
-        }
+      onSubmit={(e) => {
+        onBeforeSubmit?.(e.currentTarget);
+        submitted.current = typeof analyticsProperties === "function"
+          ? analyticsProperties(new FormData(e.currentTarget))
+          : analyticsProperties;
+        if (analyticsEvent) capture(analyticsEvent, submitted.current);
       }}
     >
       <Honeypot />

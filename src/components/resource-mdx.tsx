@@ -10,12 +10,19 @@ import type { ReactNode } from "react";
    ============================================================ */
 
 /** The in-article CTA: a subtle underlined mono link, never a filled button. */
-export function CtaLink({ href, children }: { href: string; children: ReactNode }) {
+export function CtaLink({
+  href, children, placement = "resource_inline",
+}: { href: string; children: ReactNode; placement?: string }) {
   const external = href.startsWith("http");
+  /* Links to the 4i Productions intake are the "Start a project" lead:
+     lib/analytics tracks them and adds the cross-site ids at click time. */
+  const intake = /^https?:\/\/(www\.)?4iproductions\.com\/?(\?[^#]*)?#inquire$/.test(href);
   return (
     <a
       className="ctalink"
       href={href}
+      data-link-id={intake ? "start_project" : undefined}
+      data-placement={placement}
       {...(external ? { target: "_blank", rel: "noreferrer noopener" } : {})}
     >
       <span className="ctalink-arrow" aria-hidden="true">→</span>
@@ -40,7 +47,7 @@ export function EndCta({
     <aside className="endcta">
       <h2>{title}</h2>
       <div className="endcta-body">{children}</div>
-      <CtaLink href={href}>{label}</CtaLink>
+      <CtaLink href={href} placement="resource_end_cta">{label}</CtaLink>
     </aside>
   );
 }

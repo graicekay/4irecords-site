@@ -1,5 +1,6 @@
 import { requireAdmin } from "@/lib/session";
 import { signOut } from "../login/actions";
+import MarkInternal from "@/components/MarkInternal";
 
 export const dynamic = "force-dynamic";
 
@@ -10,6 +11,7 @@ export default async function AdminLayout({ children }: { children: React.ReactN
 
   return (
     <section className="wrap" style={{ padding: "56px 24px 0" }}>
+      <MarkInternal />
       <div style={{
         display: "flex", justifyContent: "space-between",
         alignItems: "baseline", gap: 20, flexWrap: "wrap",

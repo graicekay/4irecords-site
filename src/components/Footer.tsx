@@ -33,6 +33,7 @@ export default function Footer() {
             <a
               className="fl"
               href="https://instagram.com/4irecords"
+              data-link-id="instagram_4irecords" data-placement="footer"
               target="_blank"
               rel="noreferrer noopener"
             >

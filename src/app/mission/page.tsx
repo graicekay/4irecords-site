@@ -49,7 +49,12 @@ export default function Mission() {
           </h2>
           <div className="cta" style={{ justifyContent: "center", marginTop: 30 }}>
             <Link href="/resources" className="btn btn-solid">Get the free tools</Link>
-            <Link href="/inquire?for=spotlight" className="btn">Submit for a Spotlight</Link>
+            <Link
+              href="/inquire?for=spotlight" className="btn"
+              data-event="spotlight_cta_clicked" data-placement="mission"
+            >
+              Submit for a Spotlight
+            </Link>
           </div>
         </div>
       </section>

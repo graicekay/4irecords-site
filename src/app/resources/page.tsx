@@ -57,7 +57,12 @@ export default function ResourcesIndex() {
             {/* Live tools that live on another 4i site: open in a new tab so
                 the visitor keeps their place here. */}
             {PLANNED_TOOLS.filter((t) => t.href).map((t) => (
-              <a key={t.name} href={t.href} target="_blank" rel="noopener" className={t.banner ? "card card-has-banner" : "card"}>
+              <a
+                key={t.name} href={t.href} target="_blank" rel="noopener"
+                className={t.banner ? "card card-has-banner" : "card"}
+                /* Cross-site: lib/analytics adds ids, UTMs and ref at click time. */
+                data-link-id={t.linkId} data-placement="resources_tools"
+              >
                 {t.banner && (
                   // eslint-disable-next-line @next/next/no-img-element
                   <img src={t.banner} alt="" className="card-banner" loading="lazy" />

@@ -51,7 +51,8 @@ export default function Visuals() {
             business days.
           </p>
           <div className="cta" style={{ justifyContent: "center", marginTop: 30 }}>
-            <a href={PRODUCTIONS_INTAKE_URL} className="btn btn-solid">
+            {/* Cross-site: lib/analytics adds ids, UTMs and ref=4irecords-start-project. */}
+            <a href={PRODUCTIONS_INTAKE_URL} className="btn btn-solid" data-link-id="start_project" data-placement="visuals_top">
               Start a project at <FourILower /> Productions
             </a>
           </div>
@@ -92,6 +93,7 @@ export default function Visuals() {
                 className="card card-link"
                 key={title}
                 href={productionsIntake(type)}
+                data-link-id="start_project" data-placement={`visuals_offer_${type}`}
                 target="_blank"
                 rel="noreferrer noopener"
               >
@@ -108,7 +110,7 @@ export default function Visuals() {
         <div className="wrap center">
           <h2 className="display">Let&apos;s get started</h2>
           <div className="cta" style={{ justifyContent: "center", marginTop: 30 }}>
-            <a href={PRODUCTIONS_INTAKE_URL} className="btn btn-solid">
+            <a href={PRODUCTIONS_INTAKE_URL} className="btn btn-solid" data-link-id="start_project" data-placement="visuals_bottom">
               Submit an inquiry
             </a>
           </div>

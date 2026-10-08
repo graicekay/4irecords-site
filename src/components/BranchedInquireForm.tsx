@@ -5,6 +5,7 @@ import FormShell, { Field } from "@/components/FormShell";
 import { submitBranchedInquiry, type Branch } from "@/lib/inquire-actions";
 import { PRODUCTIONS_INTAKE_URL } from "@/lib/links";
 import { FourILower } from "@/components/FourIMark";
+import { capture } from "@/lib/analytics";
 
 /* §3.6. The branch question is answered before any fields appear, so
    nobody reads a form that isn't theirs. */
@@ -33,9 +34,12 @@ const CHOICES: { value: Branch; label: string; hint: string }[] = [
 ];
 
 export default function BranchedInquireForm({
-  defaultBranch,
+  defaultBranch, from,
 }: {
   defaultBranch?: Branch;
+  /* Which link brought them here (`?from=home-newsletter`), for the
+     email_signup_submitted placement. */
+  from?: string;
 }) {
   const [branch, setBranch] = useState<Branch | null>(defaultBranch ?? null);
 
@@ -91,7 +95,10 @@ export default function BranchedInquireForm({
             they&apos;ll follow up within five business days.
           </p>
           <div className="cta" style={{ marginTop: 20 }}>
-            <a href={PRODUCTIONS_INTAKE_URL} className="btn btn-solid">
+            <a
+              href={PRODUCTIONS_INTAKE_URL} className="btn btn-solid"
+              data-link-id="start_project" data-placement="inquire_visuals"
+            >
               Start a project at <FourILower /> Productions
             </a>
           </div>
@@ -113,6 +120,9 @@ export default function BranchedInquireForm({
         action={submitBranchedInquiry}
         analyticsEvent="branched_inquiry_submitted"
         analyticsProperties={{ inquiry_branch: branch }}
+        onSuccess={branch === "updates"
+          ? () => capture("email_signup_submitted", { list: "updates", placement: from ?? "inquire" })
+          : undefined}
         submitLabel={branch === "updates" ? "Keep me posted" : "Send it"}
         successTitle={branch === "updates" ? "You're on the list." : "Got it."}
         /* The old line promised a reply to everyone. The only guaranteed

@@ -165,7 +165,10 @@ export default async function ResourcePage(
                   <p className="eyebrow">Free download</p>
                   <p className="gate-label">{resource.downloadExternalLabel}</p>
                   {/* New tab, so the visitor stays on 4irecords.com. */}
-                  <a href={resource.downloadExternal} className="btn btn-solid" target="_blank" rel="noopener noreferrer">
+                  <a
+                    href={resource.downloadExternal} className="btn btn-solid" target="_blank" rel="noopener noreferrer"
+                    data-link-id="gumroad_download" data-placement="resource_gate"
+                  >
                     Get it on Gumroad
                   </a>
                   <p className="gate-privacy">Opens graicekay.gumroad.com in a new tab. Pay what you want, $0 and up.</p>
@@ -173,6 +176,7 @@ export default async function ResourcePage(
               ) : resource.downloadFile ? (
                 <DownloadGate
                   slug={resource.slug}
+                  title={resource.title}
                   label={resource.downloadLabel}
                   payWhatYouWant={Boolean(resource.payWhatYouWant) && donationsEnabled()}
                 />

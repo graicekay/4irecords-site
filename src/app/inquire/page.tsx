@@ -17,10 +17,13 @@ const VALID: Branch[] = ["visuals", "spotlight", "creative", "updates"];
 export default async function Inquire({
   searchParams,
 }: {
-  searchParams: Promise<{ for?: string }>;
+  searchParams: Promise<{ for?: string; from?: string }>;
 }) {
-  const { for: raw } = await searchParams;
+  const { for: raw, from: rawFrom } = await searchParams;
   const preset = VALID.includes(raw as Branch) ? (raw as Branch) : undefined;
+  /* `?from=` names the link that sent them (analytics only); kept to a
+     short slug so it can't carry anything else. */
+  const from = rawFrom && /^[a-z0-9-]{1,40}$/.test(rawFrom) ? rawFrom : undefined;
 
   return (
     <>
@@ -36,7 +39,7 @@ export default async function Inquire({
 
       <section className="section" style={{ borderTop: 0, paddingTop: 48 }}>
         <div className="wrap narrow">
-          <BranchedInquireForm defaultBranch={preset} />
+          <BranchedInquireForm defaultBranch={preset} from={from} />
           <p className="muted" style={{ fontSize: 13, marginTop: 34 }}>
             Prefer email? We&apos;re at{" "}
             <a href="mailto:info@4irecords.com" style={{ color: "var(--accent)" }}>
