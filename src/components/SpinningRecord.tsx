@@ -68,7 +68,11 @@ const HOVER_RPM = IDLE_RPM * 4;
 /** How fast the speed itself changes. Higher is snappier; this is ~0.4s. */
 const RAMP = 2.6;
 
-export function SpinningRecord({ className = "hero-record" }: { className?: string }) {
+export function SpinningRecord({ className = "hero-record", rpm: idleRpm = IDLE_RPM }: {
+  className?: string;
+  /** Its resting speed (hover still winds it up to four times this). /links turns slower. */
+  rpm?: number;
+}) {
   const ref = useRef<SVGSVGElement>(null);
 
   useEffect(() => {
@@ -87,14 +91,14 @@ export function SpinningRecord({ className = "hero-record" }: { className?: stri
        edge is clipped and therefore not hoverable either. */
     const hero = el;
     let angle = 0;
-    let rpm = IDLE_RPM;
-    let target = IDLE_RPM;
+    let rpm = idleRpm;
+    let target = idleRpm;
     let last = performance.now();
     let frame = 0;
     let visible = true;
 
-    const onEnter = () => { target = HOVER_RPM; };
-    const onLeave = () => { target = IDLE_RPM; };
+    const onEnter = () => { target = idleRpm * (HOVER_RPM / IDLE_RPM); };
+    const onLeave = () => { target = idleRpm; };
     hero?.addEventListener("pointerenter", onEnter);
     hero?.addEventListener("pointerleave", onLeave);
     // A tap on a touch screen winds it up too, then lets it fall back.
@@ -148,7 +152,7 @@ export function SpinningRecord({ className = "hero-record" }: { className?: stri
       hero?.removeEventListener("pointerup", onLeave);
       hero?.removeEventListener("pointercancel", onLeave);
     };
-  }, []);
+  }, [idleRpm]);
 
   /* Grooves as stroked circles rather than a texture: a dozen paths beat a
      bitmap that would have to be twice the size for a retina screen. */

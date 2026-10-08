@@ -1,5 +1,7 @@
 import type { Metadata } from "next";
 import { SpinningRecord } from "@/components/SpinningRecord";
+import { Stickers } from "@/components/Stickers";
+import { LINKS_STICKERS } from "@/lib/stickers";
 import { LinksShotVisualizer } from "@/components/LinksShotVisualizer";
 import { allResources } from "@/lib/resources";
 import { PRODUCTIONS_SITE } from "@/lib/links";
@@ -31,18 +33,21 @@ async function productionsWork(): Promise<Piece[]> {
 }
 
 export default async function LinksPage() {
-  const tools = allResources().filter((r) => !r.draft);
+  // Artists' tools only: the Weapons graffiti pack is Graice Kay's, not here (Grace, 8 Oct).
+  const tools = allResources().filter((r) => !r.draft && r.slug !== "weapons-graffiti");
   const work = await productionsWork();
 
   return (
     <div className="links-page">
       <section className="links-hero">
+        <Stickers items={LINKS_STICKERS} />
         <h1 className="links-wordmark">
           <span className="sr-only">4i Records</span>
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img src="/4i-records-lockup.svg" alt="" className="links-lockup" />
         </h1>
-        <SpinningRecord className="hero-record links-record" />
+        {/* Slower than the home page's 33⅓: about half. */}
+        <SpinningRecord className="hero-record links-record" rpm={16} />
       </section>
 
       <div className="links-body">

@@ -32,6 +32,27 @@ export const HERO_STICKERS: Sticker[] = [
   { src: S("sparkle"), left: 74, top: 30, width: 1.8, depth: "mid", wide: true },
 ];
 
+/* /links (the bio link page, seen mostly on phones): more of them, all the
+   way round the lockup and none hidden on phones, all in the background
+   (blurred) so the lockup and the record stay the stars. */
+export const LINKS_STICKERS: Sticker[] = [
+  { src: S("record"), left: -8, top: 2, width: 26, rotate: -12, depth: "far" },
+  { src: S("camera"), left: 74, top: 0, width: 24, rotate: 8, depth: "mid" },
+  { src: S("filmstrip"), left: 30, top: -10, width: 30, rotate: -7, depth: "far" },
+  { src: S("phone-heart"), left: 90, top: 30, width: 9, rotate: 12, depth: "mid" },
+  { src: S("lens"), left: 2, top: 58, width: 15, rotate: 0, depth: "far" },
+  { src: S("poster-y2k"), left: 84, top: 62, width: 14, rotate: -6, depth: "mid" },
+  { src: S("pricetag"), left: 14, top: 34, width: 9, rotate: -18, depth: "far" },
+  { src: S("scissors"), left: 64, top: 74, width: 13, rotate: 24, depth: "far" },
+  { src: S("checklist"), left: -2, top: 82, width: 12, rotate: 9, depth: "mid" },
+  { src: S("phone-play"), left: 56, top: 6, width: 7, rotate: -10, depth: "mid" },
+  { src: S("poster-liveshow"), left: 20, top: 76, width: 11, rotate: 7, depth: "far" },
+  { src: S("viewfinder"), left: 92, top: 4, width: 9, rotate: 0, depth: "far" },
+  { src: S("sparkle"), left: 8, top: 24, width: 3, depth: "mid" },
+  { src: S("sparkle"), left: 82, top: 46, width: 2.4, depth: "mid" },
+  { src: S("sparkle"), left: 46, top: 84, width: 2, depth: "mid" },
+];
+
 /* /resources: a bit of every resource, on the right, behind the heading. */
 export const RESOURCES_STICKERS: Sticker[] = [
   { src: S("record"), left: 70, top: 4, width: 26, rotate: -10, depth: "far" },

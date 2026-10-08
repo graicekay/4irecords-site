@@ -1357,6 +1357,7 @@ body:has(.links-page) .skip { display: none; }
   background: radial-gradient(800px 460px at 50% 22%, rgba(87,255,82,0.11), transparent 70%);
 }
 .links-hero > .links-wordmark { position: relative; z-index: 1; margin: 0; }
+.links-hero > .stickers { z-index: 0; }
 .links-lockup { display: block; width: min(76vw, 360px); height: auto; margin: 0 auto; }
 .links-record.hero-record { --rec: min(92vw, 520px); opacity: 0.8; }
 .links-body {
