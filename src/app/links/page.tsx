@@ -99,7 +99,10 @@ export default async function LinksPage() {
           </section>
         )}
 
-        <a href="/" className="links-home">4irecords.com</a>
+        <a href="/" className="btn btn-solid links-proceed"
+          data-event="bio_link_clicked" data-tile="proceed_to_site" data-placement="links">
+          Proceed to site →
+        </a>
       </div>
     </div>
   );
