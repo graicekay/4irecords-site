@@ -24,7 +24,9 @@ const opt = (max: number) =>
     trimmed.max(max).optional(),
   ).transform((v) => (v ?? null) as string | null);
 
-const BRANCHES = ["visuals", "artist", "creative", "updates"] as const;
+/* "artist" (be considered by 4i) is retired with the label language (8 Oct):
+   kept valid so an old link or half-filled form still submits. */
+const BRANCHES = ["visuals", "spotlight", "artist", "creative", "updates"] as const;
 export type Branch = (typeof BRANCHES)[number];
 
 const base = {
@@ -45,6 +47,12 @@ const schemas = {
     message: trimmed.min(10, "A couple of sentences is plenty.").max(5000),
     role: opt(300),
   }),
+  spotlight: z.object({
+    ...base,
+    name: trimmed.min(1, "Tell us your name.").max(120),
+    links: trimmed.min(1, "Give us somewhere to hear you.").max(2000),
+    message: trimmed.min(10, "Where and when? A sentence or two is plenty.").max(5000),
+  }),
   creative: z.object({
     ...base,
     name: trimmed.min(1, "Tell us your name.").max(120),
@@ -57,6 +65,7 @@ const schemas = {
 
 const TAGS: Record<Branch, string[]> = {
   visuals: ["inquiry", "branch:visuals"],
+  spotlight: ["inquiry", "branch:spotlight"],
   artist: ["inquiry", "branch:artist"],
   creative: ["inquiry", "branch:creative"],
   updates: ["branch:updates"],
@@ -64,6 +73,7 @@ const TAGS: Record<Branch, string[]> = {
 
 const LABEL: Record<Branch, string> = {
   visuals: "visuals",
+  spotlight: "spotlight",
   artist: "artist",
   creative: "creative",
   updates: "keep-me-posted",

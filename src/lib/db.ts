@@ -27,7 +27,7 @@ function sql() {
    kept so rows captured by the earlier version of the form still
    read correctly. */
 export type InquiryKind =
-  | "artist" | "creative" | "visuals" | "updates" | "collaborator";
+  | "artist" | "spotlight" | "creative" | "visuals" | "updates" | "collaborator";
 export type InquiryStatus = "new" | "replied" | "archived";
 
 export type Inquiry = {

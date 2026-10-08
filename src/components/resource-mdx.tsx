@@ -28,7 +28,7 @@ export function CtaLink({ href, children }: { href: string; children: ReactNode 
 export function EndCta({
   title,
   href,
-  label = "Get a free quote",
+  label = "Start a project",
   children,
 }: {
   title: string;

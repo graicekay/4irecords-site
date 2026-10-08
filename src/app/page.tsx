@@ -29,14 +29,15 @@ export default function Home() {
         <Stickers items={HERO_STICKERS} />
         <SpinningRecord />
         <h1 className="display">
-          A record label that lets artists be their own record label.
+          Be your own record label.
         </h1>
         <p className="sub">
-          4i Records is building the infrastructure independent artists
-          don&apos;t have.
+          The rollout plans, specs and real numbers a label would hand you,
+          free. Built in Salt Lake City for artists working with what
+          they&apos;ve got.
         </p>
         <div className="cta">
-          <Link href="/resources" className="btn btn-solid">Get the free resources</Link>
+          <Link href="/resources" className="btn btn-solid">Get the free tools</Link>
           <Link href="/visuals" className="btn">Get pro visuals</Link>
         </div>
         <ScrollCue />
@@ -52,29 +53,53 @@ export default function Home() {
           </h2>
           <div className="grid-3" style={{ marginTop: 26 }}>
             <div className="card">
+              <p className="eyebrow">Tools</p>
+              <h3>The real tools, free.</h3>
+              <p className="muted" style={{ fontSize: 14, margin: 0 }}>
+                The checklists, trackers and breakdowns we use on our own
+                releases. Not a sample of a paid version. The actual files.
+                Name a fair price if they helped.
+              </p>
+            </div>
+            <div className="card">
               <p className="eyebrow">Ownership</p>
-              <h3>You keep 100% of your masters</h3>
+              <h3>Know what you own.</h3>
               <p className="muted" style={{ fontSize: 14, margin: 0 }}>
-                All of them. That isn&apos;t a headline deal term with an
-                asterisk — it&apos;s the whole arrangement.
+                Masters, publishing, splits, royalties: what&apos;s yours, and
+                how to collect it. In plain English, before anyone else
+                explains it to you.
               </p>
             </div>
             <div className="card">
-              <p className="eyebrow">Alignment</p>
-              <h3>We don&apos;t make money unless you do</h3>
+              <p className="eyebrow">Purpose</p>
+              <h3>Purpose over pure commercial.</h3>
               <p className="muted" style={{ fontSize: 14, margin: 0 }}>
-                A percentage of what you earn, rather than a fee up front. If
-                the work doesn&apos;t pay you, it doesn&apos;t pay us.
+                We spotlight Salt Lake artists making something they mean, not
+                whatever is currently converting. Then we let the work talk.
               </p>
             </div>
-            <div className="card">
-              <p className="eyebrow">Selection</p>
-              <h3>Purpose over pure commercial</h3>
-              <p className="muted" style={{ fontSize: 14, margin: 0 }}>
-                We work with artists who are making something they mean, not
-                whatever is currently converting.
-              </p>
-            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* SLC Artist Spotlight. Fit with 4i's values is the bar (Grace, 8 Oct):
+          no guarantee, and we reach out only if it's a good fit. */}
+      <section className="section">
+        <div className="wrap">
+          <p className="eyebrow">Salt Lake City</p>
+          <h2 className="display" style={{ marginTop: 12 }}>SLC Artist Spotlight</h2>
+          <p className="lede muted">
+            Playing a show or recording in Salt Lake? We&apos;ll film 20–30
+            seconds of you, cut it properly, and hand you the clip and a
+            Spotify Canvas. Free while we build the series.
+          </p>
+          <p className="muted" style={{ fontSize: 14 }}>
+            Spotlights are for artists whose work fits what <FourILower /> stands
+            for: music made with purpose, that connects and uplifts. Submitting
+            isn&apos;t a guarantee. We&apos;ll reach out if it&apos;s a good fit.
+          </p>
+          <div className="cta" style={{ marginTop: 24 }}>
+            <Link href="/inquire?for=spotlight" className="btn btn-solid">Submit for a Spotlight</Link>
           </div>
         </div>
       </section>
@@ -86,11 +111,11 @@ export default function Home() {
               display: "flex", justifyContent: "space-between",
               alignItems: "baseline", gap: 16, flexWrap: "wrap",
             }}>
-              <h2 className="display" style={{ margin: 0 }}>Free resources</h2>
+              <h2 className="display" style={{ margin: 0 }}>Free tools</h2>
               <Link href="/resources" className="linkish">All resources →</Link>
             </div>
             <p className="muted" style={{ marginTop: 14 }}>
-              The full PDFs and spreadsheet trackers go straight to your email.
+              The full PDFs and trackers go straight to your inbox.
             </p>
             <div className="grid-3" style={{ marginTop: 26 }}>
               {featured.map((r) => <ResourceCard key={r.slug} resource={r} />)}
@@ -106,8 +131,9 @@ export default function Home() {
             When you need it made properly.
           </h2>
           <p className="lede muted">
-            Music videos, performance visuals, and the short-form that comes out
-            of the same shoot.
+            Run it yourself with the tools. When you want more hands,{" "}
+            <FourILower /> Productions makes the music video, the performance
+            visuals, and the short-form from the same shoot.
           </p>
           {caseStudies.length > 0 && (
             <div
@@ -132,7 +158,7 @@ export default function Home() {
             4 Artists. 4 Fans. 4 <span className="four">Good</span>.
           </h2>
           <p className="lede muted">
-            Get new resources when we publish them.
+            New tools, first. One email when we publish.
           </p>
           <div className="cta" style={{ justifyContent: "center", marginTop: 30 }}>
             <Link href="/inquire?for=updates" className="btn btn-solid">

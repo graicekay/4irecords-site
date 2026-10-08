@@ -8,7 +8,7 @@ import { RESOURCES_STICKERS } from "@/lib/stickers";
 export const metadata: Metadata = {
   title: "Resources",
   description:
-    "Free guides, templates and breakdowns for independent artists. The full PDFs and spreadsheet trackers go straight to your email.",
+    "Free tools for independent artists running their own releases. The full PDFs and trackers go straight to your email.",
 };
 
 /* §3.2 — no gate to browse. The reading is open; the size table, the
@@ -24,11 +24,10 @@ export default function ResourcesIndex() {
       <section className="wrap page-head has-stickers">
         <Stickers items={RESOURCES_STICKERS} />
         <p className="eyebrow">Free</p>
-        <h1 className="display">Resources</h1>
+        <h1 className="display">Free Tools</h1>
         <p className="sub">
-          Guides, templates and breakdowns for independent artists.
-          We&apos;ll send the full PDFs and spreadsheet trackers directly to
-          your email.
+          The guides, templates and trackers we use on our own releases. Take
+          them and run your release. The full files go to your email.
         </p>
       </section>
 

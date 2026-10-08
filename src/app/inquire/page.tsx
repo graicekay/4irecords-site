@@ -9,7 +9,7 @@ export const metadata: Metadata = {
     "Artists, creatives, and anyone who just wants to stay posted. One form, four ways in.",
 };
 
-const VALID: Branch[] = ["visuals", "artist", "creative", "updates"];
+const VALID: Branch[] = ["visuals", "spotlight", "creative", "updates"];
 
 /* `?for=creative` pre-selects a branch — links elsewhere can point in
    this way so someone who clicked "the marketplace" doesn't have to

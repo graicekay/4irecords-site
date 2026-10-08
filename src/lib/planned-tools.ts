@@ -12,8 +12,8 @@ export type PlannedTool = { name: string; blurb: string; href?: string; banner?:
 export const PLANNED_TOOLS: PlannedTool[] = SHOT_VISUALIZER_LISTED
   ? [{
       name: "Shot visualizer",
-      /* Grace's line from the 4i Productions resources card. */
-      blurb: "Specify lenses, focal length, and aperture for your shot lists with this handy tool.",
+      /* Grace's line, the same as the shot visualizer's own intro (8 Oct). */
+      blurb: "Frame a shot, light the set and move the camera, then save it all as a shot list to download or share.",
       href: `${PRODUCTIONS_SITE}/resources/shot-visualizer`,
       /* The banner 4i Productions uses (a frame from the tool: FS 35mm f/2, low
          angle, city at night), loaded from there so the two stay in step. */

@@ -10,14 +10,14 @@ export const metadata: Metadata = {
     template: "%s — 4i Records",
   },
   description:
-    "An alternative record label in Salt Lake City. Artists keep 100% of their masters and music, and gain access to a network of resources that propels their growth.",
+    "An alternative record label in Salt Lake City. Free tools for independent artists to run their own releases: rollout plans, specs, and the real numbers.",
   openGraph: {
     type: "website",
     siteName: "4i Records",
     url: "https://www.4irecords.com",
     title: "4i Records — We're 4 Artists.",
     description:
-      "Artists keep 100% of their masters and music. 4 Artists. 4 Fans. 4 Good.",
+      "Free tools to be your own record label. 4 Artists. 4 Fans. 4 Good.",
   },
   twitter: { card: "summary_large_image" },
 };

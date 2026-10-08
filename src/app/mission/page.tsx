@@ -8,9 +8,8 @@ export const metadata: Metadata = {
     "Our mission is to empower independent artists to own their voices, their masters, and their futures.",
 };
 
-/* Mission. Verbatim from the Google Site — this page is the one
-   place the label states its position, so the copy is left alone
-   and only the setting changes. */
+/* Mission. From the Google Site, revised 8 Oct 2026 when 4i Records
+   moved from label to resource hub (not signing artists for now). */
 export default function Mission() {
   return (
     <>
@@ -29,17 +28,16 @@ export default function Mission() {
             encourage experimentation.
           </p>
           <p className="muted" style={{ marginTop: 26 }}>
-            We provide the tools, networks, and resources that support artists&apos;
-            autonomous growth and brand development.
+            We give away the tools, steps and numbers we use ourselves, so
+            artists can run their own releases with the resources they have.
           </p>
           <p className="muted" style={{ marginTop: 22 }}>
-            We believe art should connect and uplift, not divide or harm.
-            That&apos;s why we champion music that promotes authenticity and
-            thoughtfulness for positive impact.
+            We believe art should connect and uplift, not divide or harm. We
+            champion music made with authenticity and thoughtfulness.
           </p>
           <p className="muted" style={{ marginTop: 22 }}>
-            We aim to build a music movement through innovation, honesty, and the
-            power of self-expression to unify audiences everywhere.
+            We&apos;re building a music movement on innovation, honesty and
+            self-expression. It starts with the tools.
           </p>
         </div>
       </section>
@@ -50,7 +48,8 @@ export default function Mission() {
             4 Artists. 4 Fans. 4 <span className="four">Good</span>.
           </h2>
           <div className="cta" style={{ justifyContent: "center", marginTop: 30 }}>
-            <Link href="/inquire" className="btn btn-solid">Inquire</Link>
+            <Link href="/resources" className="btn btn-solid">Get the free tools</Link>
+            <Link href="/inquire?for=spotlight" className="btn">Submit for a Spotlight</Link>
           </div>
         </div>
       </section>

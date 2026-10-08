@@ -16,9 +16,9 @@ const CHOICES: { value: Branch; label: string; hint: string }[] = [
     hint: "Music videos, performance content, short-form cutdowns.",
   },
   {
-    value: "artist",
-    label: "I'm an artist who wants to be considered by 4i",
-    hint: "You're building something and want us in it.",
+    value: "spotlight",
+    label: "I'm an SLC artist who wants a Spotlight",
+    hint: "Playing or recording in Salt Lake soon? We'll come film 20–30 seconds, free.",
   },
   {
     value: "creative",
@@ -133,7 +133,7 @@ export default function BranchedInquireForm({
                 <input
                   id="name" name="name" className="input" maxLength={120}
                   defaultValue={values.name ?? ""}
-                  required={branch === "artist" || branch === "creative"}
+                  required={branch === "artist" || branch === "spotlight" || branch === "creative"}
                 />
               </Field>
             )}
@@ -160,6 +160,36 @@ export default function BranchedInquireForm({
                 <Field
                   name="message" label="What are you building?" errors={errors}
                   hint="And what do you need most right now?"
+                >
+                  <textarea
+                    id="message" name="message" className="textarea"
+                    maxLength={5000} required defaultValue={values.message ?? ""}
+                  />
+                </Field>
+              </>
+            )}
+
+            {branch === "spotlight" && (
+              <>
+                <p className="muted small" style={{ marginTop: 0, marginBottom: 22 }}>
+                  Spotlights are for artists whose work fits what <FourILower /> stands
+                  for: music made with purpose, that connects and uplifts.
+                  Submitting isn&apos;t a guarantee. We&apos;ll reach out if it&apos;s a
+                  good fit.
+                </p>
+                <Field
+                  name="links" label="Links" errors={errors}
+                  hint="Spotify, Instagram, TikTok, Bandcamp: wherever the work lives."
+                >
+                  <textarea
+                    id="links" name="links" className="textarea"
+                    style={{ minHeight: 90 }} maxLength={2000} required
+                    defaultValue={values.links ?? ""}
+                  />
+                </Field>
+                <Field
+                  name="message" label="Where and when?" errors={errors}
+                  hint="The show or session in Salt Lake: venue or studio, and the date."
                 >
                   <textarea
                     id="message" name="message" className="textarea"
