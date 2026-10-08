@@ -29,15 +29,14 @@ export default function Home() {
         <Stickers items={HERO_STICKERS} />
         <SpinningRecord />
         <h1 className="display">
-          Be your own record label.
+          A record label that lets artists be their own record label.
         </h1>
         <p className="sub">
-          The rollout plans, specs and real numbers a label would hand you,
-          free. Built in Salt Lake City for artists working with what
-          they&apos;ve got.
+          4i Records is building the infrastructure independent artists
+          don&apos;t have.
         </p>
         <div className="cta">
-          <Link href="/resources" className="btn btn-solid">Get the free tools</Link>
+          <Link href="/resources" className="btn btn-solid">Get the free resources</Link>
           <Link href="/visuals" className="btn">Get pro visuals</Link>
         </div>
         <ScrollCue />
