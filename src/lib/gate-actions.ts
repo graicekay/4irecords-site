@@ -123,8 +123,16 @@ export async function requestResource(
   /* The file has already gone out; a donation never gates it. If
      Checkout can't be opened, they still have what they came for. */
   if (cents > 0 && resource.payWhatYouWant && donationsEnabled()) {
+    /* The visitor's PostHog ids, so the payment webhook can credit the
+       right person. Free-form strings from the browser: length-capped and
+       only ever echoed back to PostHog. */
+    const phId = (key: string) => {
+      const v = formData.get(key);
+      return typeof v === "string" && v.length > 0 && v.length <= 200 ? v : undefined;
+    };
     const checkout = await createDonationCheckout({
       cents, title: resource.title, slug, email, base: BASE,
+      posthogDistinctId: phId("ph_did"), posthogSessionId: phId("ph_sid"),
     });
     if (checkout) return { ok: true, redirect: checkout };
   }

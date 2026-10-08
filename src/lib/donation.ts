@@ -34,6 +34,8 @@ export async function createDonationCheckout(opts: {
   slug: string;
   email: string;
   base: string;
+  posthogDistinctId?: string;
+  posthogSessionId?: string;
 }): Promise<string | null> {
   const key = process.env.STRIPE_SECRET_KEY?.trim();
   if (!key) return null;
@@ -53,9 +55,14 @@ export async function createDonationCheckout(opts: {
     "line_items[0][price_data][product_data][name]": opts.title,
     "metadata[source]": "4irecords-resource",
     "metadata[slug]": opts.slug,
+    "metadata[guide_name]": opts.title,
     "payment_intent_data[metadata][source]": "4irecords-resource",
     "payment_intent_data[metadata][slug]": opts.slug,
   });
+  /* Read back by /api/stripe/webhook to capture resource_fair_price_completed
+     under the same PostHog person as the checkout click. */
+  if (opts.posthogDistinctId) body.set("metadata[ph_distinct_id]", opts.posthogDistinctId);
+  if (opts.posthogSessionId) body.set("metadata[ph_session_id]", opts.posthogSessionId);
 
   const res = await fetch("https://api.stripe.com/v1/checkout/sessions", {
     method: "POST",
