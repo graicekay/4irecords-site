@@ -6,6 +6,7 @@ export const metadata: Metadata = {
   title: "Mission",
   description:
     "Our mission is to empower independent artists to own their voices, their masters, and their futures.",
+  alternates: { canonical: "/mission" },
 };
 
 /* Mission. Verbatim from the Google Site — this page is the one

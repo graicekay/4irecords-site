@@ -10,6 +10,7 @@ export const metadata: Metadata = {
   title: "Events",
   description:
     "Upcoming 4i Underground shows. Basements, garages, and neighborhood venues around Salt Lake City.",
+  alternates: { canonical: "/events" },
 };
 
 /* The events list is derived from a JSON file at request time, so a

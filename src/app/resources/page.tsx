@@ -9,6 +9,7 @@ export const metadata: Metadata = {
   title: "Resources",
   description:
     "Free tools for independent artists running their own releases. The full PDFs and trackers go straight to your email.",
+  alternates: { canonical: "/resources" },
 };
 
 /* §3.2 — no gate to browse. The reading is open; the size table, the

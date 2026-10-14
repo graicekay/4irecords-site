@@ -8,6 +8,7 @@ export const metadata: Metadata = {
   title: "4 Fans",
   description:
     "Support your favorite artists directly by coming to our shows. Subscribe for text and email updates on the best underground shows in your area.",
+  alternates: { canonical: "/fans" },
 };
 
 export default function Fans() {

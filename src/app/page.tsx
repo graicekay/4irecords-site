@@ -1,3 +1,4 @@
+import type { Metadata } from "next";
 import Link from "next/link";
 import CaseStudy from "@/components/CaseStudy";
 import { SpinningRecord } from "@/components/SpinningRecord";
@@ -8,6 +9,10 @@ import { featuredResources } from "@/lib/resources";
 import { ResourceCard } from "@/components/ResourceCard";
 import { Stickers } from "@/components/Stickers";
 import { HERO_STICKERS } from "@/lib/stickers";
+
+/* One main address for the home page, so ?fbclid= and other tracking
+   variants count as the same page in Google. */
+export const metadata: Metadata = { alternates: { canonical: "/" } };
 
 /* ============================================================
    §3.1 — landing page.

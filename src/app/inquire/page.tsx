@@ -7,6 +7,7 @@ export const metadata: Metadata = {
   title: "Inquire",
   description:
     "Artists, creatives, and anyone who just wants to stay posted. One form, four ways in.",
+  alternates: { canonical: "/inquire" },
 };
 
 const VALID: Branch[] = ["visuals", "spotlight", "creative", "updates"];

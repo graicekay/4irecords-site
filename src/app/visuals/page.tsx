@@ -9,6 +9,7 @@ export const metadata: Metadata = {
   title: "Visuals",
   description:
     "Music videos, performance visuals, short-form cutdowns and visualizers — made by 4i Productions.",
+  alternates: { canonical: "/visuals" },
 };
 
 /* §3.4. Leads with work, not copy. The primary CTA hands off to the
