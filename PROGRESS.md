@@ -8,6 +8,12 @@ Live at www.4irecords.com (Vercel, team `graicekay`); Neon project
 `4irecords-site`, schema in `schema.sql`; `/admin` behind `ADMIN_PASSWORD`.
 Started 24 September 2026.
 
+## Search Console fix (pushed 13 Oct 2026)
+- Search Console (11 Oct) reported "duplicate without user-selected canonical" plus some "noindex".
+- Fix: every public page now sets `alternates.canonical` (home, mission, visuals, resources, inquire, events, fans; resource pages already had one). `/inquire?branch=…` and Instagram tracking params now point at the main URL. Commit bd8899c.
+- The noindex pages are intentional: feedback, unsubscribe, admin, login, links, draft resources. Leave them.
+- Google takes days to weeks to recheck. If duplicates persist after ~2 weeks, look at the specific URLs in Search Console.
+
 ## Pushed 29 Sep: resume here
 
 Everything below "What's built" is live as of the 29 Sep push, including the
