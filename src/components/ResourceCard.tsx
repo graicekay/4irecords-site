@@ -24,7 +24,7 @@ export function ResourceCard({
       </p>
       {showMeta && (
         <p style={{ margin: 0, fontSize: 12 }} className="muted">
-          {r.downloadExternal ? "Download on Gumroad" : r.downloadFile ? "Includes a download" : "Read only"}
+          {r.downloadExternal ? "Download on 4iproductions.com" : r.downloadFile ? "Includes a download" : "Read only"}
         </p>
       )}
     </Link>

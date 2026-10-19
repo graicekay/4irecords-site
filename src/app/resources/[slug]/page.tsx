@@ -167,11 +167,11 @@ export default async function ResourcePage(
                   {/* New tab, so the visitor stays on 4irecords.com. */}
                   <a
                     href={resource.downloadExternal} className="btn btn-solid" target="_blank" rel="noopener noreferrer"
-                    data-link-id="gumroad_download" data-placement="resource_gate"
+                    data-link-id="4iproductions_pack_download" data-placement="resource_gate"
                   >
-                    Get it on Gumroad
+                    Get it on 4i Productions
                   </a>
-                  <p className="gate-privacy">Opens graicekay.gumroad.com in a new tab. Pay what you want, $0 and up.</p>
+                  <p className="gate-privacy">Opens 4iproductions.com in a new tab. Pay what you want, $0 and up.</p>
                 </div>
               ) : resource.downloadFile ? (
                 <DownloadGate

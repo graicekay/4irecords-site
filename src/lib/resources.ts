@@ -56,7 +56,7 @@ export type ResourceMeta = {
   /* "tools" moves a resource out of the main grid into the Tools section
      at the bottom of /resources (and out of the numbered strip). */
   section?: "tools";
-  /* A download that lives elsewhere (the Weapons pack stays on Gumroad):
+  /* A download that lives elsewhere (the Weapons pack is on 4i Productions):
      the gate is replaced by a plain link out. */
   downloadExternal?: string;
   downloadExternalLabel?: string;
