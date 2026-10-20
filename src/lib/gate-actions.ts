@@ -102,6 +102,7 @@ export async function requestResource(
     downloadLabel: resource.downloadLabel || "Download the file",
     downloadUrl: url,
     slug,
+    gallery: resource.gallery,
   });
 
   await recordDownload({ email, slug, delivered: sent.ok }).catch((e) =>

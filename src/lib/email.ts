@@ -64,13 +64,18 @@ async function send(opts: {
    default transactional template. Inline styles only — Gmail strips
    <style> blocks, and a dark background can't be relied on either,
    so this reads correctly on white. */
+/* Images load from the live site even in a local send: a mail client
+   can't reach localhost. Kept in step with 4iProductions-site's pack
+   email (src/lib/email.ts there), so every 4i pack email matches. */
+const IMAGES = "https://www.4irecords.com";
+
 function layout(body: string): string {
   return `<!doctype html><html><body style="margin:0;padding:0;background:#0a0a0a;">
   <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background:#0a0a0a;padding:32px 16px;">
     <tr><td align="center">
       <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="max-width:560px;background:#111111;border:1px solid rgba(255,255,255,0.1);border-radius:4px;">
         <tr><td style="padding:28px 28px 0;">
-          <span style="display:inline-block;background:#57ff52;color:#0a0a0a;font-family:Menlo,monospace;font-weight:bold;font-size:14px;padding:5px 8px;border-radius:2px;">4i</span>
+          <img src="${IMAGES}/email/4i-mark.png" width="29" height="36" alt="4i" style="display:block;border:0;" />
         </td></tr>
         <tr><td style="padding:20px 28px 28px;font-family:-apple-system,Helvetica,Arial,sans-serif;font-size:15px;line-height:1.65;color:#f0f0f0;">
           ${body}
@@ -84,6 +89,18 @@ function layout(body: string): string {
     </td></tr>
   </table>
 </body></html>`;
+}
+
+/* Up to four of a resource's gallery shots, two across. Each
+   gallery-NN.jpg has an email-NN.jpg beside it (504x284, made for this). */
+function thumbGrid(gallery: string[] | undefined): string {
+  const srcs = (gallery ?? []).slice(0, 4).map((g) => IMAGES + g.replace(/gallery-(\d+)\.jpg$/, "email-$1.jpg"));
+  if (srcs.length < 2) return "";
+  const cell = (src: string) =>
+    `<td width="50%" style="padding:4px;"><img src="${src}" width="244" alt="" style="display:block;width:100%;height:auto;border:0;border-radius:2px;" /></td>`;
+  const rows: string[] = [];
+  for (let i = 0; i + 1 < srcs.length; i += 2) rows.push(`<tr>${cell(srcs[i])}${cell(srcs[i + 1])}</tr>`);
+  return `<table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="margin:0 0 20px;">${rows.join("")}</table>`;
 }
 
 /* CAN-SPAM wants a working unsubscribe and a real postal address in
@@ -130,6 +147,7 @@ export async function sendResource(opts: {
   downloadLabel: string;
   downloadUrl: string;
   slug: string;
+  gallery?: string[];
 }): Promise<SendResult> {
   const html = withUnsub(
     layout(`
@@ -139,6 +157,7 @@ export async function sendResource(opts: {
           ${escapeHtml(opts.title)}
         </a>
       </p>
+      ${thumbGrid(opts.gallery)}
       <p style="margin:0 0 8px;">
         Check out our other free resources at
         <a href="https://www.4irecords.com/resources" style="color:#57ff52;">4irecords.com/resources</a>.
