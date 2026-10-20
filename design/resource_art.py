@@ -30,6 +30,7 @@ T7 = "/Volumes/T7 Shield/"
 PAPER = T7 + "Editing Refs/Overlays + Film FX/15 Textures/Paper Stills (Unsplash)/paper_black-cracked (valeria-reverdo).jpg"
 SCRIB = T7 + "4i/4i Records/Resources/Gig Poster Scribbles/"
 WEAP = T7 + "2026/Film & Music Video Projects/Productions/Weapons/"
+SPOIL = os.path.expanduser("~/Documents/My Apps/4i-plugin/packs/spoilers/items/")
 MONO = "/System/Library/Fonts/Menlo.ttc"
 
 BANNER = (1600, 800)      # the top half of a card
@@ -207,7 +208,7 @@ def contact_sheets(slug, files, title, tile_bg, first=2, cols=8, rows=3):
             art = trimmed(f, (tw - 28, th - 50), tile_bg)
             cv.alpha_composite(art, (x + (tw - art.width) // 2, y + 12 + (th - 50 - art.height) // 2 + 6))
             name = f"{s + k + 1:02d}  {os.path.splitext(os.path.basename(f))[0]}"[:22]
-            ink = (60, 60, 60) if sum(tile_bg) > 400 else (150, 150, 150)
+            ink = (60, 60, 60) if sum(tile_bg) > 300 else (150, 150, 150)  # mid-grey tiles (Spoilers) get dark labels too
             d.text((x + 10, y + th - 26), name, font=small, fill=ink)
         save(cv, slug, f"gallery-{first + s // per:02d}.jpg", q=86)
 
@@ -218,6 +219,13 @@ def sheets():
     graf = glob.glob(WEAP + "Footage/BTS:Graffiti Pics/Graffiti/Transparent/[!.]*.png")
     graf.sort(key=lambda p: int("".join(ch for ch in os.path.basename(p) if ch.isdigit()) or 0))
     contact_sheets("weapons-graffiti", graf, "GRAFFITI GRAPHICS ASSET PACK (WEAPONS)", (28, 28, 28))
+    spoilers_sheets()
+
+
+def spoilers_sheets():
+    # the pack as it downloads (Graice's picks), from the 4i plugin's pack source
+    items = sorted(glob.glob(SPOIL + "[!.]*.png"), key=str.lower)
+    contact_sheets("spoilers", items, "SPOILERS ASSET PACK", (128, 128, 126))
 
 
 if __name__ == "__main__":
