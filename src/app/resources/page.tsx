@@ -10,6 +10,13 @@ export const metadata: Metadata = {
   description:
     "Free tools for independent artists running their own releases. The full PDFs and trackers go straight to your email.",
   alternates: { canonical: "/resources" },
+  // Link preview (23 Oct 2026): "Free Tools" with the resources' banners, made from design/og/og-index.html.
+  openGraph: {
+    title: "Free Tools — 4i Records",
+    description: "The guides, templates and trackers we use on our own releases.",
+    images: [{ url: "/resources/og.png", width: 1200, height: 630, alt: "Free tools from 4i Records" }],
+  },
+  twitter: { card: "summary_large_image", images: ["/resources/og.png"] },
 };
 
 /* §3.2 — no gate to browse. The reading is open; the size table, the

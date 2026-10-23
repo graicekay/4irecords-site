@@ -1,3 +1,5 @@
+import { existsSync } from "node:fs";
+import { join } from "node:path";
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
@@ -44,6 +46,13 @@ export async function generateMetadata(
   if (!resource) return {};
 
   const url = `${SITE}/resources/${resource.slug}`;
+  /* The link preview (23 Oct 2026): a 1200x630 card per resource (its banner, format and title, the 4i Records
+     lockup), made from design/og/. A resource without one falls back to its first JPG/PNG slide; never an SVG,
+     which Instagram, iMessage and most apps won't show. */
+  const card = existsSync(join(process.cwd(), "public", "resources", resource.slug, "og.png"))
+    ? { url: `/resources/${resource.slug}/og.png`, width: 1200, height: 630, alt: resource.title } : null;
+  const slide = [...(resource.gallery ?? []), resource.cover, resource.banner].find((u) => u && !u.endsWith(".svg"));
+  const image = card ?? (slide ? { url: slide } : null);
   return {
     title: resource.title,
     description: resource.description,
@@ -54,13 +63,13 @@ export async function generateMetadata(
       description: resource.description,
       url,
       publishedTime: new Date(resource.publishedAt).toISOString(),
-      ...((resource.gallery?.[0] ?? resource.cover)
-        ? { images: [{ url: (resource.gallery?.[0] ?? resource.cover)! }] } : {}),
+      ...(image ? { images: [image] } : {}),
     },
     twitter: {
       card: "summary_large_image",
       title: resource.title,
       description: resource.description,
+      ...(image ? { images: [image.url] } : {}),
     },
     /* Placeholders must never be indexed — they'd rank for nothing
        and teach Google the site is thin. */
