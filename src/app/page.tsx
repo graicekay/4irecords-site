@@ -9,6 +9,8 @@ import { featuredResources } from "@/lib/resources";
 import { ResourceCard } from "@/components/ResourceCard";
 import { Stickers } from "@/components/Stickers";
 import { HERO_STICKERS } from "@/lib/stickers";
+import { PluginPromo } from "@/components/PluginPromo";
+import { PRODUCTIONS_SITE } from "@/lib/links";
 
 /* One main address for the home page, so ?fbclid= and other tracking
    variants count as the same page in Google. */
@@ -89,7 +91,8 @@ export default function Home() {
       {/* SLC Artist Spotlight. Fit with 4i's values is the bar (Grace, 8 Oct):
           no guarantee, and we reach out only if it's a good fit. */}
       <section className="section">
-        <div className="wrap">
+        <div className="wrap spotlight">
+          <div>
           <p className="eyebrow">Salt Lake City</p>
           <h2 className="display" style={{ marginTop: 12 }}>SLC Artist Spotlight</h2>
           <p className="lede muted">
@@ -110,6 +113,23 @@ export default function Home() {
               Submit for a Spotlight
             </Link>
           </div>
+          </div>
+          {/* The first Spotlight (Lesser Moose, Oct 2026). Video on R2 through 4i Productions' /media, like the
+              hero; the master is on the T7 under 4i/Social Media/Weekly Social Content/26.19.12/4i Records. */}
+          <video
+            className="spotlight-video"
+            src={`${PRODUCTIONS_SITE}/media/records/lesser-moose-spotlight.mp4`}
+            poster="/spotlight/lesser-moose-poster.jpg"
+            autoPlay muted loop playsInline controls preload="metadata"
+            aria-label="Artist Spotlight: Lesser Moose"
+          />
+        </div>
+      </section>
+
+      {/* The free 4i plugin (26 Oct). */}
+      <section className="section">
+        <div className="wrap">
+          <PluginPromo placement="home_plugin" />
         </div>
       </section>
 

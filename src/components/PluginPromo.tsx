@@ -2,7 +2,7 @@ import { FourILower, FourIText } from "@/components/FourIMark";
 import { PRODUCTIONS_SITE } from "@/lib/links";
 
 /* ============================================================
-   The free 4i plugin (26 Oct 2026), on /resources. The plugin lives on 4i
+   The free 4i plugin (26 Oct 2026), on the home page and /resources. The plugin lives on 4i
    Productions, so the banner, the sample video and the pack
    covers load from there (like the shot visualizer's banner) and
    every link opens its /plugin page in a new tab.
@@ -32,7 +32,7 @@ const PACKS = [
   },
 ];
 
-/** `placement` tags the outbound clicks (resources_plugin). */
+/** `placement` tags the outbound clicks (home_plugin / resources_plugin). */
 export function PluginPromo({ placement }: { placement: string }) {
   return (
     <div className="plugin-promo">
