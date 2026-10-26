@@ -40,7 +40,7 @@ export default function ResourcesIndex() {
         </p>
       </section>
 
-      <section className="section" style={{ borderTop: 0, paddingTop: 48 }}>
+      <section className="section" style={{ borderTop: 0, paddingTop: 48, paddingBottom: 32 }}>
         <div className="wrap">
           {resources.length === 0 ? (
             <div className="notice">
@@ -58,7 +58,7 @@ export default function ResourcesIndex() {
       </section>
 
       {/* The free 4i plugin (26 Oct), between the resources and the Tools. */}
-      <section className="section" id="plugin" style={{ borderTop: 0 }}>
+      <section className="section" id="plugin" style={{ borderTop: 0, paddingTop: 32, paddingBottom: 32 }}>
         <div className="wrap">
           <PluginPromo placement="resources_plugin" />
         </div>
@@ -66,7 +66,7 @@ export default function ResourcesIndex() {
 
       {/* Tools: packs hosted elsewhere and what's being built next. Kept at
           the bottom so the roadmap never reads as the headline. */}
-      <section className="section" style={{ borderTop: 0 }}>
+      <section className="section" style={{ borderTop: 0, paddingTop: 32 }}>
         <div className="wrap">
           <h2 className="display" style={{ fontSize: 30, margin: 0 }}>More tools</h2>
           <div className="grid-3" style={{ marginTop: 26 }}>
