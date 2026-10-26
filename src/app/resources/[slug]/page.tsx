@@ -19,6 +19,7 @@ import { Gallery } from "@/components/Gallery";
 import { Stickers } from "@/components/Stickers";
 import { PAGE_STICKERS } from "@/lib/stickers";
 import { ResourceCard } from "@/components/ResourceCard";
+import { PluginPromo } from "@/components/PluginPromo";
 import {
   FORMAT_LABEL, allResources, mainResources, relatedResources, resourceBySlug,
 } from "@/lib/resources";
@@ -203,16 +204,20 @@ export default async function ResourcePage(
         </div>
       </section>
 
-      {related.length > 0 && (
-        <section className="section">
-          <div className="wrap">
-            <h2 className="display" style={{ fontSize: 30 }}>More resources</h2>
-            <div className="grid-3" style={{ marginTop: 26 }}>
-              {related.map((r) => <ResourceCard key={r.slug} resource={r} />)}
-            </div>
-          </div>
-        </section>
-      )}
+      {/* More resources: the free 4i plugin first (26 Oct), then the related resources. */}
+      <section className="section">
+        <div className="wrap">
+          <PluginPromo placement="more_resources_plugin" />
+          {related.length > 0 && (
+            <>
+              <h2 className="display" style={{ fontSize: 30, marginTop: 64 }}>More resources</h2>
+              <div className="grid-3" style={{ marginTop: 26 }}>
+                {related.map((r) => <ResourceCard key={r.slug} resource={r} />)}
+              </div>
+            </>
+          )}
+        </div>
+      </section>
       </div>
     </>
   );

@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { mainResources, toolResources } from "@/lib/resources";
 import { ResourceCard } from "@/components/ResourceCard";
+import { PluginPromo } from "@/components/PluginPromo";
 import { PLANNED_TOOLS } from "@/lib/planned-tools";
 import { Stickers } from "@/components/Stickers";
 import { RESOURCES_STICKERS } from "@/lib/stickers";
@@ -53,6 +54,13 @@ export default function ResourcesIndex() {
               {resources.map((r) => <ResourceCard key={r.slug} resource={r} showMeta />)}
             </div>
           )}
+        </div>
+      </section>
+
+      {/* The free 4i plugin (26 Oct), between the resources and the Tools. */}
+      <section className="section" id="plugin">
+        <div className="wrap">
+          <PluginPromo placement="resources_plugin" />
         </div>
       </section>
 
