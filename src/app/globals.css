@@ -1407,7 +1407,9 @@ body:has(.links-page) .skip { display: none; }
 @media (prefers-reduced-motion: reduce) { .links-fold { transition: none; } }
 
 /* ---------- The free 4i plugin (components/PluginPromo) ---------- */
-.plugin-promo-title { font-size: 30px; margin: 0; max-width: 22ch; }
+.plugin-promo-title { font-size: 30px; margin: 0; max-width: 22ch; color: var(--accent); }
+/* The line is green; the 4i mark in it stays white (Graice, 26 Oct). */
+.plugin-promo-title .inline-mark { color: var(--text); }
 .plugin-promo-media { margin-top: 26px; align-items: stretch; }
 .plugin-promo-frame {
   display: block; overflow: hidden; border: 1px solid var(--border); border-radius: var(--radius);
