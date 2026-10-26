@@ -58,7 +58,7 @@ export default function ResourcesIndex() {
       </section>
 
       {/* The free 4i plugin (26 Oct), between the resources and the Tools. */}
-      <section className="section" id="plugin">
+      <section className="section" id="plugin" style={{ borderTop: 0 }}>
         <div className="wrap">
           <PluginPromo placement="resources_plugin" />
         </div>
@@ -66,9 +66,9 @@ export default function ResourcesIndex() {
 
       {/* Tools: packs hosted elsewhere and what's being built next. Kept at
           the bottom so the roadmap never reads as the headline. */}
-      <section className="section">
+      <section className="section" style={{ borderTop: 0 }}>
         <div className="wrap">
-          <h2 className="display" style={{ fontSize: 30, margin: 0 }}>Tools</h2>
+          <h2 className="display" style={{ fontSize: 30, margin: 0 }}>More tools</h2>
           <div className="grid-3" style={{ marginTop: 26 }}>
             {/* Live tools that live on another 4i site: open in a new tab so
                 the visitor keeps their place here. */}
