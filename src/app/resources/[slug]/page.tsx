@@ -115,7 +115,7 @@ export default async function ResourcePage(
         <p className="res-byline">
           <FourILower /> Records · Updated {new Date(resource.publishedAt).toLocaleDateString("en-GB", { month: "short", year: "numeric" })} · {FORMAT_LABEL[resource.format]}
         </p>
-        <h1>{resource.title}</h1>
+        <h1 className={resource.keepCase ? "keep-case" : undefined}>{resource.title}</h1>
         <p className="standfirst">{resource.description}</p>
         <ResourceNav resources={mainResources()} current={resource.slug} />
       </section>
@@ -180,7 +180,11 @@ export default async function ResourcePage(
                   >
                     Get it on <FourILower /> Productions
                   </a>
-                  <p className="gate-privacy">Opens 4iproductions.com in a new tab. Pay what you want, $0 and up.</p>
+                  <p className="gate-privacy">
+                    Opens 4iproductions.com in a new tab.
+                    {/* Border-iCE comes with the free plugin; only the packs take a fair price. */}
+                    {resource.format === "pack" ? " Pay what you want, $0 and up." : " Free."}
+                  </p>
                 </div>
               ) : resource.downloadFile ? (
                 <DownloadGate

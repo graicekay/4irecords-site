@@ -60,6 +60,9 @@ export type ResourceMeta = {
      the gate is replaced by a plain link out. */
   downloadExternal?: string;
   downloadExternalLabel?: string;
+  /* The title has a lowercase letter that must stay (Border-iCE). Anton is
+     capitals only, so it's set in Inter instead, case kept. */
+  keepCase?: boolean;
 };
 
 export type Resource = ResourceMeta & { body: string };

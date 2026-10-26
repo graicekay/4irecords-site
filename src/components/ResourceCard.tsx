@@ -18,7 +18,7 @@ export function ResourceCard({
       <span className={hasDownload(r) ? "badge badge-has-dl" : "badge"}>
         {FORMAT_LABEL[r.format]}
       </span>
-      <h3 className="card-title">{r.title}</h3>
+      <h3 className={r.keepCase ? "card-title keep-case" : "card-title"}>{r.title}</h3>
       <p className="muted" style={{ fontSize: 13.5, margin: showMeta ? "0 0 14px" : 0 }}>
         {r.description}
       </p>
