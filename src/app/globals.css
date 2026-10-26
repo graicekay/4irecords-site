@@ -1443,7 +1443,7 @@ a.plugin-promo-frame:hover { border-color: var(--border-hi); }
 .section.tight { border-top: 0; padding: 48px 0; }
 @media (max-width: 720px) { .section.tight { padding: 36px 0; } }
 
-/* /resources "More tools": four smaller cards on one line. */
+/* /resources: the resources and "More tools", four smaller cards on one line each. */
 .tools-row { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 16px; }
 .tools-row .card { padding: 18px; }
 .tools-row .card-banner { width: calc(100% + 36px); margin: 0 -18px 14px; }

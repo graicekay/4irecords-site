@@ -50,7 +50,8 @@ export default function ResourcesIndex() {
               <p style={{ margin: "8px 0 0" }}>The first resources are being written.</p>
             </div>
           ) : (
-            <div className="grid-3">
+            /* One line of four, like More tools (Graice, 26 Oct). */
+            <div className="tools-row">
               {resources.map((r) => <ResourceCard key={r.slug} resource={r} showMeta />)}
             </div>
           )}
