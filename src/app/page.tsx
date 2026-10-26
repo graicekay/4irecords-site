@@ -49,7 +49,7 @@ export default function Home() {
         <ScrollCue />
       </section>
 
-      <section className="section">
+      <section className="section tight">
         <div className="wrap">
           {/* The mark, not the letters. `.display` uppercases, and Anton
               has no lowercase to fall back on, so a typed "4i" came out as
@@ -90,7 +90,7 @@ export default function Home() {
 
       {/* SLC Artist Spotlight. Fit with 4i's values is the bar (Grace, 8 Oct):
           no guarantee, and we reach out only if it's a good fit. */}
-      <section className="section">
+      <section className="section tight">
         <div className="wrap spotlight">
           <div>
           <p className="eyebrow">Salt Lake City</p>
@@ -127,14 +127,14 @@ export default function Home() {
       </section>
 
       {/* The free 4i plugin (26 Oct). */}
-      <section className="section">
+      <section className="section tight">
         <div className="wrap">
           <PluginPromo placement="home_plugin" />
         </div>
       </section>
 
       {featured.length > 0 && (
-        <section className="section">
+        <section className="section tight">
           <div className="wrap">
             <div style={{
               display: "flex", justifyContent: "space-between",
@@ -153,7 +153,7 @@ export default function Home() {
         </section>
       )}
 
-      <section className="section">
+      <section className="section tight">
         <div className="wrap">
           <p className="eyebrow"><FourILower /> Productions</p>
           <h2 className="display" style={{ marginTop: 12 }}>
@@ -181,7 +181,7 @@ export default function Home() {
       </section>
 
 
-      <section className="section">
+      <section className="section tight">
         <div className="wrap center">
           <h2 className="display">
             4 Artists. 4 Fans. 4 <span className="four">Good</span>.

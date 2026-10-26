@@ -69,7 +69,8 @@ export default function ResourcesIndex() {
       <section className="section" style={{ borderTop: 0, paddingTop: 32 }}>
         <div className="wrap">
           <h2 className="display" style={{ fontSize: 30, margin: 0 }}>More tools</h2>
-          <div className="grid-3" style={{ marginTop: 26 }}>
+          {/* All four on one line (Graice, 26 Oct): smaller cards than the resources above. */}
+          <div className="tools-row" style={{ marginTop: 26 }}>
             {/* Live tools that live on another 4i site: open in a new tab so
                 the visitor keeps their place here. */}
             {PLANNED_TOOLS.filter((t) => t.href).map((t) => (
