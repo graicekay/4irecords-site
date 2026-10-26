@@ -178,7 +178,7 @@ export default async function ResourcePage(
                     href={resource.downloadExternal} className="btn btn-solid" target="_blank" rel="noopener noreferrer"
                     data-link-id="4iproductions_pack_download" data-placement="resource_gate"
                   >
-                    Get it on 4i Productions
+                    Get it on <FourILower /> Productions
                   </a>
                   <p className="gate-privacy">Opens 4iproductions.com in a new tab. Pay what you want, $0 and up.</p>
                 </div>

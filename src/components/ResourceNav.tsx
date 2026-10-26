@@ -3,8 +3,8 @@ import Link from "next/link";
 import type { ResourceMeta } from "@/lib/resources";
 
 /**
- * The strip across the top of a resource that lets you move between all
- * three without going back to the index.
+ * The strip across the top of a resource that lets you move between them
+ * without going back to the index, plus the free 4i plugin at the end.
  *
  * Numbered, because these have a reading order — the checklist, then the
  * budget guide, then the cutdown matrix — and the numbers are how the PDFs,
@@ -35,6 +35,11 @@ export function ResourceNav({
           </Link>
         );
       })}
+      {/* The free 4i plugin (26 Oct), numbered on after the resources; its section is on /resources. */}
+      <Link href="/resources#plugin" className="resnav-item">
+        <span className="resnav-n">{String(Math.max(...resources.map((r, i) => r.order ?? i + 1)) + 1).padStart(2, "0")}</span>
+        <span className="resnav-label">The free 4i plugin</span>
+      </Link>
     </nav>
   );
 }
