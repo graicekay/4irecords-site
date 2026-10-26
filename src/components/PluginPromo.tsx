@@ -2,8 +2,7 @@ import { FourILower, FourIText } from "@/components/FourIMark";
 import { PRODUCTIONS_SITE } from "@/lib/links";
 
 /* ============================================================
-   The free 4i plugin (26 Oct 2026), on /resources and in "More
-   resources" under every resource. The plugin lives on 4i
+   The free 4i plugin (26 Oct 2026), on /resources. The plugin lives on 4i
    Productions, so the banner, the sample video and the pack
    covers load from there (like the shot visualizer's banner) and
    every link opens its /plugin page in a new tab.
@@ -16,7 +15,7 @@ const PLUGIN = `${PRODUCTIONS_SITE}/plugin`;
 
 const PACKS = [
   {
-    id: "border-ice", name: "Border-iCE", cover: "border-ice-cover.gif",
+    id: "border-ice", name: "Border-iCE", cover: "border-ice-cover.gif", wide: true,
     blurb: "Boiling hand-drawn borders and torn-paper cut-outs around any masked or cut-out layer.",
   },
   {
@@ -33,7 +32,7 @@ const PACKS = [
   },
 ];
 
-/** `placement` tags the outbound clicks (resources_plugin / more_resources_plugin). */
+/** `placement` tags the outbound clicks (resources_plugin). */
 export function PluginPromo({ placement }: { placement: string }) {
   return (
     <div className="plugin-promo">
@@ -62,7 +61,7 @@ export function PluginPromo({ placement }: { placement: string }) {
           <a key={p.id} href={PLUGIN} target="_blank" rel="noopener" className="card card-has-banner"
             data-link-id={`plugin_pack_${p.id}`} data-placement={placement}>
             {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img src={`${PRODUCTIONS_SITE}/plugin/${p.cover}`} alt="" className="card-banner plugin-pack-cover" loading="lazy" />
+            <img src={`${PRODUCTIONS_SITE}/plugin/${p.cover}`} alt="" className={`card-banner plugin-pack-cover${"wide" in p ? " plugin-pack-cover-wide" : ""}`} loading="lazy" />
             <span className="badge badge-has-dl">Free</span>
             {/* Not Anton: it's uppercase only, and "Border-iCE" keeps its lowercase i. */}
             <h3 className="plugin-pack-name">{p.name}</h3>

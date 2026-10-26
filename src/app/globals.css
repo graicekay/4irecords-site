@@ -1421,3 +1421,5 @@ a.plugin-promo-frame:hover { border-color: var(--border-hi); }
 @media (max-width: 1000px) { .plugin-packs { grid-template-columns: repeat(2, 1fr); } }
 @media (max-width: 520px) { .plugin-packs { grid-template-columns: 1fr; } }
 .section .card h3.plugin-pack-name { font-family: var(--font-mono, inherit); font-size: 15px; font-weight: 600; text-transform: none; letter-spacing: 0.02em; margin: 16px 0 8px; }
+/* Border-iCE's cover is wider than 16:9: show all of it, on black. */
+.plugin-pack-cover-wide { object-fit: contain; background: #000; }
