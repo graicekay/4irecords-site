@@ -8,6 +8,17 @@ Live at www.4irecords.com (Vercel, team `graicekay`); Neon project
 `4irecords-site`, schema in `schema.sql`; `/admin` behind `ADMIN_PASSWORD`.
 Started 24 September 2026.
 
+## Plugin promo, Spotlight video, More tools (LIVE 26 Oct 2026, 57ca9b5)
+- `components/PluginPromo.tsx`: green heading (white 4i mark), the 4i Plugin banner + Border-iCE sample video, 4 pack cards,
+  "Get the free 4i plugin". Assets load from 4iproductions.com; links go to its /plugin. Home page and /resources only.
+- Home: Lesser Moose Spotlight video beside the Spotlight copy (R2 `media/records/lesser-moose-spotlight.mp4` via
+  4iproductions.com/media). Home sections use `.section.tight`: no lines, 48px.
+- /resources: resources and "More tools" each one row of four (`.tools-row`), no separator lines. More tools = Shot visualizer,
+  Weapons, Spoilers (new), Border-iCE (new, `format: tool`, `keepCase: true` keeps its lowercase i out of Anton, GIF banner).
+- Resource index strip ends with "05 The free 4i plugin" → /resources#plugin.
+- Packs carry Graice's line "To use for music edits, posters, lyric videos, etc." Spoilers + Border-iCE page copy is a placeholder.
+- Vocabulary: "the index" = the home page.
+
 ## Search Console fix (pushed 13 Oct 2026)
 - Search Console (11 Oct) reported "duplicate without user-selected canonical" plus some "noindex".
 - Fix: every public page now sets `alternates.canonical` (home, mission, visuals, resources, inquire, events, fans; resource pages already had one). `/inquire?branch=…` and Instagram tracking params now point at the main URL. Commit bd8899c.
