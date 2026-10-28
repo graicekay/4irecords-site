@@ -31,3 +31,7 @@ build
 coverage
 *.tsbuildinfo
 .DS_Store
+
+# Hosted downloads, now served from Cloudflare R2 through 4iproductions.com/dl
+# (28 Oct 2026). Kept here as the source, never deployed.
+dl-src

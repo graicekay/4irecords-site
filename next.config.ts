@@ -32,6 +32,14 @@ const nextConfig: NextConfig = {
          now split between the landing page and the artist branch of
          /inquire, which is where its inbound links should land. */
       { source: "/artists", destination: "/inquire?for=artist", permanent: true },
+      /* Scribbles' zip moved to Cloudflare R2 (28 Oct 2026), served through
+         4iproductions.com/dl, which signs a short-lived link. Download links
+         already emailed still point here. */
+      {
+        source: "/dl/:path*",
+        destination: "https://www.4iproductions.com/dl/:path*",
+        permanent: false,
+      },
     ];
   },
 };
